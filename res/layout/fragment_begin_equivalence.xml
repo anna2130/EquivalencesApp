@@ -9,39 +9,43 @@
 <!--     android:paddingRight="@dimen/activity_horizontal_margin" -->
 <!--     android:paddingTop="@dimen/activity_vertical_margin" -->
 <!--     tools:context="com.example.equivalencesapp.BeginEquivalenceActivity$PlaceholderFragment" > -->
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:orientation="vertical">
-  
-    <LinearLayout
- 	    android:layout_width="wrap_content"
- 	    android:layout_height="0dip"
- 	    android:orientation="vertical" 
-        android:layout_weight="0.1"
- 	    >
- 	    
-        <ListView 
-            android:id="@+id/start_equivalence"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content" />
-        
-        <ListView
-            android:id="@+id/rules_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
- 	</LinearLayout>
+<!-- <LinearLayout -->
+<!--   xmlns:android="http://schemas.android.com/apk/res/android" -->
+<!--   android:layout_width="fill_parent" -->
+<!--   android:layout_height="fill_parent" -->
+<!--   android:orientation="vertical"> -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent" android:layout_height="fill_parent">
     
     <LinearLayout
+        android:id="@+id/linear_layout"
  	    android:layout_width="wrap_content"
  	    android:layout_height="wrap_content"
  	    android:orientation="vertical" >
-        
-	 	<ListView 
-	 	    android:id="@+id/end_equivalence"
-		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content" />
+ 	    <LinearLayout
+	        android:id="@+id/top_linear_layout"
+	 	    android:layout_width="wrap_content"
+	 	    android:layout_height="wrap_content"
+	 	    android:orientation="vertical" >
+ 		</LinearLayout>
+ 		
+ 		<TextView
+            android:id="@+id/rules_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dip" />
+ 		
+ 	    <LinearLayout
+	        android:id="@+id/bottom_linear_layout"
+	 	    android:layout_width="wrap_content"
+	 	    android:layout_height="wrap_content"
+	 	    android:orientation="vertical" >
+ 		</LinearLayout>
+ 		
+<!-- 	 	<TextView  -->
+<!-- 	 	    android:id="@+id/end_equivalence" -->
+<!-- 		    android:layout_width="fill_parent" -->
+<!-- 		    android:layout_height="wrap_content" /> -->
 <!-- 		    android:layout_alignParentBottom="true" /> -->
  	</LinearLayout>
-</LinearLayout>
+</ScrollView>

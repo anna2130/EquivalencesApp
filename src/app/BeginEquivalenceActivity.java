@@ -2,6 +2,7 @@ package app;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Stack;
 
 import treeBuilder.BinaryOperator;
 import treeBuilder.Compiler;
@@ -13,15 +14,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.equivalencesapp.R;
@@ -38,12 +36,14 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	String start;
     String end;
 	
-    ListView topListView;
-    ListView bottomListView;
-    ArrayList<String> forward;
-    ArrayList<String> backward;
-    ArrayAdapter<String> topAdapter;
-    ArrayAdapter<String> bottomAdapter;
+//    ArrayList<String> forward;
+//    ArrayList<String> backward;
+    
+    Stack<TextView> topStack;
+    Stack<TextView> bottomStack;
+    
+    LinearLayout topLinearLayout;
+    LinearLayout bottomLinearLayout;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,9 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    start = intent.getStringExtra(MainActivity.START_EQUIVALENCE);
 	    end = intent.getStringExtra(MainActivity.END_EQUIVALENCE);
 	    
+	    topStack = new Stack<TextView>();
+	    bottomStack = new Stack<TextView>();
+	    
 	    rs = new RuleSelector();
 	    ra = new RuleApplicator();
 	    compiler = new Compiler();
@@ -64,65 +67,82 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    // Set the user interface layout for this Activity
 	    setContentView(R.layout.fragment_begin_equivalence);
 	    
-	    topListView = (ListView) findViewById(R.id.start_equivalence);
-	    forward = new ArrayList<String>();
-	    forward.add(start);
-	    topAdapter = new ArrayAdapter<String>(context, 
-	    		android.R.layout.simple_list_item_1, forward);
-	    topListView.setAdapter(topAdapter);
-	    topListView.setOnItemClickListener(new OnItemClickListener() {
-	    	
+//	    forward = new ArrayList<String>();
+//	    forward.add(start);
+//	    backward = new ArrayList<String>();
+//	    backward.add(end);
+	    
+		addTextViewToTop(new TextView(context), start);
+		addTextViewToBottom(new TextView(context), end);
+	}
+	
+	public void addTextViewToTop(TextView textView, String text) {
+		topLinearLayout = (LinearLayout) findViewById(R.id.top_linear_layout);
+	    
+	    textView.setId(topStack.size());
+	    textView.setText(text);
+	    textView.setTextSize(20);
+	    textView.setClickable(true);
+	    textView.setLayoutParams(new LinearLayout.LayoutParams(
+	    		LinearLayout.LayoutParams.WRAP_CONTENT,
+	    		LinearLayout.LayoutParams.WRAP_CONTENT));
+	    
+	    textView.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				int bottomChild = topListView.getChildCount();
-				if (position == bottomChild - 1) {
+			public void onClick(View view) {
+				if (view.equals(topStack.peek())) {
 					// Currently apply random rule to current equivalence
 					// TODO: Set rules list and choose rule to apply
 					Node node = topTree.getRoot();
 					BitSet bs = rs.getApplicableRules(topTree, node);
 					ra.applyRandomRule(bs, topTree, (BinaryOperator) node);
-					forward.add(topTree.toString());
-			        topAdapter.notifyDataSetChanged();
+//					forward.add(topTree.toString());
+					addTextViewToTop(new TextView(context), topTree.toString());
 			        
 			        if (equivalenceComplete(topTree.toString(), end))
 			        	Log.d("DEBUG", "Complete");
 			        
 				} else {
-					// Undo to position in list clicked
-					// TODO: Add redo functionality
-					for (int i = forward.size() - 1; i > position; --i) {
-						forward.remove(i);
+//					// Undo to position in list clicked
+//					// TODO: Add redo functionality
+			        int position = view.getId();
+					for (int i = topStack.size() - 1; i > position; --i) {
+//						forward.remove(i);
+						topLinearLayout.removeViewAt(i);
+						topStack.pop();
 					}
 					
-					topTree = compiler.compile(forward.get(position));
-			        topAdapter.notifyDataSetChanged();
+					topTree = compiler.compile(topStack.peek().getText().toString());
 				}
 			}
 		});
+	    
+	    topLinearLayout.addView(textView);
+	    topStack.push(textView);
+	}
+	
+	public void addTextViewToBottom(TextView textView, String text) {
+	    bottomLinearLayout = (LinearLayout) findViewById(R.id.bottom_linear_layout);
 
-	    bottomListView = (ListView) findViewById(R.id.end_equivalence);
-	    backward = new ArrayList<String>();
-	    backward.add(end);
-	    bottomAdapter = new ArrayAdapter<String>(context, 
-	    		android.R.layout.simple_list_item_1, backward);
-	    bottomListView.setAdapter(bottomAdapter);
-	    bottomListView.setOnItemClickListener(new OnItemClickListener() {
-	    	
+	    textView.setId(bottomStack.size());
+	    textView.setText(text);
+	    textView.setTextSize(20);
+	    textView.setClickable(true);
+	    textView.setLayoutParams(new LinearLayout.LayoutParams(
+	    		LinearLayout.LayoutParams.WRAP_CONTENT,
+	    		LinearLayout.LayoutParams.WRAP_CONTENT));
+	    
+	    textView.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-//				int topChild = bottomListView.getChildCount();
-				if (position == 0) {
+			public void onClick(View view) {
+				if (view.equals(bottomStack.peek())) {
 					// Currently apply random rule to current equivalence
 					// TODO: Set rules list and choose rule to apply
 					Node node = bottomTree.getRoot();
 					BitSet bs = rs.getApplicableRules(bottomTree, node);
 					ra.applyRandomRule(bs, bottomTree, (BinaryOperator) node);
-					backward.add(0, bottomTree.toString());
-			        bottomAdapter.notifyDataSetChanged();
+//					backward.add(0, bottomTree.toString());
+					addTextViewToBottom(new TextView(context), bottomTree.toString());
 			        
 			        if (equivalenceComplete(bottomTree.toString(), start))
 			        	Log.d("DEBUG", "Complete");
@@ -130,15 +150,20 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 				} else {
 					// Undo to position in list clicked
 					// TODO: Add redo functionality
+					int position = bottomStack.size() - view.getId() - 1;
 					for (int i = 0; i < position; ++i) {
-						backward.remove(0);
+//						backward.remove(0);
+						bottomLinearLayout.removeViewAt(0);
+						bottomStack.pop();
 					}
 					
-					bottomTree = compiler.compile(backward.get(0));
-					bottomAdapter.notifyDataSetChanged();
+					bottomTree = compiler.compile(bottomStack.peek().getText().toString());
 				}
 			}
 		});
+	    
+	    bottomLinearLayout.addView(textView, 0);
+	    bottomStack.push(textView);
 	}
 	
 	public boolean equivalenceComplete(String top, String bottom) {
@@ -173,34 +198,34 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 //	    return ss;
 //	}
 	
-	public void setRulesList(final FormationTree tree, int key, int depth) {
-		final Node node = tree.findNode(key, depth);
-		final BitSet bs = rs.getApplicableRules(tree, node);
-		String[] rules = rs.rulesToString(bs, tree, node);
-    	final ListView listview = (ListView) findViewById(R.id.rules_list);
-    	
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-			android.R.layout.simple_list_item_1, android.R.id.text1, rules);
-		listview.setAdapter(adapter);
-		listview.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Log.d("DEBUG", ""+bs.toString()+" "+position);
-				
-				ra.applyRuleFromBitSet(bs, position, tree, (BinaryOperator) node);
-				
-				TextView topTextView = (TextView) findViewById(R.id.start_equivalence);
-//			    topTextView.setText(setClickableOperators(tree, tree.toString()));
-				topTextView.setText(tree.toString());
-			    
-			    String[] rules = new String[] {};
-			    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-					android.R.layout.simple_list_item_1, android.R.id.text1, rules);
-				listview.setAdapter(adapter);
-			}
-		});
-	}
+//	public void setRulesList(final FormationTree tree, int key, int depth) {
+//		final Node node = tree.findNode(key, depth);
+//		final BitSet bs = rs.getApplicableRules(tree, node);
+//		String[] rules = rs.rulesToString(bs, tree, node);
+//    	final ListView listview = (ListView) findViewById(R.id.rules_list);
+//    	
+//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
+//			android.R.layout.simple_list_item_1, android.R.id.text1, rules);
+//		listview.setAdapter(adapter);
+//		listview.setOnItemClickListener(new OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> parent, View view,
+//					int position, long id) {
+//				Log.d("DEBUG", ""+bs.toString()+" "+position);
+//				
+//				ra.applyRuleFromBitSet(bs, position, tree, (BinaryOperator) node);
+//				
+//				TextView topTextView = (TextView) findViewById(R.id.start_equivalence);
+////			    topTextView.setText(setClickableOperators(tree, tree.toString()));
+//				topTextView.setText(tree.toString());
+//			    
+//			    String[] rules = new String[] {};
+//			    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
+//					android.R.layout.simple_list_item_1, android.R.id.text1, rules);
+//				listview.setAdapter(adapter);
+//			}
+//		});
+//	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
