@@ -11,31 +11,30 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
+import treeManipulation.RuleApplicator;
 import treeManipulation.RuleSelector;
 
 public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
-		String s = "(r&q)&(p&s)";
+		String s = "(r&q)&p";
 		FormationTree tree = compiler.compile(s);
 		System.out.println(tree);
 		
 		Node node = tree.findNode(0, 0);
 		
-		TreeIterator it = new TreeIterator(node);
-		while (it.hasNext()) {
-			System.out.println(it.next().getValue());
-		}
+//		TreeIterator it = new TreeIterator(node);
+//		while (it.hasNext()) {
+//			System.out.println(it.next().getValue());
+//		}
 		
-//		RuleSelector rs = new RuleSelector();
-//		BitSet bs = rs.getApplicableRules(tree, node);
-//		System.out.println(rs.rulesToString(bs, tree, node)[0] + " " + tree.numNodes());
+		RuleSelector rs = new RuleSelector();
+		BitSet bs = rs.getApplicableRules(tree, node);
 		
+		RuleApplicator ra = new RuleApplicator();
+		ra.applyRandomRule(bs, tree, (BinaryOperator) node);
+//		ra.applyRuleFromBitSet(bs, 1, tree, (BinaryOperator) node); 
 		System.out.println(tree);
-		
-//		RuleApplicator ra = new RuleApplicator();
-//		ra.applyAndSimplification(tree, 0, 1);
-//		System.out.println(tree);
 	}
 	
 	public FormationTree compile(String expr) {

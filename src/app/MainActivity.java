@@ -73,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
 		// such as the equivalences used
 		Intent intent = new Intent(this, BeginEquivalenceActivity.class);
 		String startEquivalence = "a&(b&c)";
-		String endEquivalence = "(b&a)&c";
+		String endEquivalence = "(b&c)&a";
 		intent.putExtra(START_EQUIVALENCE, startEquivalence);
 		intent.putExtra(END_EQUIVALENCE, endEquivalence);
 	    startActivity(intent);

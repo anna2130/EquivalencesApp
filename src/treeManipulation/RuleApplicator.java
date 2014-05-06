@@ -1,6 +1,7 @@
 package treeManipulation;
 
 import java.util.BitSet;
+import java.util.Random;
 
 import treeBuilder.BinaryOperator;
 import treeBuilder.FormationTree;
@@ -42,13 +43,13 @@ public class RuleApplicator {
 	 * 
 	 */
 	
-	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, BinaryOperator node) {
+	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, 
+			BinaryOperator node) {
+		int numSetBits = bs.cardinality();
 		int nextSetBit = bs.nextSetBit(0);
 		
-		while (index >= 0) {
+		while (numSetBits-- > 0 && nextSetBit != index)
 			nextSetBit = bs.nextSetBit(nextSetBit + 1);
-			--index;
-		}
 		
 		if (nextSetBit == 0 || nextSetBit == 4)
 			applyCommutativity(node);
@@ -58,6 +59,19 @@ public class RuleApplicator {
 			applyAndLeftAssociativity(tree, node);
 		if (nextSetBit == 3)
 			applyAndRightAssociativity(tree, node);
+	}
+	
+	public void applyRandomRule(BitSet bs, FormationTree tree, BinaryOperator node) {
+		int numSetBits = bs.cardinality();
+		int nextSetBit = bs.nextSetBit(0);
+		
+		Random rand = new Random();
+	    int randomNum = rand.nextInt(numSetBits);
+	    
+		while (randomNum-- > 0)
+			nextSetBit = bs.nextSetBit(nextSetBit + 1);
+	    
+	    applyRuleFromBitSet(bs, nextSetBit, tree, node);
 	}
 	
 	public void applyCommutativity(BinaryOperator node) {

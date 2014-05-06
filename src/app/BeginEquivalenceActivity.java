@@ -1,31 +1,23 @@
 package app;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Stack;
 
-import treeBuilder.Atom;
 import treeBuilder.BinaryOperator;
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
-import treeBuilder.TreeIterator;
 import treeManipulation.RuleApplicator;
 import treeManipulation.RuleSelector;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -36,38 +28,77 @@ import com.example.equivalencesapp.R;
 
 public class BeginEquivalenceActivity extends ActionBarActivity {
 
-	final Context context = this;
-	Stack<FormationTree> forward;
-	Stack<FormationTree> backward;
+	Context context;
+	RuleSelector rs;
+	RuleApplicator ra;
+    Compiler compiler;
+    FormationTree tree;
 	
+	String start;
+    String end;
+	
+    ListView topListView;
+    ListView bottomListView;
+    ArrayList<String> forward;
+    ArrayList<String> backward;
+    ArrayAdapter<String> topAdapter;
+    ArrayAdapter<String> bottomAdapter;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-	    // Get the message from the intent
+	    // Get the equivalences from the intent
+		context = this;
 	    Intent intent = getIntent();
-	    String start = intent.getStringExtra(MainActivity.START_EQUIVALENCE);
-	    String end = intent.getStringExtra(MainActivity.END_EQUIVALENCE);
+	    start = intent.getStringExtra(MainActivity.START_EQUIVALENCE);
+	    end = intent.getStringExtra(MainActivity.END_EQUIVALENCE);
 	    
-	    // Set up stack for previous equivalences
-	    forward = new Stack<FormationTree>();
-	    backward = new Stack<FormationTree>();
-	    
-	    Compiler compiler = new Compiler();
-	    FormationTree tree = compiler.compile(start);
-	    forward.push(tree);
+	    rs = new RuleSelector();
+	    ra = new RuleApplicator();
+	    compiler = new Compiler();
+	    tree = compiler.compile(start);
 	    
 	    // Set the user interface layout for this Activity
 	    setContentView(R.layout.fragment_begin_equivalence);
-//    	setRulesList(forward.peek(), 0, 0);
 	    
-	    SpannableString ss = setClickableOperators(tree, start);
-	    
-	    // Create the text views
-	    TextView topTextView = (TextView) findViewById(R.id.start_equivalence);
-	    topTextView.setTextSize(40);
-	    topTextView.setText(ss);
-	    topTextView.setMovementMethod(LinkMovementMethod.getInstance());
+	    topListView = (ListView) findViewById(R.id.start_equivalence);
+	    forward = new ArrayList<String>();
+	    forward.add(start);
+	    topAdapter = new ArrayAdapter<String>(context, 
+	    		android.R.layout.simple_list_item_1, forward);
+	    topListView.setAdapter(topAdapter);
+	    topListView.setOnItemClickListener(new OnItemClickListener() {
+	    	
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				int topChild = topListView.getChildCount();
+				if (position == topChild - 1) {
+					// Currently apply random rule to current equivalence
+					// TODO: Set rules list and choose rule to apply
+					Node node = tree.getRoot();
+					BitSet bs = rs.getApplicableRules(tree, node);
+					ra.applyRandomRule(bs, tree, (BinaryOperator) node);
+					forward.add(tree.toString());
+			        topAdapter.notifyDataSetChanged();
+			        
+			        if (equivalenceComplete(tree.toString(), end))
+			        	Log.d("DEBUG", "Complete");
+			        
+				} else {
+					// Undo to position in list clicked
+					// TODO: Add redo functionality
+					for (int i = forward.size() - 1; i > position; --i) {
+						forward.remove(i);
+					}
+					
+					tree = compiler.compile(forward.get(position));
+			        topAdapter.notifyDataSetChanged();
+				}
+			}
+		});
 
 	    TextView bottomTextView = (TextView) findViewById(R.id.end_equivalence);
 	    bottomTextView.setTextSize(40);
@@ -75,43 +106,44 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    bottomTextView.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 	
-	public SpannableString setClickableOperators(FormationTree tree, String start) {
-		SpannableString ss = new SpannableString(forward.peek().toString());
-	    // Make each operator node clickable
-	    TreeIterator iterator = new TreeIterator(tree.getRoot());
-	    String s = start;
-	    int i = 0;
-	    
-	    while (iterator.hasNext()) {
-	    	final Node next = iterator.next();
-	    	
-	    	while (s.charAt(i) == '(' || s.charAt(i) == ')')
-	    		++i;
-	    	
-	    	if (!(next instanceof Atom)) {
-		    	ClickableSpan clickableSpan = new ClickableSpan() {
-			        @Override
-			        public void onClick(View textView) {
-			        	setRulesList(forward.peek(), next.getKey(), next.getDepth());
-			        }
-			    };
-			    ss.setSpan(clickableSpan, i, i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-	    	}
-	    	
-		    ++i;
-	    }
-	    return ss;
+	public boolean equivalenceComplete(String top, String bottom) {
+		return top.equals(bottom);
 	}
+	
+//	public SpannableString setClickableOperators(FormationTree tree, String start) {
+//		SpannableString ss = new SpannableString(tree.toString());
+//	    // Make each operator node clickable
+//	    TreeIterator iterator = new TreeIterator(tree.getRoot());
+//	    String s = start;
+//	    int i = 0;
+//	    
+//	    while (iterator.hasNext()) {
+//	    	final Node next = iterator.next();
+//	    	
+//	    	while (s.charAt(i) == '(' || s.charAt(i) == ')')
+//	    		++i;
+//	    	
+//	    	if (!(next instanceof Atom)) {
+//		    	ClickableSpan clickableSpan = new ClickableSpan() {
+//			        @Override
+//			        public void onClick(View textView) {
+//			        	setRulesList(tree.toString(), next.getKey(), next.getDepth());
+//			        }
+//			    };
+//			    ss.setSpan(clickableSpan, i, i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//	    	}
+//	    	
+//		    ++i;
+//	    }
+//	    return ss;
+//	}
 	
 	public void setRulesList(final FormationTree tree, int key, int depth) {
 		final Node node = tree.findNode(key, depth);
-		
-		RuleSelector rs = new RuleSelector();
 		final BitSet bs = rs.getApplicableRules(tree, node);
 		String[] rules = rs.rulesToString(bs, tree, node);
-		
-    	ListView listview = (ListView) findViewById(R.id.rules_list);
-
+    	final ListView listview = (ListView) findViewById(R.id.rules_list);
+    	
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
 			android.R.layout.simple_list_item_1, android.R.id.text1, rules);
 		listview.setAdapter(adapter);
@@ -119,13 +151,18 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				Log.d("DEBUG", "Clicked");
+				Log.d("DEBUG", ""+bs.toString()+" "+position);
 				
-				RuleApplicator ra = new RuleApplicator();
 				ra.applyRuleFromBitSet(bs, position, tree, (BinaryOperator) node);
 				
 				TextView topTextView = (TextView) findViewById(R.id.start_equivalence);
-			    topTextView.setText(setClickableOperators(tree, tree.toString()));
+//			    topTextView.setText(setClickableOperators(tree, tree.toString()));
+				topTextView.setText(tree.toString());
+			    
+			    String[] rules = new String[] {};
+			    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
+					android.R.layout.simple_list_item_1, android.R.id.text1, rules);
+				listview.setAdapter(adapter);
 			}
 		});
 	}
@@ -149,22 +186,4 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(
-					R.layout.fragment_begin_equivalence, container, false);
-			return rootView;
-		}
-	}
-
 }
