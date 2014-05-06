@@ -32,7 +32,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	RuleSelector rs;
 	RuleApplicator ra;
     Compiler compiler;
-    FormationTree tree;
+    FormationTree topTree;
+    FormationTree bottomTree;
 	
 	String start;
     String end;
@@ -57,7 +58,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    rs = new RuleSelector();
 	    ra = new RuleApplicator();
 	    compiler = new Compiler();
-	    tree = compiler.compile(start);
+	    topTree = compiler.compile(start);
+	    bottomTree = compiler.compile(end);
 	    
 	    // Set the user interface layout for this Activity
 	    setContentView(R.layout.fragment_begin_equivalence);
@@ -74,17 +76,17 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				
-				int topChild = topListView.getChildCount();
-				if (position == topChild - 1) {
+				int bottomChild = topListView.getChildCount();
+				if (position == bottomChild - 1) {
 					// Currently apply random rule to current equivalence
 					// TODO: Set rules list and choose rule to apply
-					Node node = tree.getRoot();
-					BitSet bs = rs.getApplicableRules(tree, node);
-					ra.applyRandomRule(bs, tree, (BinaryOperator) node);
-					forward.add(tree.toString());
+					Node node = topTree.getRoot();
+					BitSet bs = rs.getApplicableRules(topTree, node);
+					ra.applyRandomRule(bs, topTree, (BinaryOperator) node);
+					forward.add(topTree.toString());
 			        topAdapter.notifyDataSetChanged();
 			        
-			        if (equivalenceComplete(tree.toString(), end))
+			        if (equivalenceComplete(topTree.toString(), end))
 			        	Log.d("DEBUG", "Complete");
 			        
 				} else {
@@ -94,16 +96,49 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 						forward.remove(i);
 					}
 					
-					tree = compiler.compile(forward.get(position));
+					topTree = compiler.compile(forward.get(position));
 			        topAdapter.notifyDataSetChanged();
 				}
 			}
 		});
 
-	    TextView bottomTextView = (TextView) findViewById(R.id.end_equivalence);
-	    bottomTextView.setTextSize(40);
-	    bottomTextView.setText(end);
-	    bottomTextView.setMovementMethod(LinkMovementMethod.getInstance());
+	    bottomListView = (ListView) findViewById(R.id.end_equivalence);
+	    backward = new ArrayList<String>();
+	    backward.add(end);
+	    bottomAdapter = new ArrayAdapter<String>(context, 
+	    		android.R.layout.simple_list_item_1, backward);
+	    bottomListView.setAdapter(bottomAdapter);
+	    bottomListView.setOnItemClickListener(new OnItemClickListener() {
+	    	
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+//				int topChild = bottomListView.getChildCount();
+				if (position == 0) {
+					// Currently apply random rule to current equivalence
+					// TODO: Set rules list and choose rule to apply
+					Node node = bottomTree.getRoot();
+					BitSet bs = rs.getApplicableRules(bottomTree, node);
+					ra.applyRandomRule(bs, bottomTree, (BinaryOperator) node);
+					backward.add(0, bottomTree.toString());
+			        bottomAdapter.notifyDataSetChanged();
+			        
+			        if (equivalenceComplete(bottomTree.toString(), start))
+			        	Log.d("DEBUG", "Complete");
+			        
+				} else {
+					// Undo to position in list clicked
+					// TODO: Add redo functionality
+					for (int i = 0; i < position; ++i) {
+						backward.remove(0);
+					}
+					
+					bottomTree = compiler.compile(backward.get(0));
+					bottomAdapter.notifyDataSetChanged();
+				}
+			}
+		});
 	}
 	
 	public boolean equivalenceComplete(String top, String bottom) {
