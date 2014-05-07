@@ -33,7 +33,7 @@
             android:id="@+id/rules_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip" />
+            android:layout_marginTop="15dip" />
  		
  	    <LinearLayout
 	        android:id="@+id/bottom_linear_layout"

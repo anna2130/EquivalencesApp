@@ -30,20 +30,18 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	RuleSelector rs;
 	RuleApplicator ra;
     Compiler compiler;
+    
     FormationTree topTree;
     FormationTree bottomTree;
-	
 	String start;
     String end;
-	
-//    ArrayList<String> forward;
-//    ArrayList<String> backward;
     
     Stack<TextView> topStack;
     Stack<TextView> bottomStack;
-    
     LinearLayout topLinearLayout;
     LinearLayout bottomLinearLayout;
+    
+    TextView rulesList;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +64,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    
 	    // Set the user interface layout for this Activity
 	    setContentView(R.layout.fragment_begin_equivalence);
-	    
-//	    forward = new ArrayList<String>();
-//	    forward.add(start);
-//	    backward = new ArrayList<String>();
-//	    backward.add(end);
+	    rulesList = (TextView) findViewById(R.id.rules_list);
 	    
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);
@@ -95,8 +89,10 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					// TODO: Set rules list and choose rule to apply
 					Node node = topTree.getRoot();
 					BitSet bs = rs.getApplicableRules(topTree, node);
+					
+					rulesList.setText(rs.rulesToString(bs, topTree, node)[0]);
+					
 					ra.applyRandomRule(bs, topTree, (BinaryOperator) node);
-//					forward.add(topTree.toString());
 					addTextViewToTop(new TextView(context), topTree.toString());
 			        
 			        if (equivalenceComplete(topTree.toString(), end))
@@ -107,7 +103,6 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 //					// TODO: Add redo functionality
 			        int position = view.getId();
 					for (int i = topStack.size() - 1; i > position; --i) {
-//						forward.remove(i);
 						topLinearLayout.removeViewAt(i);
 						topStack.pop();
 					}
@@ -141,7 +136,6 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					Node node = bottomTree.getRoot();
 					BitSet bs = rs.getApplicableRules(bottomTree, node);
 					ra.applyRandomRule(bs, bottomTree, (BinaryOperator) node);
-//					backward.add(0, bottomTree.toString());
 					addTextViewToBottom(new TextView(context), bottomTree.toString());
 			        
 			        if (equivalenceComplete(bottomTree.toString(), start))
@@ -152,7 +146,6 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					// TODO: Add redo functionality
 					int position = bottomStack.size() - view.getId() - 1;
 					for (int i = 0; i < position; ++i) {
-//						backward.remove(0);
 						bottomLinearLayout.removeViewAt(0);
 						bottomStack.pop();
 					}
