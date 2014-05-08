@@ -42,6 +42,18 @@ public class Parser {
 	}
 	
 	@Test
+	public void testImplies() {
+		FormationTree tree = compiler.compile("a->b");
+		assertEquals("a->b: ", tree.toTreeString(), "0-0: -> (0-1: a, 1-1: b)");
+	}
+	
+	@Test
+	public void testIff() {
+		FormationTree tree = compiler.compile("a<->b");
+		assertEquals("a<->b: ", tree.toTreeString(), "0-0: <-> (0-1: a, 1-1: b)");
+	}
+	
+	@Test
 	public void testAtom() {
 		FormationTree tree = compiler.compile("a");
 		assertEquals("a: ", tree.toTreeString(), "0-0: a");
@@ -92,6 +104,13 @@ public class Parser {
 		FormationTree tree = compiler.compile("!p|q->(p->q&r)");
 		assertEquals("!p|q->(p->q&r): ", tree.toTreeString(), "0-0: -> (0-1: | (0-2: ! (0-3: p), 1-2: q), 1-1: -> (2-2: p, 3-2: & (6-3: q, 7-3: r)))");
 	}
+
+	@Test
+	public void testComplexIff() {
+		FormationTree tree = compiler.compile("!p|q<->(p->q&r)");
+		assertEquals("!p|q<->(p->q&r): ", tree.toTreeString(), "0-0: <-> (0-1: | (0-2: ! (0-3: p), 1-2: q), 1-1: -> (2-2: p, 3-2: & (6-3: q, 7-3: r)))");
+	}
+
 	
 //	@Test
 //	public void testComplex4() {
