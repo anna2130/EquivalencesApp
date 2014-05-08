@@ -17,9 +17,10 @@ import treeManipulation.RuleSelector;
 public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
-		String s = "(r&q)&p";
+//		String s = "(r&q)&p";
+		String s = "a<->b";
 		FormationTree tree = compiler.compile(s);
-		System.out.println(tree);
+		System.out.println(tree.toString());
 		
 		Node node = tree.findNode(0, 0);
 		
@@ -27,14 +28,15 @@ public class Compiler {
 //		while (it.hasNext()) {
 //			System.out.println(it.next().getValue());
 //		}
-		
-		RuleSelector rs = new RuleSelector();
-		BitSet bs = rs.getApplicableRules(tree, node);
-		
+//		
+//		RuleSelector rs = new RuleSelector();
+//		BitSet bs = rs.getApplicableRules(tree, node);
+//		
 		RuleApplicator ra = new RuleApplicator();
-		ra.applyRandomRule(bs, tree, (BinaryOperator) node);
+		ra.applyIffToAndImplies(tree, (BinaryOperator) node);
+//		ra.applyRandomRule(bs, tree, (BinaryOperator) node);
 //		ra.applyRuleFromBitSet(bs, 1, tree, (BinaryOperator) node); 
-		System.out.println(tree);
+		System.out.println(tree.toTreeString());
 	}
 	
 	public FormationTree compile(String expr) {

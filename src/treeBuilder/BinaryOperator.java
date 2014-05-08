@@ -5,8 +5,8 @@ public class BinaryOperator extends Node {
 	private Node leftChild;
 	private Node rightChild;
 	
-	public BinaryOperator(int currentIndex, int depth, String value, int index) {
-		super(currentIndex, depth, value, index);
+	public BinaryOperator(int key, int depth, String value) {
+		super(key, depth, value);
 	}
 
 	public Node getLeftChild() {
@@ -15,6 +15,7 @@ public class BinaryOperator extends Node {
 
 	public void setLeftChild(Node leftChild) {
 		this.leftChild = leftChild;
+		leftChild.setParent(this);
 	}
 
 	public Node getRightChild() {
@@ -23,6 +24,7 @@ public class BinaryOperator extends Node {
 
 	public void setRightChild(Node rightChild) {
 		this.rightChild = rightChild;
+		rightChild.setParent(this);
 	}
 
 	@Override
@@ -75,6 +77,17 @@ public class BinaryOperator extends Node {
 		sb.append(")");
 		
 		return sb.toString();
+	}
+
+	@Override
+	public Node clone() {
+		BinaryOperator clone = new BinaryOperator(getKey(), getDepth(), getValue());
+		
+		clone.setLeftChild(getLeftChild().clone());
+		clone.setRightChild(getRightChild().clone());
+		clone.setParent(getParent());
+		
+		return clone;
 	}
 
 }

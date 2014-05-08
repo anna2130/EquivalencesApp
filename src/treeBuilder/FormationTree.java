@@ -66,12 +66,12 @@ public class FormationTree {
 		return n;
 	}
 	
-	public Node findParent(int key, int depth) {
-		int parentKey = key >> 1;
-		int parentDepth = depth - 1;
-		
-		return findNode(parentKey, parentDepth);
-	}
+//	public Node findParent(int key, int depth) {
+//		int parentKey = key >> 1;
+//		int parentDepth = depth - 1;
+//		
+//		return findNode(parentKey, parentDepth);
+//	}
 	
 	public int numNodes() {
 		int numNodes = 1;
@@ -107,7 +107,9 @@ public class FormationTree {
 	@Override
 	public String toString() {
 		String s = root.toString();
-		return s.substring(1, s.length()-1);
+		if (s.charAt(0) == '(')
+			s = s.substring(1, s.length()-1);
+		return s;
 	}
 	
 	public String toTreeString() {

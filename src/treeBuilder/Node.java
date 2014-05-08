@@ -5,14 +5,12 @@ public abstract class Node {
 	private int key;
 	private int depth;
 	private String value;
-	private int index;
 	private Node parent;
 	
-	public Node(int key, int depth, String value, int index) {
+	public Node(int key, int depth, String value) {
 		this.setKey(key);
 		this.setDepth(depth);
 		this.setValue(value);
-		this.setIndex(index);
 		parent = null;
 	}
 	
@@ -52,14 +50,6 @@ public abstract class Node {
 		this.depth = depth;
 	}
 	
-	public int getIndex() {
-		return index;
-	}
-	
-	public void setIndex(int index) {
-		this.index = index;
-	}
-	
 	public boolean hasChildren() {
 		return false;
 	}
@@ -95,6 +85,8 @@ public abstract class Node {
 	public boolean isRoot() {
 		return key == 0 && depth == 0;
 	}
+	
+	public abstract Node clone();
 	
 	@Override
 	public abstract String toString();

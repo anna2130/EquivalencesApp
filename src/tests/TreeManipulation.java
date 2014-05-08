@@ -10,6 +10,7 @@ import org.junit.Test;
 import treeBuilder.BinaryOperator;
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
+import treeBuilder.UnaryOperator;
 import treeManipulation.RuleApplicator;
 import treeManipulation.RuleSelector;
 
@@ -203,5 +204,120 @@ public class TreeManipulation {
 		FormationTree tree = compiler.compile("((r->s)|(!p|q))&t");
 		ra.applyLeftAssociativity(tree, (BinaryOperator) tree.findNode(0, 1));
 		assertEquals("((r->s)|(!p|q))&t: ", tree.toTreeString(), "0-0: & (0-1: | (0-2: | (0-3: -> (0-4: r, 1-4: s), 1-3: ! (2-4: p)), 1-2: q), 1-1: t)");
+	}
+	
+	@Test
+	public void testNotNotRoot() {
+		FormationTree tree = compiler.compile("!!a");
+		ra.applyNotNot(tree, (UnaryOperator) tree.findNode(0, 0));
+		assertEquals("!!a", tree.toTreeString(), "0-0: a");
+	}
+
+	@Test
+	public void testNotNotUnary() {
+		FormationTree tree = compiler.compile("!!!a");
+		ra.applyNotNot(tree, (UnaryOperator) tree.findNode(0, 1));
+		assertEquals("!!!a", tree.toTreeString(), "0-0: ! (0-1: a)");
+	}
+	
+	@Test
+	public void testNotNotBinaryLeft() {
+		FormationTree tree = compiler.compile("!!a&b");
+		ra.applyNotNot(tree, (UnaryOperator) tree.findNode(0, 1));
+		assertEquals("!!a&b", tree.toTreeString(), "0-0: & (0-1: a, 1-1: b)");
+	}
+	
+	@Test
+	public void testNotNotBinaryRight() {
+		FormationTree tree = compiler.compile("b&!!a");
+		ra.applyNotNot(tree, (UnaryOperator) tree.findNode(1, 1));
+		assertEquals("b&!!a", tree.toTreeString(), "0-0: & (0-1: b, 1-1: a)");
+	}
+
+	// 9. A->B |- !A|B
+	@Test
+	public void testImpilesToOrRoot() {
+		FormationTree tree = compiler.compile("a->b");
+		ra.applyImpliesToOr(tree, (BinaryOperator) tree.findNode(0, 0));
+		assertEquals("a->b", tree.toTreeString(), "0-0: | (0-1: ! (0-2: a), 1-1: b)");
+	}
+
+	@Test
+	public void testImpilesToOrUnary() {
+		FormationTree tree = compiler.compile("!(a->b)");
+		ra.applyImpliesToOr(tree, (BinaryOperator) tree.findNode(0, 1));
+		assertEquals("!(a->b)", tree.toTreeString(), "0-0: ! (0-1: | (0-2: ! (0-3: a), 1-2: b))");
+	}
+	
+	@Test
+	public void testImpilesToOrBinaryLeft() {
+		FormationTree tree = compiler.compile("(a->b)&a");
+		ra.applyImpliesToOr(tree, (BinaryOperator) tree.findNode(0, 1));
+		assertEquals("(a->b)&a", tree.toTreeString(), "0-0: & (0-1: | (0-2: ! (0-3: a), 1-2: b), 1-1: a)");
+	}
+	
+	@Test
+	public void testImpilesToOrBinaryRight() {
+		FormationTree tree = compiler.compile("a&(a->b)");
+		ra.applyImpliesToOr(tree, (BinaryOperator) tree.findNode(1, 1));
+		assertEquals("a&(a->b)", tree.toTreeString(), "0-0: & (0-1: a, 1-1: | (2-2: ! (4-3: a), 3-2: b))");
+	}
+
+	// 10. !(A->B) 	|-	A|!B
+	@Test
+	public void testNotImpilesRoot() {
+		FormationTree tree = compiler.compile("!(a->b)");
+		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 0));
+		assertEquals("a->b", tree.toTreeString(), "0-0: | (0-1: a, 1-1: ! (2-2: b))");
+	}
+
+	@Test
+	public void testNotImpilesUnary() {
+		FormationTree tree = compiler.compile("!!(a->b)");
+		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 1));
+		assertEquals("!(a->b)", tree.toTreeString(), "0-0: ! (0-1: | (0-2: a, 1-2: ! (2-3: b)))");
+	}
+	
+	@Test
+	public void testNotImpilesBinaryLeft() {
+		FormationTree tree = compiler.compile("!(a->b)&a");
+		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 1));
+		assertEquals("(a->b)&a", tree.toTreeString(), "0-0: & (0-1: | (0-2: a, 1-2: ! (2-3: b)), 1-1: a)");
+	}
+	
+	@Test
+	public void testNotImpilesBinaryRight() {
+		FormationTree tree = compiler.compile("a&!(a->b)");
+		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(1, 1));
+		assertEquals("a&(a->b)", tree.toTreeString(), "0-0: & (0-1: a, 1-1: | (2-2: a, 3-2: ! (6-3: b)))");
+	}
+	
+	// 11. A<->B	|-  (A->B)&(B->A)
+	@Test
+	public void testIffToAndRoot() {
+		FormationTree tree = compiler.compile("a<->b");
+		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(0, 0));
+		assertEquals("a<->b", tree.toTreeString(), "0-0: & (0-1: -> (0-2: a, 1-2: b), 1-1: -> (2-2: b, 3-2: a))");
+	}
+
+	@Test
+	public void testIffToAndUnary() {
+		FormationTree tree = compiler.compile("!(a<->b)");
+		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(0, 1));
+		assertEquals("!(a<->b)", tree.toTreeString(), "0-0: ! (0-1: & (0-2: -> (0-3: a, 1-3: b), 1-2: -> (2-3: b, 3-3: a)))");
+	}
+	
+	@Test
+	public void testIffToAndBinaryLeft() {
+		FormationTree tree = compiler.compile("(a<->b)&a");
+		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(0, 1));
+		assertEquals("(a<->b)&a", tree.toTreeString(), "0-0: & (0-1: & (0-2: -> (0-3: a, 1-3: b), 1-2: -> (2-3: b, 3-3: a)), 1-1: a)");
+	}
+	
+	@Test
+	public void testIffToAndBinaryRight() {
+		FormationTree tree = compiler.compile("a&(a<->b)");
+		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(1, 1));
+		assertEquals("a&(a<->b)", tree.toTreeString(), "0-0: & (0-1: a, 1-1: & (2-2: -> (4-3: a, 5-3: b), 3-2: -> (6-3: b, 7-3: a)))");
 	}
 }

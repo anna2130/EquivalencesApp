@@ -4,12 +4,13 @@ public class UnaryOperator extends Node {
 	
 	private Node child;
 
-	public UnaryOperator(int key, int depth, String value, int index) {
-		super(key, depth, value, index);
+	public UnaryOperator(int key, int depth, String value) {
+		super(key, depth, value);
 	}
 	
 	public void setChild(Node n) {
 		child = n;
+		child.setParent(this);
 	}
 	
 	public Node getChild() {
@@ -34,7 +35,7 @@ public class UnaryOperator extends Node {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		
+
 		sb.append(super.getValue());
 		sb.append(child);
 		
@@ -56,6 +57,16 @@ public class UnaryOperator extends Node {
 		sb.append(")");
 		
 		return sb.toString();
+	}
+
+	@Override
+	public Node clone() {
+		UnaryOperator clone = new UnaryOperator(getKey(), getDepth(), getValue());
+		
+		clone.setChild(getChild().clone());
+		clone.setParent(getParent());
+		
+		return clone;
 	}
 
 }

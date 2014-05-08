@@ -2,8 +2,8 @@ package treeBuilder;
 
 public class Atom extends Node {
 	
-	public Atom(int key, int depth, String value, int index) {
-		super(key, depth, value, index);
+	public Atom(int key, int depth, String value) {
+		super(key, depth, value);
 	}
 
 	@Override
@@ -13,6 +13,13 @@ public class Atom extends Node {
 	
 	public String toTreeString() {
 		return getKey() + "-" + getDepth() + ": " + getValue();
+	}
+
+	@Override
+	public Node clone() {
+		Atom clone = new Atom(getKey(), getDepth(), getValue());
+		clone.setParent(getParent());
+		return clone;
 	}
 
 }

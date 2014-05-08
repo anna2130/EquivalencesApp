@@ -30,6 +30,12 @@ public class Parser {
 	}
 	
 	@Test
+	public void testNotNot() {
+		FormationTree tree = compiler.compile("!!a");
+		assertEquals("!!a: ", tree.toTreeString(), "0-0: ! (0-1: ! (0-2: a))");
+	}
+	
+	@Test
 	public void testAnd() {
 		FormationTree tree = compiler.compile("a&b");
 		assertEquals("a&b: ", tree.toTreeString(), "0-0: & (0-1: a, 1-1: b)");

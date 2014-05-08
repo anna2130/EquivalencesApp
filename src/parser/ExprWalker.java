@@ -62,7 +62,7 @@ public class ExprWalker extends ExprBaseListener {
 	@Override 
 	public void enterIFF(ExprParser.IFFContext ctx) {
 		addBinary();
-        tree.addNode(new BinaryOperator(key, depth(), "<->", 0));
+        tree.addNode(new BinaryOperator(key, depth(), "<->"));
 	}
 
 	@Override 
@@ -73,7 +73,7 @@ public class ExprWalker extends ExprBaseListener {
     @Override 
     public void enterIMPLIES(ExprParser.IMPLIESContext ctx) {
         addBinary();
-        tree.addNode(new BinaryOperator(key, depth(), "->", 0));
+        tree.addNode(new BinaryOperator(key, depth(), "->"));
     }
     
 	@Override 
@@ -84,7 +84,7 @@ public class ExprWalker extends ExprBaseListener {
     @Override 
     public void enterNOT(ExprParser.NOTContext ctx) { 
         addUnary();
-        tree.addNode(new UnaryOperator(key, depth(), "!", 0));
+        tree.addNode(new UnaryOperator(key, depth(), "!"));
     }
     
 	@Override public void exitNOT(ExprParser.NOTContext ctx) {
@@ -99,7 +99,7 @@ public class ExprWalker extends ExprBaseListener {
         int i = ctx.getText().indexOf(ctx.getChild(1).getText());
         String c = ctx.getText().charAt(i) + "";
         
-        tree.addNode(new BinaryOperator(key, depth(), c, 0));
+        tree.addNode(new BinaryOperator(key, depth(), c));
     }
     
     @Override 
@@ -111,7 +111,7 @@ public class ExprWalker extends ExprBaseListener {
     public void enterATOM_(ExprParser.ATOM_Context ctx) { 
         addUnary();
     	TerminalNode e = ctx.ATOM();
-        tree.addNode(new Atom(key, depth(), e.getText(), 0));
+        tree.addNode(new Atom(key, depth(), e.getText()));
     }
     
 	@Override public void exitATOM_(ExprParser.ATOM_Context ctx) {
