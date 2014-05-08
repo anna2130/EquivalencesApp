@@ -32,15 +32,17 @@ public class RuleApplicator {
 	}
 	
 	/* The BitSet returns the rules applicable to a node in the order below:
-	 * 0. Commutativity of &
-	 * 1. Idempotence of & 
-	 * 2. Left Associativity of &
-	 * 3. Right Associativity of &
-	 * 4. Commutativity of |
-	 * 5. Idempotence of |
-	 * 6. Left Associativity of |
-	 * 7. Right Associativity of |
-	 * 
+	 * 0.  Commutativity of &
+	 * 1.  Idempotence of & 
+	 * 2.  Left Associativity of &
+	 * 3.  Right Associativity of &
+	 * 4.  Commutativity of |
+	 * 5.  Idempotence of |
+	 * 6.  Left Associativity of |
+	 * 7.  Right Associativity of |
+	 * 8.  !!A 		|- 	A
+	 * 9.  A->B 	|- 	!A|B
+	 * 10. !(A->B) 	|-	A|!B
 	 */
 	
 	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, 
@@ -53,12 +55,12 @@ public class RuleApplicator {
 		
 		if (nextSetBit == 0 || nextSetBit == 4)
 			applyCommutativity(node);
-		if (nextSetBit == 1)
-			applyAndIdempotence(tree, node);
-		if (nextSetBit == 2)
-			applyAndLeftAssociativity(tree, node);
-		if (nextSetBit == 3)
-			applyAndRightAssociativity(tree, node);
+		if (nextSetBit == 1 || nextSetBit == 5)
+			applyIdempotence(tree, node);
+		if (nextSetBit == 2 || nextSetBit == 6)
+			applyLeftAssociativity(tree, node);
+		if (nextSetBit == 3 || nextSetBit == 7)
+			applyRightAssociativity(tree, node);
 	}
 	
 	public void applyRandomRule(BitSet bs, FormationTree tree, BinaryOperator node) {
@@ -82,7 +84,7 @@ public class RuleApplicator {
 		relabelNode(node);
 	}
 	
-	public void applyAndIdempotence(FormationTree tree, BinaryOperator node) {
+	public void applyIdempotence(FormationTree tree, BinaryOperator node) {
 		Node child = node.getLeftChild();
 		
 		Node parent = child;
@@ -105,11 +107,11 @@ public class RuleApplicator {
 		relabelNode(parent);
 	}
 
-	public void applyAndRightAssociativity(FormationTree tree, BinaryOperator node) {
+	public void applyRightAssociativity(FormationTree tree, BinaryOperator node) {
 		applyRightRotation(tree, node);
 	}
 
-	public void applyAndLeftAssociativity(FormationTree tree, BinaryOperator node) {
+	public void applyLeftAssociativity(FormationTree tree, BinaryOperator node) {
 		applyLeftRotation(tree, node);
 	}
 	

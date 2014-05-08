@@ -1,6 +1,5 @@
 package app;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Stack;
 
@@ -17,6 +16,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
@@ -42,6 +42,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
     LinearLayout bottomLinearLayout;
     
     TextView rulesList;
+    TextureView formationTree;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
