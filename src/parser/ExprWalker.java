@@ -59,6 +59,17 @@ public class ExprWalker extends ExprBaseListener {
     
 	@Override public void exitEXPR(ExprParser.EXPRContext ctx) { }
     
+	@Override 
+	public void enterIFF(ExprParser.IFFContext ctx) {
+		addBinary();
+        tree.addNode(new BinaryOperator(key, depth(), "<->", 0));
+	}
+
+	@Override 
+	public void exitIFF(ExprParser.IFFContext ctx) {
+		remove();
+	}
+	
     @Override 
     public void enterIMPLIES(ExprParser.IMPLIESContext ctx) {
         addBinary();

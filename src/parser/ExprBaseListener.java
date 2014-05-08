@@ -17,6 +17,19 @@ public class ExprBaseListener implements ExprListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
+	@Override public void enterIFF(@NotNull ExprParser.IFFContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitIFF(@NotNull ExprParser.IFFContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
 	@Override public void enterProg(@NotNull ExprParser.ProgContext ctx) { }
 	/**
 	 * {@inheritDoc}

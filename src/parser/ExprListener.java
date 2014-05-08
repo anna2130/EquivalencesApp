@@ -9,6 +9,17 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ExprListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link ExprParser#IFF}.
+	 * @param ctx the parse tree
+	 */
+	void enterIFF(@NotNull ExprParser.IFFContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#IFF}.
+	 * @param ctx the parse tree
+	 */
+	void exitIFF(@NotNull ExprParser.IFFContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link ExprParser#prog}.
 	 * @param ctx the parse tree
 	 */
