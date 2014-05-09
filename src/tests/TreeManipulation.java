@@ -49,7 +49,7 @@ public class TreeManipulation {
 		BitSet expected = new BitSet(noRules);
 		expected.set(0);
 		expected.set(1);
-		assertEquals("(r|s)&(r|s)", bs, expected);
+		assertEquals("(r|s)&(r|s)", bs.get(0, 2), expected);
 	}
 	
 	@Test
@@ -79,7 +79,7 @@ public class TreeManipulation {
 		BitSet expected = new BitSet(noRules);
 		expected.set(4);
 		expected.set(5);
-		assertEquals("(r&s)|(r&s)", bs, expected);
+		assertEquals("(r&s)|(r&s)", bs.get(0, 6), expected);
 	}
 	
 	@Test
