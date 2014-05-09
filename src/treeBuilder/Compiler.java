@@ -18,7 +18,7 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s = "a<->b";
+		String s = "(a|b)&c";
 		FormationTree tree = compiler.compile(s);
 		System.out.println(tree.toString());
 		
@@ -33,7 +33,7 @@ public class Compiler {
 //		BitSet bs = rs.getApplicableRules(tree, node);
 //		
 		RuleApplicator ra = new RuleApplicator();
-		ra.applyIffToAndImplies(tree, (BinaryOperator) node);
+		ra.applyDistributivityAndRight(tree, (BinaryOperator) node);
 //		ra.applyRandomRule(bs, tree, (BinaryOperator) node);
 //		ra.applyRuleFromBitSet(bs, 1, tree, (BinaryOperator) node); 
 		System.out.println(tree.toTreeString());

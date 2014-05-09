@@ -48,6 +48,16 @@ public class RuleApplicator {
 	 * 13. !(A<->B) |- 	A<->!B
 	 * 14. !(A<->B) |-  !A<->B
 	 * 15. !(A<->B) |-  (A&!B)|(!A&B)	-- Exclusive or of A and B
+	 * 16. !(A&B)	|-  !A|!B			-- De Morgan laws
+	 * 17. !(A|B)	|-	!A&!B
+	 * 18. A&(B|C) 	|- 	(A&B)|(A&C)		-- Distributitivity
+	 * 19. (A|B)&C	|-  (A&C)|(B&C)
+	 * 20. A|(B&C)	|- 	(A|B)&(A|C)
+	 * 21. (A&B)|C	|-	(A|C)&(B|C)
+	 * 22. A&(A|B)  |-	A				-- Absoption
+	 * 23. A|(A&B)	|-  A
+	 * 24. (A|B)&A  |-	A
+	 * 25. (A&B)|A	|-  A
 	 */
 	
 	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, 
@@ -72,6 +82,36 @@ public class RuleApplicator {
 			applyImpliesToOr(tree, (BinaryOperator) node);
 		if (nextSetBit == 10)
 			applyNotImplies(tree, (UnaryOperator) node);
+		if (nextSetBit == 11)
+			applyIffToAndImplies(tree, (BinaryOperator) node);
+		if (nextSetBit == 12)
+			applyIffToOrAnd(tree, (BinaryOperator) node);
+		if (nextSetBit == 13)
+			applyNotIffToNotB(tree, (UnaryOperator) node);
+		if (nextSetBit == 14)
+			applyNotIffToNotA(tree, (UnaryOperator) node);
+		if (nextSetBit == 15)
+			applyNotIffToOrAnd(tree, (UnaryOperator) node);
+		if (nextSetBit == 16)
+			applyDeMorgansAnd(tree, (UnaryOperator) node);
+		if (nextSetBit == 17)
+			applyDeMorgansOr(tree, (UnaryOperator) node);
+		if (nextSetBit == 18)
+			applyDistributivityAndLeft(tree, (BinaryOperator) node);
+		if (nextSetBit == 19)
+			applyDistributivityAndRight(tree, (BinaryOperator) node);
+		if (nextSetBit == 20)
+			applyDistributivityOrLeft(tree, (BinaryOperator) node);
+		if (nextSetBit == 21)
+			applyDistributivityOrRight(tree, (BinaryOperator) node);
+		if (nextSetBit == 22)
+			applyLeftAbsorption(tree, (BinaryOperator) node);
+		if (nextSetBit == 23)
+			applyLeftAbsorption(tree, (BinaryOperator) node);
+		if (nextSetBit == 24)
+			applyRightAbsorption(tree, (BinaryOperator) node);
+		if (nextSetBit == 25)
+			applyRightAbsorption(tree, (BinaryOperator) node);
 	}
 	
 	public void applyRandomRule(BitSet bs, FormationTree tree, BinaryOperator node) {
@@ -177,10 +217,10 @@ public class RuleApplicator {
 		Node rightChildClone = rightChild.clone();
 		
 		BinaryOperator result = new BinaryOperator(key, depth, "|");
-		BinaryOperator left = new BinaryOperator(key << 1, depth + 1, "&");
-		BinaryOperator right = new BinaryOperator(key << 1 + 1, depth + 1, "&");
-		UnaryOperator leftNot = new UnaryOperator((key << 1 + 1) << 1, depth + 2, "!");
-		UnaryOperator rightNot = new UnaryOperator((key << 1 + 1) << 1 + 1, depth + 2, "!");
+		BinaryOperator left = new BinaryOperator(key, depth, "&");
+		BinaryOperator right = new BinaryOperator(key, depth, "&");
+		UnaryOperator leftNot = new UnaryOperator(key, depth, "!");
+		UnaryOperator rightNot = new UnaryOperator(key, depth, "!");
 		
 		result.setLeftChild(left);
 		result.setRightChild(right);
@@ -196,8 +236,210 @@ public class RuleApplicator {
 	}
 	
 	// 13. !(A<->B) |- 	A<->!B
+	public void applyNotIffToNotB(FormationTree tree, UnaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator iff = (BinaryOperator) node.getChild();
+		Node rightChild = iff.getRightChild();
+		
+		UnaryOperator not = new UnaryOperator(key, depth, "!");
+		
+		not.setChild(rightChild);
+		iff.setRightChild(not);
+		
+		replaceNode(tree, node, iff);
+	}
+	
 	// 14. !(A<->B) |-  !A<->B
+	public void applyNotIffToNotA(FormationTree tree, UnaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator iff = (BinaryOperator) node.getChild();
+		Node leftChild = iff.getLeftChild();
+		
+		UnaryOperator not = new UnaryOperator(key, depth, "!");
+		
+		not.setChild(leftChild);
+		iff.setLeftChild(not);
+		
+		replaceNode(tree, node, iff);
+	}
+	
 	// 15. !(A<->B) |-  (A&!B)|(!A&B)
+	public void applyNotIffToOrAnd(FormationTree tree, UnaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator iff = (BinaryOperator) node.getChild();
+		Node leftChild = iff.getLeftChild();
+		Node rightChild = iff.getRightChild();
+		Node leftChildClone = leftChild.clone();
+		Node rightChildClone = rightChild.clone();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "|");
+		BinaryOperator left = new BinaryOperator(key, depth, "&");
+		BinaryOperator right = new BinaryOperator(key, depth, "&");
+		UnaryOperator leftNot = new UnaryOperator(key, depth, "!");
+		UnaryOperator rightNot = new UnaryOperator(key, depth, "!");
+		
+		result.setLeftChild(left);
+		result.setRightChild(right);
+		left.setRightChild(rightNot);
+		right.setLeftChild(leftNot);
+		left.setLeftChild(leftChild);
+		right.setRightChild(rightChild);
+		leftNot.setChild(leftChildClone);
+		rightNot.setChild(rightChildClone);
+		
+		replaceNode(tree, node, result);
+	}
+
+	// 16. !(A&B)	|-  !A|!B
+	public void applyDeMorgansAnd(FormationTree tree, UnaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator and = (BinaryOperator) node.getChild();
+		Node leftChild = and.getLeftChild();
+		Node rightChild = and.getRightChild();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "|");
+		UnaryOperator leftNot = new UnaryOperator(key, depth, "!");
+		UnaryOperator rightNot = new UnaryOperator(key, depth, "!");
+		
+		result.setLeftChild(leftNot);
+		result.setRightChild(rightNot);
+		leftNot.setChild(leftChild);
+		rightNot.setChild(rightChild);
+		
+		replaceNode(tree, node, result);
+	}
+	
+	// 17. !(A|B)	|-	!A&!B
+	public void applyDeMorgansOr(FormationTree tree, UnaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator and = (BinaryOperator) node.getChild();
+		Node leftChild = and.getLeftChild();
+		Node rightChild = and.getRightChild();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "&");
+		UnaryOperator leftNot = new UnaryOperator(key, depth, "!");
+		UnaryOperator rightNot = new UnaryOperator(key, depth, "!");
+		
+		result.setLeftChild(leftNot);
+		result.setRightChild(rightNot);
+		leftNot.setChild(leftChild);
+		rightNot.setChild(rightChild);
+		
+		replaceNode(tree, node, result);
+	}
+	
+	// 18. A&(B|C) 	|- 	(A&B)|(A&C)
+	public void applyDistributivityAndLeft(FormationTree tree, BinaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator or = (BinaryOperator) node.getRightChild();
+		Node leftChild = node.getLeftChild();
+		Node leftChildClone = leftChild.clone();
+		Node rightLeftChild = or.getLeftChild();
+		Node rightRightChild = or.getRightChild();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "|");
+		BinaryOperator leftAnd = new BinaryOperator(key, depth, "&");
+		BinaryOperator rightAnd = new BinaryOperator(key, depth, "&");
+		
+		result.setLeftChild(leftAnd);
+		result.setRightChild(rightAnd);
+		leftAnd.setLeftChild(leftChild);
+		leftAnd.setRightChild(rightLeftChild);
+		rightAnd.setLeftChild(leftChildClone);
+		rightAnd.setRightChild(rightRightChild);
+		
+		replaceNode(tree, node, result);
+	}
+	
+	// 19. (A|B)&C	|-  (A&C)|(B&C)
+	public void applyDistributivityAndRight(FormationTree tree, BinaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator or = (BinaryOperator) node.getLeftChild();
+		Node rightChild = node.getRightChild();
+		Node rightChildClone = rightChild.clone();
+		Node leftLeftChild = or.getLeftChild();
+		Node leftRightChild = or.getRightChild();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "|");
+		BinaryOperator leftAnd = new BinaryOperator(key, depth, "&");
+		BinaryOperator rightAnd = new BinaryOperator(key, depth, "&");
+		
+		result.setLeftChild(leftAnd);
+		result.setRightChild(rightAnd);
+		leftAnd.setLeftChild(leftLeftChild);
+		leftAnd.setRightChild(rightChild);
+		rightAnd.setLeftChild(leftRightChild);
+		rightAnd.setRightChild(rightChildClone);
+		
+		replaceNode(tree, node, result);
+	}
+	
+	// 20. A|(B&C)	|- 	(A|B)&(A|C)
+	public void applyDistributivityOrLeft(FormationTree tree, BinaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator or = (BinaryOperator) node.getRightChild();
+		Node leftChild = node.getLeftChild();
+		Node leftChildClone = leftChild.clone();
+		Node rightLeftChild = or.getLeftChild();
+		Node rightRightChild = or.getRightChild();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "&");
+		BinaryOperator leftOr = new BinaryOperator(key, depth, "|");
+		BinaryOperator rightOr = new BinaryOperator(key, depth, "|");
+		
+		result.setLeftChild(leftOr);
+		result.setRightChild(rightOr);
+		leftOr.setLeftChild(leftChild);
+		leftOr.setRightChild(rightLeftChild);
+		rightOr.setLeftChild(leftChildClone);
+		rightOr.setRightChild(rightRightChild);
+		
+		replaceNode(tree, node, result);
+	}
+	
+	// 21. (A&B)|C	|-	(A|C)&(B|C)
+	public void applyDistributivityOrRight(FormationTree tree, BinaryOperator node) {
+		int key = node.getKey();
+		int depth = node.getDepth();
+		BinaryOperator or = (BinaryOperator) node.getLeftChild();
+		Node rightChild = node.getRightChild();
+		Node rightChildClone = rightChild.clone();
+		Node leftLeftChild = or.getLeftChild();
+		Node leftRightChild = or.getRightChild();
+		
+		BinaryOperator result = new BinaryOperator(key, depth, "&");
+		BinaryOperator leftAnd = new BinaryOperator(key, depth, "|");
+		BinaryOperator rightAnd = new BinaryOperator(key, depth, "|");
+		
+		result.setLeftChild(leftAnd);
+		result.setRightChild(rightAnd);
+		leftAnd.setLeftChild(leftLeftChild);
+		leftAnd.setRightChild(rightChild);
+		rightAnd.setLeftChild(leftRightChild);
+		rightAnd.setRightChild(rightChildClone);
+		
+		replaceNode(tree, node, result);
+	}
+	
+	// 22. A&(A|B)  |-	A
+	// 23. A|(A&B)	|-  A
+	public void applyLeftAbsorption(FormationTree tree, BinaryOperator node) {
+		replaceNode(tree, node, node.getLeftChild());
+	}
+	
+	// 24. (A|B)&A  |-	A
+	// 25. (A&B)|A	|-  A
+	public void applyRightAbsorption(FormationTree tree, BinaryOperator node) {
+		replaceNode(tree, node, node.getRightChild());
+	}
 	
 	public void replaceNode(FormationTree tree, Node node, Node result) {
 		Node parent = result;
