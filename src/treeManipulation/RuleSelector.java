@@ -90,29 +90,65 @@ public class RuleSelector {
 		String nodeBefore = s.substring(1, s.length() - 1);
 		
 		if (bs.get(0))
-			rules.add("Commutativity of ^ :		" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewCommutativity((BinaryOperator) node) + "\n");
 		if (bs.get(1))
-			rules.add("Idempotence of ^ :		" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewIdempotence((BinaryOperator) node) + "\n");
 		if (bs.get(2))
-			rules.add("Left Associativity of ^ :	" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewLeftAssociativity((BinaryOperator) node) + "\n");
 		if (bs.get(3))
-			rules.add("Right Associativity of ^ :	" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewRightAssociativity((BinaryOperator) node) + "\n");
 		if (bs.get(4))
-			rules.add("Commutativity of v:		" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewCommutativity((BinaryOperator) node) + "\n");
 		if (bs.get(5))
-			rules.add("Idempotence of v:		" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewIdempotence((BinaryOperator) node) + "\n");
 		if (bs.get(6))
-			rules.add("Left Associativity of v:	" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewLeftAssociativity((BinaryOperator) node) + "\n");
 		if (bs.get(7))
-			rules.add("Right Associativity of v:	" + nodeBefore + " |- " + 
+			rules.add(nodeBefore + " |- " + 
 					ra.viewRightAssociativity((BinaryOperator) node) + "\n");
+		if (bs.get(8))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(9))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(10))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(11))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(12))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(13))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(14))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(15))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(16))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(17))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(18))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(19))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(20))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(21))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(22))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(23))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(24))
+			rules.add(nodeBefore + " |- " + "" + "\n");
+		if (bs.get(25))
+			rules.add(nodeBefore + " |- " + "" + "\n");
 		
 		String[] arr = new String[rules.size()];
 		return rules.toArray(arr);

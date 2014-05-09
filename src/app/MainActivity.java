@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.example.equivalencesapp.R;
 
@@ -72,8 +73,14 @@ public class MainActivity extends ActionBarActivity {
 		// Use intents to carry extra information to the activity
 		// such as the equivalences used
 		Intent intent = new Intent(this, BeginEquivalenceActivity.class);
-		String startEquivalence = "a&(b&c)";
-		String endEquivalence = "(b&c)&a";
+
+		EditText startText = (EditText) findViewById(R.id.start_equivalence);
+		EditText endText = (EditText) findViewById(R.id.end_equivalence);
+		String startEquivalence = startText.getText().toString();
+		String endEquivalence = endText.getText().toString();
+		
+		// TODO: Check equivalences are valid and equivalent
+		
 		intent.putExtra(START_EQUIVALENCE, startEquivalence);
 		intent.putExtra(END_EQUIVALENCE, endEquivalence);
 	    startActivity(intent);
