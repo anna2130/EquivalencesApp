@@ -13,6 +13,7 @@ import parser.ExprParser;
 import parser.ExprWalker;
 import treeManipulation.RuleApplicator;
 import treeManipulation.RuleSelector;
+import treeManipulation.TruthTable;
 
 public class Compiler {
 	public static void main(String args[]) {
@@ -21,6 +22,11 @@ public class Compiler {
 		String s = "(a|b)&c";
 		FormationTree tree = compiler.compile(s);
 		System.out.println(tree.toString());
+		
+		TruthTable tt = new TruthTable(compiler);
+		int[][] table = tt.createTruthTable(2);
+		
+		System.out.println(tt.truthTableToString(table));
 		
 		Node node = tree.findNode(0, 0);
 		

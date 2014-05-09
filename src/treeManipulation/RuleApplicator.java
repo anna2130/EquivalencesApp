@@ -68,6 +68,7 @@ public class RuleApplicator {
 		while (numSetBits-- > 0 && nextSetBit != index)
 			nextSetBit = bs.nextSetBit(nextSetBit + 1);
 		
+		// TODO: SWITCH
 		if (nextSetBit == 0 || nextSetBit == 4)
 			applyCommutativity((BinaryOperator) node);
 		if (nextSetBit == 1 || nextSetBit == 5)
