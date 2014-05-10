@@ -1,5 +1,8 @@
 package treeBuilder;
 
+import java.util.HashMap;
+import java.util.SortedSet;
+
 public class UnaryOperator extends Node {
 	
 	private Node child;
@@ -67,6 +70,18 @@ public class UnaryOperator extends Node {
 		clone.setParent(getParent());
 		
 		return clone;
+	}
+
+	@Override
+	public boolean getTruthValue(HashMap<String, Integer> values) {
+		return !child.getTruthValue(values);
+	}
+
+	@Override
+	public SortedSet<String> getVariables() {
+		SortedSet<String> variables = new java.util.TreeSet<String>();
+		variables.addAll(child.getVariables());
+		return variables;
 	}
 
 }

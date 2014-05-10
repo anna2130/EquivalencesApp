@@ -1,5 +1,8 @@
 package treeBuilder;
 
+import java.util.HashMap;
+import java.util.SortedSet;
+
 public class FormationTree {
 
 	private Node root;
@@ -86,7 +89,13 @@ public class FormationTree {
 		return numNodes;
 	}
 	
+	public SortedSet<String> getVariables() {
+		return root.getVariables();
+	}
 	
+	public boolean getTruthValue(HashMap<String, Integer> values) {
+		return root.getTruthValue(values);
+	}
 	
 	public boolean equalSubTrees(Node n1, Node n2) {		
 		if (n1.getValue().equals(n2.getValue())) {

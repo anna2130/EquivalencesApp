@@ -1,5 +1,8 @@
 package treeBuilder;
 
+import java.util.HashMap;
+import java.util.SortedSet;
+
 public abstract class Node {
 
 	private int key;
@@ -87,6 +90,10 @@ public abstract class Node {
 	}
 	
 	public abstract Node clone();
+	
+	public abstract boolean getTruthValue(HashMap<String, Integer> values);
+	
+	public abstract SortedSet<String> getVariables();
 	
 	@Override
 	public abstract String toString();

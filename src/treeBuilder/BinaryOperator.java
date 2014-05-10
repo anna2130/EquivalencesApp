@@ -1,5 +1,8 @@
 package treeBuilder;
 
+import java.util.HashMap;
+import java.util.SortedSet;
+
 public class BinaryOperator extends Node {
 
 	private Node leftChild;
@@ -88,6 +91,28 @@ public class BinaryOperator extends Node {
 		clone.setParent(getParent());
 		
 		return clone;
+	}
+
+	@Override
+	public boolean getTruthValue(HashMap<String, Integer> values) {
+//		System.out.println(leftChild.getTruthValue(values) & rightChild.getTruthValue(values));
+		if (getValue().equals("&"))
+			return leftChild.getTruthValue(values) & rightChild.getTruthValue(values);
+		if (getValue().equals("|"))
+			return leftChild.getTruthValue(values) | rightChild.getTruthValue(values);
+		if (getValue().equals("->"))
+			return !(leftChild.getTruthValue(values) & !rightChild.getTruthValue(values));
+		if (getValue().equals("<->"))
+			return leftChild.getTruthValue(values) == rightChild.getTruthValue(values);
+		return false;
+	}
+
+	@Override
+	public SortedSet<String> getVariables() {
+		SortedSet<String> variables = new java.util.TreeSet<String>();
+		variables.addAll(leftChild.getVariables());
+		variables.addAll(rightChild.getVariables());
+		return variables;
 	}
 
 }

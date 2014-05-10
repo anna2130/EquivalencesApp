@@ -1,6 +1,7 @@
 package treeBuilder;
 
-import java.util.BitSet;
+import java.util.ArrayList;
+import java.util.SortedSet;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -12,21 +13,23 @@ import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
 import treeManipulation.RuleApplicator;
-import treeManipulation.RuleSelector;
 import treeManipulation.TruthTable;
 
 public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s = "(a|b)&c";
+		String s = "a<->b";
 		FormationTree tree = compiler.compile(s);
-		System.out.println(tree.toString());
+		System.out.println(tree.toString() + "\n");
 		
 		TruthTable tt = new TruthTable(compiler);
-		int[][] table = tt.createTruthTable(2);
+		ArrayList<Integer> vals = tt.getTruthValues(tree);
 		
-		System.out.println(tt.truthTableToString(table));
+		for (int i = 0; i < vals.size(); ++i) {
+			System.out.print(vals.get(i));
+		}
+		System.out.println("\n");
 		
 		Node node = tree.findNode(0, 0);
 		
@@ -38,8 +41,8 @@ public class Compiler {
 //		RuleSelector rs = new RuleSelector();
 //		BitSet bs = rs.getApplicableRules(tree, node);
 //		
-		RuleApplicator ra = new RuleApplicator();
-		ra.applyDistributivityAndRight(tree, (BinaryOperator) node);
+//		RuleApplicator ra = new RuleApplicator();
+//		ra.applyDistributivityAndRight(tree, (BinaryOperator) node);
 //		ra.applyRandomRule(bs, tree, (BinaryOperator) node);
 //		ra.applyRuleFromBitSet(bs, 1, tree, (BinaryOperator) node); 
 		System.out.println(tree.toTreeString());
