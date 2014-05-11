@@ -19,19 +19,22 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s = "a<->b";
-		FormationTree tree = compiler.compile(s);
-		System.out.println(tree.toString() + "\n");
+		String s1 = "a&(a|b)";
+		String s2 = "a";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		System.out.println(tree1.toString() + "\n");
 		
 		TruthTable tt = new TruthTable(compiler);
-		ArrayList<Integer> vals = tt.getTruthValues(tree);
+		ArrayList<Integer> vals = tt.getTruthValues(tree1);
+		System.out.println(tt.testEquivalence(tree1, tree2));
 		
 		for (int i = 0; i < vals.size(); ++i) {
 			System.out.print(vals.get(i));
 		}
 		System.out.println("\n");
 		
-		Node node = tree.findNode(0, 0);
+//		Node node = tree1.findNode(0, 0);
 		
 //		TreeIterator it = new TreeIterator(node);
 //		while (it.hasNext()) {
@@ -45,7 +48,7 @@ public class Compiler {
 //		ra.applyDistributivityAndRight(tree, (BinaryOperator) node);
 //		ra.applyRandomRule(bs, tree, (BinaryOperator) node);
 //		ra.applyRuleFromBitSet(bs, 1, tree, (BinaryOperator) node); 
-		System.out.println(tree.toTreeString());
+		System.out.println(tree1.toTreeString());
 	}
 	
 	public FormationTree compile(String expr) {

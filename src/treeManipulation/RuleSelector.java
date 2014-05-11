@@ -22,7 +22,7 @@ public class RuleSelector {
 	 * 7.  Right Associativity of |
 	 * 8.  !!A 		|- 	A
 	 * 9.  A->B 	|- 	!A|B 			-- Also equivalent to !(A&!B). Separate rule?
-	 * 10. !(A->B) 	|-	A|!B
+	 * 10. !(A->B) 	|-	A&!B
 	 * 11. A<->B	|-  (A->B)&(B->A)
 	 * 12. A<->B	|-	(A&B)|(!A&!B)
 	 * 13. !(A<->B) |- 	A<->!B

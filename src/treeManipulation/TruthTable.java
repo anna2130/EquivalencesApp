@@ -1,5 +1,6 @@
 package treeManipulation;
 
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,10 +12,25 @@ import treeBuilder.FormationTree;
 public class TruthTable {
 
 	Compiler compiler;
-//	int[][] table;
 	
 	public TruthTable(Compiler compiler) {
 		this.compiler = compiler;
+	}
+	
+	public boolean testEquivalence(FormationTree t1, FormationTree t2) {
+		ArrayList<Integer> list1 = getTruthValues(t1);
+		ArrayList<Integer> list2 = getTruthValues(t2);
+		
+		if (list1.size() == list2.size())
+			return list1.equals(list2);
+		else {
+			if (list1.size() > list2.size()) {
+				list2.addAll(list2);
+			} else {
+				list1.addAll(list1);
+			}
+			return list1.equals(list2);
+		}
 	}
 	
 	public ArrayList<Integer> getTruthValues(FormationTree	tree) {
@@ -47,7 +63,7 @@ public class TruthTable {
 		return equivTruthVals;
 	}
 	
-	public ArrayList<int[]> createTruthTable(int n) {
+	private ArrayList<int[]> createTruthTable(int n) {
         int rows = (int) Math.pow(2,n);
     	ArrayList<int[]> table = new ArrayList<int[]>();
 
@@ -61,7 +77,7 @@ public class TruthTable {
         return table;
     }
 	
-	public String truthTableToString(ArrayList<int[]> table) {
+	private String truthTableToString(ArrayList<int[]> table) {
 		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < table.size(); ++i) {

@@ -42,7 +42,7 @@ public class RuleApplicator {
 	 * 7.  Right Associativity of |
 	 * 8.  !!A 		|- 	A
 	 * 9.  A->B 	|- 	!A|B 			-- Also equivalent to !(A&!B). Separate rule?
-	 * 10. !(A->B) 	|-	A|!B
+	 * 10. !(A->B) 	|-	A&!B
 	 * 11. A<->B	|-  (A->B)&(B->A)
 	 * 12. A<->B	|-	(A&B)|(!A&!B)
 	 * 13. !(A<->B) |- 	A<->!B
@@ -169,13 +169,13 @@ public class RuleApplicator {
 		replaceNode(tree, node, result);
 	}
 	
-	// 10. !(A->B) 	|-	A|!B
+	// 10. !(A->B) 	|-	A&!B
 	public void applyNotImplies(FormationTree tree, UnaryOperator node) {
 		int key = node.getKey();
 		int depth = node.getDepth();
 		BinaryOperator implies = (BinaryOperator) node.getChild();
 		
-		BinaryOperator result = new BinaryOperator(key, depth, "|");
+		BinaryOperator result = new BinaryOperator(key, depth, "&");
 		UnaryOperator not = new UnaryOperator(key << 1, depth + 1, "!");
 		
 		not.setChild(implies.getRightChild());

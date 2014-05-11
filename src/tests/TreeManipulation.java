@@ -264,33 +264,33 @@ public class TreeManipulation {
 		assertEquals("a&(a->b)", tree.toTreeString(), "0-0: & (0-1: a, 1-1: | (2-2: ! (4-3: a), 3-2: b))");
 	}
 
-	// 10. !(A->B) 	|-	A|!B
+	// 10. !(A->B) 	|-	A&!B
 	@Test
 	public void testNotImpilesRoot() {
 		FormationTree tree = compiler.compile("!(a->b)");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 0));
-		assertEquals("a->b", tree.toTreeString(), "0-0: | (0-1: a, 1-1: ! (2-2: b))");
+		assertEquals("a->b", tree.toTreeString(), "0-0: & (0-1: a, 1-1: ! (2-2: b))");
 	}
 
 	@Test
 	public void testNotImpilesUnary() {
 		FormationTree tree = compiler.compile("!!(a->b)");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("!(a->b)", tree.toTreeString(), "0-0: ! (0-1: | (0-2: a, 1-2: ! (2-3: b)))");
+		assertEquals("!(a->b)", tree.toTreeString(), "0-0: ! (0-1: & (0-2: a, 1-2: ! (2-3: b)))");
 	}
 	
 	@Test
 	public void testNotImpilesBinaryLeft() {
 		FormationTree tree = compiler.compile("!(a->b)&a");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("(a->b)&a", tree.toTreeString(), "0-0: & (0-1: | (0-2: a, 1-2: ! (2-3: b)), 1-1: a)");
+		assertEquals("(a->b)&a", tree.toTreeString(), "0-0: & (0-1: & (0-2: a, 1-2: ! (2-3: b)), 1-1: a)");
 	}
 	
 	@Test
 	public void testNotImpilesBinaryRight() {
 		FormationTree tree = compiler.compile("a&!(a->b)");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a&(a->b)", tree.toTreeString(), "0-0: & (0-1: a, 1-1: | (2-2: a, 3-2: ! (6-3: b)))");
+		assertEquals("a&(a->b)", tree.toTreeString(), "0-0: & (0-1: a, 1-1: & (2-2: a, 3-2: ! (6-3: b)))");
 	}
 	
 	// 11. A<->B	|-  (A->B)&(B->A)
