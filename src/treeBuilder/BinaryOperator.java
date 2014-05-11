@@ -95,7 +95,6 @@ public class BinaryOperator extends Node {
 
 	@Override
 	public boolean getTruthValue(HashMap<String, Integer> values) {
-//		System.out.println(leftChild.getTruthValue(values) & rightChild.getTruthValue(values));
 		if (getValue().equals("&"))
 			return leftChild.getTruthValue(values) & rightChild.getTruthValue(values);
 		if (getValue().equals("|"))

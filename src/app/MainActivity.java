@@ -1,5 +1,7 @@
 package app;
 
+import treeManipulation.TruthTable;
+import treeBuilder.Compiler;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -80,9 +82,15 @@ public class MainActivity extends ActionBarActivity {
 		String endEquivalence = endText.getText().toString();
 		
 		// TODO: Check equivalences are valid and equivalent
+		Compiler c = new Compiler();
+		TruthTable tt = new TruthTable();
 		
-		intent.putExtra(START_EQUIVALENCE, startEquivalence);
-		intent.putExtra(END_EQUIVALENCE, endEquivalence);
-	    startActivity(intent);
+		if (tt.testEquivalence(c.compile(startEquivalence), c.compile(endEquivalence))) {
+			intent.putExtra(START_EQUIVALENCE, startEquivalence);
+			intent.putExtra(END_EQUIVALENCE, endEquivalence);
+		    startActivity(intent);
+		} else {
+			
+		}
 	}
 }

@@ -19,7 +19,7 @@ public class TruthTables {
 	@Before 
 	public void method() {
 		compiler = new Compiler();
-		tt = new TruthTable(compiler);
+		tt = new TruthTable();
 	}
 
 	// Test commonly used logical operators
@@ -29,7 +29,7 @@ public class TruthTables {
 		String s = "p";
 		FormationTree tree = compiler.compile(s);
 		ArrayList<Integer> list = tt.getTruthValues(tree);
-		assertEquals("", "[0, 1]", list.toString());
+		assertEquals("", "[1, 0]", list.toString());
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class TruthTables {
 		String s = "!p";
 		FormationTree tree = compiler.compile(s);
 		ArrayList<Integer> list = tt.getTruthValues(tree);
-		assertEquals("", "[1, 0]", list.toString());
+		assertEquals("", "[0, 1]", list.toString());
 	}
 
 	@Test
@@ -45,7 +45,7 @@ public class TruthTables {
 		String s = "p&q";
 		FormationTree tree = compiler.compile(s);
 		ArrayList<Integer> list = tt.getTruthValues(tree);
-		assertEquals("", "[0, 0, 0, 1]", list.toString());
+		assertEquals("", "[1, 0, 0, 0]", list.toString());
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class TruthTables {
 		String s = "p|q";
 		FormationTree tree = compiler.compile(s);
 		ArrayList<Integer> list = tt.getTruthValues(tree);
-		assertEquals("", "[0, 1, 1, 1]", list.toString());
+		assertEquals("", "[1, 1, 1, 0]", list.toString());
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class TruthTables {
 		String s = "p->q";
 		FormationTree tree = compiler.compile(s);
 		ArrayList<Integer> list = tt.getTruthValues(tree);
-		assertEquals("", "[1, 0, 1, 1]", list.toString());
+		assertEquals("", "[1, 1, 0, 1]", list.toString());
 	}
 
 	@Test
@@ -70,6 +70,16 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		ArrayList<Integer> list = tt.getTruthValues(tree);
 		assertEquals("", "[1, 0, 0, 1]", list.toString());
+	}
+
+	@Test
+	public void testAndOr() {
+		String s = "p&(p|q)";
+		FormationTree tree = compiler.compile(s);
+		System.out.println(tree.getVariables());
+		ArrayList<Integer> list = tt.getTruthValues(tree);
+		System.out.println(list.toString());
+		assertEquals("", "[1, 0, 1, 0]", list.toString());
 	}
 
 	// Test comparisons for equality

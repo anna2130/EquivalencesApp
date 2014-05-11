@@ -19,15 +19,15 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s1 = "a&(a|b)";
+		String s1 = "(a|b)&a";
 		String s2 = "a";
 		FormationTree tree1 = compiler.compile(s1);
-		FormationTree tree2 = compiler.compile(s2);
+//		FormationTree tree2 = compiler.compile(s2);
 		System.out.println(tree1.toString() + "\n");
 		
-		TruthTable tt = new TruthTable(compiler);
+		TruthTable tt = new TruthTable();
 		ArrayList<Integer> vals = tt.getTruthValues(tree1);
-		System.out.println(tt.testEquivalence(tree1, tree2));
+//		System.out.println(tt.testEquivalence(tree1, tree2));
 		
 		for (int i = 0; i < vals.size(); ++i) {
 			System.out.print(vals.get(i));
