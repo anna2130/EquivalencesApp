@@ -95,13 +95,13 @@ public class BinaryOperator extends Node {
 
 	@Override
 	public boolean getTruthValue(HashMap<String, Integer> values) {
-		if (getValue().equals("&"))
+		if (isAnd())
 			return leftChild.getTruthValue(values) & rightChild.getTruthValue(values);
-		if (getValue().equals("|"))
+		if (isOr())
 			return leftChild.getTruthValue(values) | rightChild.getTruthValue(values);
-		if (getValue().equals("->"))
+		if (isImplies())
 			return !(leftChild.getTruthValue(values) & !rightChild.getTruthValue(values));
-		if (getValue().equals("<->"))
+		if (isIff())
 			return leftChild.getTruthValue(values) == rightChild.getTruthValue(values);
 		return false;
 	}
@@ -112,6 +112,26 @@ public class BinaryOperator extends Node {
 		variables.addAll(leftChild.getVariables());
 		variables.addAll(rightChild.getVariables());
 		return variables;
+	}
+
+	@Override
+	public boolean isAnd() {
+		return getValue().equals("^");
+	}
+
+	@Override
+	public boolean isOr() {
+		return getValue().equals("v");
+	}
+
+	@Override
+	public boolean isImplies() {
+		return getValue().equals("→");
+	}
+
+	@Override
+	public boolean isIff() {
+		return getValue().equals("↔");
 	}
 
 }

@@ -17,8 +17,8 @@
         <Key android:codes="102"    android:keyLabel="f" />
         <Key android:codes="103"    android:keyLabel="g" />
         <Key android:codes="104"    android:keyLabel="h" />
-        <Key android:codes="118"    android:keyLabel="\u2227" android:horizontalGap="6.25%p" />
-        <Key android:codes="094"    android:keyLabel="\u2228" />
+        <Key android:codes="118"    android:keyLabel="\u2228" android:horizontalGap="6.25%p" />
+        <Key android:codes="094"    android:keyLabel="\u2227" />
         <Key android:codes="55006"  android:keyLabel="UNDO" android:keyEdgeFlags="right"/>
     </Row>
     <Row>

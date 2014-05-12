@@ -36,4 +36,9 @@ public class Atom extends Node {
 		return variables;
 	}
 
+	@Override
+	public boolean isAtom() {
+		return true;
+	}
+
 }

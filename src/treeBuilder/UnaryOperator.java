@@ -84,4 +84,9 @@ public class UnaryOperator extends Node {
 		return variables;
 	}
 
+	@Override
+	public boolean isNot() {
+		return getValue().equals("¬");
+	}
+
 }

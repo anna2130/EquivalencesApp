@@ -62,7 +62,7 @@ public class ExprWalker extends ExprBaseListener {
 	@Override 
 	public void enterIFF(ExprParser.IFFContext ctx) {
 		addBinary();
-        tree.addNode(new BinaryOperator(key, depth(), "<->"));
+        tree.addNode(new BinaryOperator(key, depth(), "↔"));
 	}
 
 	@Override 
@@ -73,7 +73,7 @@ public class ExprWalker extends ExprBaseListener {
     @Override 
     public void enterIMPLIES(ExprParser.IMPLIESContext ctx) {
         addBinary();
-        tree.addNode(new BinaryOperator(key, depth(), "->"));
+        tree.addNode(new BinaryOperator(key, depth(), "→"));
     }
     
 	@Override 
@@ -84,7 +84,7 @@ public class ExprWalker extends ExprBaseListener {
     @Override 
     public void enterNOT(ExprParser.NOTContext ctx) { 
         addUnary();
-        tree.addNode(new UnaryOperator(key, depth(), "!"));
+        tree.addNode(new UnaryOperator(key, depth(), "¬"));
     }
     
 	@Override public void exitNOT(ExprParser.NOTContext ctx) {

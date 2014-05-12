@@ -17,7 +17,7 @@ public class ExprParser extends Parser {
 	public static final int
 		T__4=1, T__3=2, T__2=3, T__1=4, T__0=5, BINOP=6, ATOM=7;
 	public static final String[] tokenNames = {
-		"<INVALID>", "'->'", "')'", "'<->'", "'('", "'!'", "BINOP", "ATOM"
+		"<INVALID>", "')'", "'('", "'→'", "'↔'", "'¬'", "BINOP", "ATOM"
 	};
 	public static final int
 		RULE_prog = 0, RULE_expr = 1;
@@ -210,14 +210,14 @@ public class ExprParser extends Parser {
 				setState(8); expr(5);
 				}
 				break;
-			case 4:
+			case 2:
 				{
 				_localctx = new EXPRContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(9); match(4);
+				setState(9); match(2);
 				setState(10); expr(0);
-				setState(11); match(2);
+				setState(11); match(1);
 				}
 				break;
 			case ATOM:
@@ -259,7 +259,7 @@ public class ExprParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(19);
 						if (!(3 >= _localctx._p)) throw new FailedPredicateException(this, "3 >= $_p");
-						setState(20); match(1);
+						setState(20); match(3);
 						setState(21); expr(4);
 						}
 						break;
@@ -270,7 +270,7 @@ public class ExprParser extends Parser {
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(22);
 						if (!(2 >= _localctx._p)) throw new FailedPredicateException(this, "2 >= $_p");
-						setState(23); match(3);
+						setState(23); match(4);
 						setState(24); expr(3);
 						}
 						break;
@@ -316,10 +316,10 @@ public class ExprParser extends Parser {
 		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\21\n\3\3\3\3\3\3\3\3\3"+
 		"\3\3\3\3\3\3\3\3\3\3\7\3\34\n\3\f\3\16\3\37\13\3\3\3\2\4\2\4\2\2#\2\6"+
 		"\3\2\2\2\4\20\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\7\2\2"+
-		"\n\21\5\4\3\2\13\f\7\6\2\2\f\r\5\4\3\2\r\16\7\4\2\2\16\21\3\2\2\2\17\21"+
+		"\n\21\5\4\3\2\13\f\7\4\2\2\f\r\5\4\3\2\r\16\7\3\2\2\16\21\3\2\2\2\17\21"+
 		"\7\t\2\2\20\b\3\2\2\2\20\13\3\2\2\2\20\17\3\2\2\2\21\35\3\2\2\2\22\23"+
-		"\6\3\2\3\23\24\7\b\2\2\24\34\5\4\3\2\25\26\6\3\3\3\26\27\7\3\2\2\27\34"+
-		"\5\4\3\2\30\31\6\3\4\3\31\32\7\5\2\2\32\34\5\4\3\2\33\22\3\2\2\2\33\25"+
+		"\6\3\2\3\23\24\7\b\2\2\24\34\5\4\3\2\25\26\6\3\3\3\26\27\7\5\2\2\27\34"+
+		"\5\4\3\2\30\31\6\3\4\3\31\32\7\6\2\2\32\34\5\4\3\2\33\22\3\2\2\2\33\25"+
 		"\3\2\2\2\33\30\3\2\2\2\34\37\3\2\2\2\35\33\3\2\2\2\35\36\3\2\2\2\36\5"+
 		"\3\2\2\2\37\35\3\2\2\2\5\20\33\35";
 	public static final ATN _ATN =

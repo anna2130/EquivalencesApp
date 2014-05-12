@@ -89,6 +89,30 @@ public abstract class Node {
 		return key == 0 && depth == 0;
 	}
 	
+	public boolean isNot() {
+		return false;
+	}
+
+	public boolean isAnd() {
+		return false;
+	}
+	
+	public boolean isOr() {
+		return false;
+	}
+	
+	public boolean isImplies() {
+		return false;
+	}
+
+	public boolean isIff() {
+		return false;
+	}
+	
+	public boolean isAtom() {
+		return false;
+	}
+	
 	public abstract Node clone();
 	
 	public abstract boolean getTruthValue(HashMap<String, Integer> values);

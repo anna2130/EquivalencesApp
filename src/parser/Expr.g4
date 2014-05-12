@@ -3,12 +3,12 @@ grammar Expr;
 prog: expr;
 
 expr: '(' expr ')' 			#EXPR
-	| '!' expr				#NOT
+	| '¬' expr				#NOT
 	| expr BINOP expr		#BINOP_
-	| expr '->' expr		#IMPLIES
-	| expr '<->' expr		#IFF
+	| expr '→' expr		#IMPLIES
+	| expr '↔' expr		#IFF
 	| ATOM					#ATOM_
 	;
 
-BINOP: ('&' | '|');
+BINOP: ('^' | 'v');
 ATOM:  ('a'..'z');

@@ -12,32 +12,32 @@ import treeBuilder.UnaryOperator;
 public class RuleSelector {
 
 	/* The BitSet returns the rules applicable to a node in the order below:
-	 * 0.  Commutativity of &
-	 * 1.  Idempotence of & 
-	 * 2.  Left Associativity of &
-	 * 3.  Right Associativity of &
-	 * 4.  Commutativity of |
-	 * 5.  Idempotence of |
-	 * 6.  Left Associativity of |
-	 * 7.  Right Associativity of |
-	 * 8.  !!A 		|- 	A
-	 * 9.  A->B 	|- 	!A|B 			-- Also equivalent to !(A&!B). Separate rule?
-	 * 10. !(A->B) 	|-	A&!B
-	 * 11. A<->B	|-  (A->B)&(B->A)
-	 * 12. A<->B	|-	(A&B)|(!A&!B)
-	 * 13. !(A<->B) |- 	A<->!B
-	 * 14. !(A<->B) |-  !A<->B
-	 * 15. !(A<->B) |-  (A&!B)|(!A&B)	-- Exclusive or of A and B
-	 * 16. !(A&B)	|-  !A|!B			-- De Morgan laws
-	 * 17. !(A|B)	|-	!A&!B
-	 * 18. A&(B|C) 	|- 	(A&B)|(A&C)		-- Distributitivity
-	 * 19. (A|B)&C	|-  (A&C)|(B&C)
-	 * 20. A|(B&C)	|- 	(A|B)&(A|C)
-	 * 21. (A&B)|C	|-	(A|C)&(B|C)
-	 * 22. A&(A|B)  |-	A				-- Absoption
-	 * 23. A|(A&B)	|-  A
-	 * 24. (A|B)&A  |-	A
-	 * 25. (A&B)|A	|-  A
+	 * 0.  Commutativity of ^
+	 * 1.  Idempotence of ^ 
+	 * 2.  Left Associativity of ^
+	 * 3.  Right Associativity of ^
+	 * 4.  Commutativity of v
+	 * 5.  Idempotence of v
+	 * 6.  Left Associativity of v
+	 * 7.  Right Associativity of v
+	 * 8.  ¬¬A 		|- 	A
+	 * 9.  A→B 		|- 	¬AvB 			-- Also equivalent to ¬(A^¬B). Separate rule?
+	 * 10. ¬(A→B) 	|-	A^¬B
+	 * 11. A↔B		|-  (A→B)^(B→A)
+	 * 12. A↔B		|-	(A^B)v(¬A^¬B)
+	 * 13. ¬(A↔B) 	|- 	A↔¬B
+	 * 14. ¬(A↔B) 	|-  ¬A↔B
+	 * 15. ¬(A↔B) 	|-  (A^¬B)v(¬A^B)	-- Exclusive or of A and B
+	 * 16. ¬(A^B)	|-  ¬Av¬B			-- De Morgan laws
+	 * 17. ¬(AvB)	|-	¬A^¬B
+	 * 18. A^(BvC) 	|- 	(A^B)v(A^C)		-- Distributitivity
+	 * 19. (AvB)^C	|-  (A^C)v(B^C)
+	 * 20. Av(B^C)	|- 	(AvB)^(AvC)
+	 * 21. (A^B)vC	|-	(AvC)^(BvC)
+	 * 22. A^(AvB)  |-	A				-- Absoption
+	 * 23. Av(A^B)	|-  A
+	 * 24. (AvB)^A  |-	A
+	 * 25. (A^B)vA	|-  A
 	 */
 	
 	private int noRules = 26;
@@ -48,35 +48,34 @@ public class RuleSelector {
 	
 	public BitSet getApplicableRules(FormationTree tree, Node node) {
 		BitSet bs = new BitSet(noRules);
-		bs.set(0, isAnd(tree, node));
-		bs.set(1, isAnd(tree, node) && isIdempotent(tree, (BinaryOperator) node));
-		bs.set(2, isAnd(tree, node) && isLeftAssociative(tree, (BinaryOperator) node, "&"));
-		bs.set(3, isAnd(tree, node) && isRightAssociative(tree, (BinaryOperator) node, "&"));
-		bs.set(4, isOr(tree, node));
-		bs.set(5, isOr(tree, node) && isIdempotent(tree, (BinaryOperator) node));
-		bs.set(6, isOr(tree, node) && isLeftAssociative(tree, (BinaryOperator) node, "|"));
-		bs.set(7, isOr(tree, node) && isRightAssociative(tree, (BinaryOperator) node, "|"));
-		bs.set(8, isNot(tree, node) && isNot(tree, ((UnaryOperator) node).getChild()));
-		bs.set(9, isImplies(tree, node));
-		bs.set(10, isNot(tree, node) && isImplies(tree, ((UnaryOperator) node).getChild()));
-		bs.set(11, isIff(tree, node));
-		bs.set(12, isIff(tree, node));
-		bs.set(13, isNot(tree, node) && isIff(tree, ((UnaryOperator) node).getChild()));
-		bs.set(14, isNot(tree, node) && isIff(tree, ((UnaryOperator) node).getChild()));
-		bs.set(15, isNot(tree, node) && isIff(tree, ((UnaryOperator) node).getChild()));
-		bs.set(16, isNot(tree, node) && isAnd(tree, ((UnaryOperator) node).getChild()));
-		bs.set(17, isNot(tree, node) && isOr(tree, ((UnaryOperator) node).getChild()));
-		bs.set(18, isAnd(tree, node) && isOr(tree, ((BinaryOperator) node).getRightChild()));
-		bs.set(19, isAnd(tree, node) && isOr(tree, ((BinaryOperator) node).getLeftChild()));
-		bs.set(20, isOr(tree, node) && isAnd(tree, ((BinaryOperator) node).getRightChild()));
-		bs.set(21, isOr(tree, node) && isAnd(tree, ((BinaryOperator) node).getLeftChild()));
-		bs.set(22, isAnd(tree, node) && isOr(tree, ((BinaryOperator) node).getRightChild()) 
+		bs.set(0, node.isAnd());
+		bs.set(1, node.isAnd() && isIdempotent(tree, (BinaryOperator) node));
+		bs.set(2, node.isAnd() && isLeftAssociative(tree, (BinaryOperator) node, "^"));
+		bs.set(3, node.isAnd() && isRightAssociative(tree, (BinaryOperator) node, "^"));
+		bs.set(4, node.isOr());
+		bs.set(5, node.isOr() && isIdempotent(tree, (BinaryOperator) node));
+		bs.set(6, node.isOr() && isLeftAssociative(tree, (BinaryOperator) node, "v"));
+		bs.set(7, node.isOr() && isRightAssociative(tree, (BinaryOperator) node, "v"));
+		bs.set(8, node.isNot() && ((UnaryOperator) node).getChild().isNot());
+		bs.set(9, node.isImplies());
+		bs.set(10, node.isNot() && ((UnaryOperator) node).getChild().isImplies());
+		bs.set(11, node.isIff());
+		bs.set(12, node.isIff());
+		bs.set(13, node.isNot() && ((UnaryOperator) node).getChild().isIff());
+		bs.set(14, node.isNot() && ((UnaryOperator) node).getChild().isIff());
+		bs.set(16, node.isNot() && ((UnaryOperator) node).getChild().isAnd());
+		bs.set(17, node.isNot() && ((UnaryOperator) node).getChild().isOr());
+		bs.set(18, node.isAnd() && ((BinaryOperator) node).getRightChild().isOr());
+		bs.set(19, node.isAnd() && ((BinaryOperator) node).getLeftChild().isOr());
+		bs.set(20, node.isOr() && ((BinaryOperator) node).getRightChild().isAnd());
+		bs.set(21, node.isOr() && ((BinaryOperator) node).getLeftChild().isAnd());
+		bs.set(22, node.isAnd() &&  ((BinaryOperator) node).getRightChild().isOr() 
 				&& canBeAbsorbedLeft(tree, (BinaryOperator) node));
-		bs.set(23, isOr(tree, node) && isAnd(tree, ((BinaryOperator) node).getRightChild()) 
+		bs.set(23, node.isOr() && ((BinaryOperator) node).getRightChild().isAnd() 
 				&& canBeAbsorbedLeft(tree, (BinaryOperator) node));
-		bs.set(24, isAnd(tree, node) && isOr(tree, ((BinaryOperator) node).getLeftChild()) 
+		bs.set(24, node.isAnd() && ((BinaryOperator) node).getLeftChild().isOr() 
 				&& canBeAbsorbedRight(tree, (BinaryOperator) node));
-		bs.set(25, isOr(tree, node) && isAnd(tree, ((BinaryOperator) node).getLeftChild()) 
+		bs.set(25, node.isOr() && ((BinaryOperator) node).getLeftChild().isAnd() 
 				&& canBeAbsorbedRight(tree, (BinaryOperator) node));
 		
 		return bs;
@@ -152,26 +151,6 @@ public class RuleSelector {
 		
 		String[] arr = new String[rules.size()];
 		return rules.toArray(arr);
-	}
-	
-	private boolean isAnd(FormationTree tree, Node node) {
-		return node.getValue().equals("&");
-	}
-	
-	private boolean isOr(FormationTree tree, Node node) {
-		return node.getValue().equals("|");
-	}
-
-	private boolean isImplies(FormationTree tree, Node node) {
-		return node.getValue().equals("->");
-	}
-
-	private boolean isIff(FormationTree tree, Node node) {
-		return node.getValue().equals("<->");
-	}
-
-	private boolean isNot(FormationTree tree, Node node) {
-		return node.getValue().equals("!");
 	}
 	
 	private boolean isIdempotent(FormationTree tree, BinaryOperator node) {
