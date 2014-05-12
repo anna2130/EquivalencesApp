@@ -25,6 +25,7 @@ import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.text.Editable;
 import android.text.InputType;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,22 +51,34 @@ class CustomKeyboard {
     /** The key (code) handler. */
     private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
-        public final static int CodeHide   = -3;
-        public final static int CodeUndo     = 55006;
+        public final static int CodeHide = -3;
+        public final static int CodeUndo = 55006;
+        public final static int CodeClear = 55007;
 
         @Override public void onKey(int primaryCode, int[] keyCodes) {
             // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
             // Get the EditText and its Editable
             View focusCurrent = mHostActivity.getWindow().getCurrentFocus();
-            if( focusCurrent==null || focusCurrent.getClass()!=EditText.class ) return;
+            if (focusCurrent == null || focusCurrent.getClass() != EditText.class) 
+            	return;
+            
             EditText edittext = (EditText) focusCurrent;
             Editable editable = edittext.getText();
             int start = edittext.getSelectionStart();
+            
             // Apply the key to the edittext
             if (primaryCode == CodeHide)
                 hideCustomKeyboard();
-            else if (primaryCode == CodeUndo)
-                if( editable!=null && start>0 ) editable.delete(start - 1, start);
+            if (primaryCode == CodeClear) {
+                if( editable!=null )
+                	editable.clear();
+            } else if (primaryCode == CodeUndo) {
+                if(editable != null && start > 0) 
+                	editable.delete(start - 1, start);
+            } else {
+            	editable.insert(start, Character.toString((char) primaryCode));
+            	System.out.println("Char: " + Character.toString((char) primaryCode) + " " + primaryCode);
+            }
         }
 
         @Override public void onPress(int arg0) {
@@ -125,6 +138,7 @@ class CustomKeyboard {
 
     /** Make the CustomKeyboard invisible. */
     public void hideCustomKeyboard() {
+    	Log.d("", "Hide");
         mKeyboardView.setVisibility(View.GONE);
         mKeyboardView.setEnabled(false);
     }
