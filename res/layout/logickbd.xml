@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="12.50%p"
+    android:keyHeight="10%p" >
+
+    <Row>
+        <Key android:codes="55"    android:keyLabel="a" android:keyEdgeFlags="left" />
+        <Key android:codes="56"    android:keyLabel="b" />
+        <Key android:codes="57"    android:keyLabel="c" />
+        <Key android:codes="65"    android:keyLabel="(" android:horizontalGap="6.25%p" />
+        <Key android:codes="66"    android:keyLabel=")" />
+        <Key android:codes="67"    android:keyLabel="~" />
+        <Key android:codes="55006" android:keyLabel="UNDO" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row>
+        <Key android:codes="52"    android:keyLabel="d" android:keyEdgeFlags="left"  />
+        <Key android:codes="53"    android:keyLabel="e" />
+        <Key android:codes="54"    android:keyLabel="f" />
+        <Key android:codes="68"    android:keyLabel="v" android:horizontalGap="6.25%p" />
+        <Key android:codes="69"    android:keyLabel="^" />
+    </Row>
+    <Row>
+        <Key android:codes="49"    android:keyLabel="g"  android:keyEdgeFlags="left" />
+        <Key android:codes="50"    android:keyLabel="h" />
+        <Key android:codes="51"    android:keyLabel="i" />
+        <Key android:codes="70"    android:keyLabel="->" android:horizontalGap="6.25%p" />
+        <Key android:codes="71"    android:keyLabel="IFF" />
+    </Row>
+    <Row>
+        <Key android:codes="-3"    android:keyLabel="HIDE" android:keyWidth="25%p" android:horizontalGap="12.50%p" />
+    </Row>
+</Keyboard>

@@ -1,8 +1,10 @@
 package app;
 
-import treeManipulation.TruthTable;
 import treeBuilder.Compiler;
+import treeManipulation.TruthTable;
+import android.app.Activity;
 import android.content.Intent;
+import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -21,18 +23,26 @@ public class MainActivity extends ActionBarActivity {
 		= "app.START_EQUIVALENCE";
 	public final static String END_EQUIVALENCE 
 		= "app.END_EQUIVALENCE";
+
+    static CustomKeyboard mCustomKeyboard;
+    
+	static Activity activity;
+    static KeyboardView mKeyboardView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		if (savedInstanceState == null) {
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
-		}
+		setContentView(R.layout.fragment_main);
+		
+	    mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
+	    mCustomKeyboard.registerEditText(R.id.start_equivalence);
+	    mCustomKeyboard.registerEditText(R.id.end_equivalence);
 	}
 
+	@Override public void onBackPressed() {
+	    if( mCustomKeyboard.isCustomKeyboardVisible() ) mCustomKeyboard.hideCustomKeyboard(); else this.finish();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -51,23 +61,6 @@ public class MainActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-	public static class PlaceholderFragment extends Fragment {
-
-		public PlaceholderFragment() {
-		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-			return rootView;
-		}
 	}
 
 	/** Called when the user clicks the Start button */
