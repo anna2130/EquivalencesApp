@@ -29,7 +29,7 @@ public class TruthTable {
 		if (variables.equals(v2) && table.equals(t2))
 			return true;
 		else {
-			if (table.size() > t2.size())
+			if (variables.size() > v2.size())
 				return testSubsetEquivalence(t2, v2);
 			else
 				return tt2.testSubsetEquivalence(table, variables);
@@ -47,19 +47,17 @@ public class TruthTable {
 		while (it1.hasNext() && it2.hasNext()) {
 			String s1 = it1.next();
 			String s2 = it2.next();
-			System.out.println(s1 + " " + s2);
 			
-			while (!s1.equals(s2) && it2.hasNext()) {
-				s2 = it2.next();
+			while (!s1.equals(s2) && it1.hasNext()) {
+				s1 = it1.next();
 				++i;
 			}
 			
 			keptValues.add(i);
 			++i;
 		}
-		keptValues.add(variables.size());
-		System.out.println(keptValues);
 		
+		keptValues.add(variables.size());
 		Iterator<ArrayList<Integer>> tabIt = table.iterator();
 		
 		while (tabIt.hasNext()) {
@@ -67,13 +65,9 @@ public class TruthTable {
 			Iterator<Integer> it = keptValues.iterator();
 			ArrayList<Integer> next = tabIt.next();
 			
-			for (int k = 0; k <= variables.size() && it.hasNext(); ++k) {
+			for (int k = 0; k <= variables.size() && it.hasNext(); ++k)
 				arr.add(next.get(it.next()));
-				System.out.print(arr.get(k));
-			}
-			
 			reducedTable.add(arr);
-			System.out.println("");
 		}
 		
 		return reducedTable.equals(t2);
