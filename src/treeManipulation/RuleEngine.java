@@ -16,14 +16,14 @@ import treeBuilder.UnaryOperator;
 
 public class RuleEngine {
 	
-	private FormationTree tree;
-	private BitSet bs;
+//	private FormationTree tree;
+//	private BitSet bs;
 	private HashSet<Rule> rules;
 	private Compiler compiler;
 	
 	public RuleEngine(FormationTree tree, Compiler compiler) {
-		this.tree = tree;
-		bs = new BitSet();
+//		this.tree = tree;
+//		bs = new BitSet();
 		this.compiler = compiler;
 		setRules();
 	}
@@ -73,21 +73,20 @@ public class RuleEngine {
 		addRule("(b^a)va");
 	}
 	
-	public HashSet<Rule> getRules() {
-		return rules;
-	}
-	
 	public BitSet getRulesBitSet(Node node) {
 		TruthTable tt = getTruthTable(node);
+		BitSet bs = new BitSet();
 		
 		Iterator<Rule> it = rules.iterator();
 		for (int i = 0; it.hasNext(); ++i) {
 			Rule r = it.next();
+//			System.out.println(r.getRule());
+//			System.out.println(tt.getTable());
+//			System.out.println(r.getTruthTable().getTable() + "\n");
 			if (tt.testEquivalence(r.getTruthTable())) {
 				bs.set(i);
 			}
 		}
-		
 		return bs;
 	}
 	
@@ -101,52 +100,41 @@ public class RuleEngine {
 		
 	}
 	
-	public BitSet getApplicableRules(Node node) {
-		
-		return null;
-	}
-	
-	public BitSet getBitSet(Node node) {
-		getSingleVarRules(node);
-		
-		return bs;
-	}
-	
-	public void applyRuleFromBitSet(BitSet bs, Node node) {
+	public void applyRuleFromBitSet(Node node, int index) {
 		
 	}
 	
-	private void getSingleVarRules(Node node) {
-		if (node.isAnd()) {
-			BinaryOperator binary = (BinaryOperator) node;
-			if (binary.getLeftChild().getValue().equals(binary.getRightChild().getValue()))
-				bs.set(0);
-			else if (binary.getRightChild().isTop())
-				bs.set(1);
-			else if (binary.getLeftChild().isTop())
-				bs.set(2);
-			else if (binary.getRightChild().isOr()) {
-				BinaryOperator rightChild = (BinaryOperator) binary.getRightChild();
-				if (tree.equalSubTrees(binary, rightChild.getLeftChild()))
-					bs.set(16);
-				else if (tree.equalSubTrees(binary, rightChild.getRightChild()))
-					bs.set(17);
-			}
-		} else if (node.isOr()){
-			BinaryOperator binary = (BinaryOperator) node;
-			if (binary.getLeftChild().getValue().equals(binary.getRightChild().getValue()))
-				bs.set(3);
-			else if (binary.getRightChild().isBottom())
-				bs.set(4);
-			else if (binary.getLeftChild().isBottom())
-				bs.set(5);
-		} else if (node.isNot() && ((UnaryOperator) node).getChild().isNot()) {
-			bs.set(6);
-		} else if (node.isImplies() && ((BinaryOperator) node).getLeftChild().isTop()) {
-			bs.set(7);
-		} else if (node.isAtom()) {
-			bs.set(8, 16);
-			bs.set(23, 27);
-		}
-	}
+//	private void getSingleVarRules(Node node) {
+//		if (node.isAnd()) {
+//			BinaryOperator binary = (BinaryOperator) node;
+//			if (binary.getLeftChild().getValue().equals(binary.getRightChild().getValue()))
+//				bs.set(0);
+//			else if (binary.getRightChild().isTop())
+//				bs.set(1);
+//			else if (binary.getLeftChild().isTop())
+//				bs.set(2);
+//			else if (binary.getRightChild().isOr()) {
+//				BinaryOperator rightChild = (BinaryOperator) binary.getRightChild();
+//				if (tree.equalSubTrees(binary, rightChild.getLeftChild()))
+//					bs.set(16);
+//				else if (tree.equalSubTrees(binary, rightChild.getRightChild()))
+//					bs.set(17);
+//			}
+//		} else if (node.isOr()){
+//			BinaryOperator binary = (BinaryOperator) node;
+//			if (binary.getLeftChild().getValue().equals(binary.getRightChild().getValue()))
+//				bs.set(3);
+//			else if (binary.getRightChild().isBottom())
+//				bs.set(4);
+//			else if (binary.getLeftChild().isBottom())
+//				bs.set(5);
+//		} else if (node.isNot() && ((UnaryOperator) node).getChild().isNot()) {
+//			bs.set(6);
+//		} else if (node.isImplies() && ((BinaryOperator) node).getLeftChild().isTop()) {
+//			bs.set(7);
+//		} else if (node.isAtom()) {
+//			bs.set(8, 16);
+//			bs.set(23, 27);
+//		}
+//	}
 }

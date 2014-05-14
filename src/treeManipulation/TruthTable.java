@@ -1,6 +1,7 @@
 package treeManipulation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,18 +29,29 @@ public class TruthTable {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
 
-		if (variables.equals(v2) && table.equals(t2))
+		if (variables.equals(v2) && equalsSet(t2))
 			return true;
 		else {
-			if (variables.size() > v2.size())
+			if (variables.size() > v2.size()) 
 				return testSubsetEquivalence(t2, v2);
-			else
+			else if (variables.size() < v2.size()) 
 				return tt2.testSubsetEquivalence(table, variables);
 		}
+		return false;
 	}
 	
-	public boolean testRuleEquivalence(TruthTable ruleTt) {
-		HashSet<ArrayList<Integer>> t2 = ruleTt.getTable();
+	public boolean testRuleEquivalence(TruthTable tt2) {
+		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
+
+		if (equalsSet(t2))
+			return true;
+//		else {
+//			if (variables.size() > v2.size())
+//				return testSubsetEquivalence(t2, v2);
+//			else
+//				return tt2.testSubsetEquivalence(table, variables);
+//		}
+		
 		return table.equals(t2);
 	}
 	
@@ -118,6 +130,42 @@ public class TruthTable {
 	
 	public HashSet<ArrayList<Integer>> getTable() {
 		return table;
+	}
+	
+	private boolean equalsSet(HashSet<ArrayList<Integer>> t2) {
+		boolean result = true;
+		
+		Iterator<ArrayList<Integer>> it1 = table.iterator();
+		Iterator<ArrayList<Integer>> it2 = t2.iterator();
+		
+		if (table.size() != t2.size())
+			return false;
+		
+		while (it1.hasNext() && it2.hasNext()) {
+			result &= equalLists(it1.next(), it2.next());
+		}
+		
+		return result;
+	}
+	
+	private  boolean equalLists(ArrayList<Integer> l1, ArrayList<Integer> l2){
+	    if (l1 == null && l2 == null){
+	        return true;
+	    }
+
+	    if((l1 == null && l2 != null) 
+	      || l1 != null && l2 == null
+	      || l1.size() != l2.size()){
+	        return false;
+	    }
+
+	    // to avoid messing the order of the lists we will use a copy
+	    l1 = new ArrayList<Integer>(l1); 
+	    l2 = new ArrayList<Integer>(l2);   
+
+	    Collections.sort(l1);
+	    Collections.sort(l2);      
+	    return l1.equals(l2);
 	}
 	
 	@Override
