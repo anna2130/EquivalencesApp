@@ -65,15 +65,12 @@ public class TruthTable {
 		}
 		
 		keptValues.add(variables.size());
-		Iterator<ArrayList<Integer>> tabIt = table.iterator();
 		
-		while (tabIt.hasNext()) {
+		for (ArrayList<Integer> next : table) {
 			ArrayList<Integer> arr = new ArrayList<Integer>();
-			Iterator<Integer> it = keptValues.iterator();
-			ArrayList<Integer> next = tabIt.next();
 			
-			for (int k = 0; k <= variables.size() && it.hasNext(); ++k)
-				arr.add(next.get(it.next()));
+			for (Integer val : keptValues)
+				arr.add(next.get(val));
 			reducedTable.add(arr);
 		}
 		
@@ -83,12 +80,10 @@ public class TruthTable {
 	public HashSet<ArrayList<Integer>> getTruthValues(FormationTree tree) {
 		int numVars = variables.size();
 		HashSet<ArrayList<Integer>> newTable = createTruthTable(numVars);
-		Iterator<ArrayList<Integer>> tabIt = newTable.iterator();
 		
-		while (tabIt.hasNext()) {
+		for (ArrayList<Integer> row : newTable) {
 			HashMap<String, Integer> values = new HashMap<String, Integer>();
 			Iterator<String> varIt = variables.iterator();
-			ArrayList<Integer> row = tabIt.next();
 			
 			for (int j =  0; j < numVars && varIt.hasNext(); ++j) {
 				String var = varIt.next();
