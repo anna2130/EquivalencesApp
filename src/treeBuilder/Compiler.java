@@ -18,7 +18,7 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s1 = "┬^a";
+		String s1 = "┬";
 //		String s2 = "a";
 		FormationTree tree1 = compiler.compile(s1);
 //		FormationTree tree2 = compiler.compile(s2);

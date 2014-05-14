@@ -1,24 +1,18 @@
 package treeManipulation;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.SortedSet;
+import java.util.LinkedHashSet;
 
 import treeBuilder.Compiler;
-import treeBuilder.BinaryOperator;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
-import treeBuilder.UnaryOperator;
 
 public class RuleEngine {
 	
 //	private FormationTree tree;
 //	private BitSet bs;
-	private HashSet<Rule> rules;
+	private LinkedHashSet<Rule> rules;
 	private Compiler compiler;
 	
 	public RuleEngine(FormationTree tree, Compiler compiler) {
@@ -52,8 +46,9 @@ public class RuleEngine {
 	 * 22	(B^A)vA |- A	
 	 */
 	private void setRules() {
-		rules = new HashSet<Rule>();
+		rules = new LinkedHashSet<Rule>();
 
+		// Equivalent to a
 		addRule("a");
 		addRule("a^a");
 		addRule("a^┬");
@@ -71,6 +66,31 @@ public class RuleEngine {
 		addRule("av(b^a)");
 		addRule("(a^b)va");
 		addRule("(b^a)va");
+		
+		// Equivalent to ┬
+		addRule("┬");
+		addRule("┬va");
+		addRule("av┬");
+		addRule("av¬a");
+		addRule("¬ava");
+		addRule("¬⊥");
+		addRule("a→a");
+		addRule("a→┬");
+		addRule("⊥→a");
+		
+		// Equivalent to ⊥
+		addRule("⊥");
+		addRule("⊥^a");
+		addRule("a^⊥");
+		addRule("a^¬a");
+		addRule("¬a^a");
+		addRule("¬┬");
+	}
+	
+	private void addRule(String rule) {
+		FormationTree tree = compiler.compile(rule);
+		TruthTable tt = new TruthTable(tree);
+		rules.add(new Rule(rule, tt));
 	}
 	
 	public BitSet getRulesBitSet(Node node) {
@@ -85,12 +105,6 @@ public class RuleEngine {
 			}
 		}
 		return bs;
-	}
-	
-	private void addRule(String rule) {
-		FormationTree tree = compiler.compile(rule);
-		TruthTable tt = new TruthTable(tree);
-		rules.add(new Rule(rule, tt));
 	}
 
 	public void applyRandomRule() {
