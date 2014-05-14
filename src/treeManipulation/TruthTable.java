@@ -73,7 +73,7 @@ public class TruthTable {
 		return reducedTable.equals(t2);
 	}
 	
-	private HashSet<ArrayList<Integer>> getTruthValues(FormationTree tree) {
+	public HashSet<ArrayList<Integer>> getTruthValues(FormationTree tree) {
 		int numVars = variables.size();
 		HashSet<ArrayList<Integer>> newTable = createTruthTable(numVars);
 		Iterator<ArrayList<Integer>> tabIt = newTable.iterator();
