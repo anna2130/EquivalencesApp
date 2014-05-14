@@ -1,6 +1,7 @@
 package app;
 
 import treeBuilder.Compiler;
+import treeBuilder.FormationTree;
 import treeManipulation.TruthTable;
 import android.app.Activity;
 import android.content.Intent;
@@ -74,9 +75,12 @@ public class MainActivity extends ActionBarActivity {
 		
 		// TODO: Check equivalences are valid and equivalent
 		Compiler c = new Compiler();
-		TruthTable tt = new TruthTable();
+		FormationTree t1 = c.compile(startEquivalence);
+		FormationTree t2 = c.compile(endEquivalence);
+		TruthTable tt1 = new TruthTable(t1);
+		TruthTable tt2 = new TruthTable(t2);
 		
-		if (tt.testEquivalence(c.compile(startEquivalence), c.compile(endEquivalence))) {
+		if (tt1.testEquivalence(tt2)) {
 			intent.putExtra(START_EQUIVALENCE, startEquivalence);
 			intent.putExtra(END_EQUIVALENCE, endEquivalence);
 		    startActivity(intent);
