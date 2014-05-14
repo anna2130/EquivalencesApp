@@ -11,6 +11,7 @@ import treeManipulation.RuleApplicator;
 import treeManipulation.RuleSelector;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -41,6 +42,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
     LinearLayout topLinearLayout;
     LinearLayout bottomLinearLayout;
     
+    int oldTopStackSize;
+    
     TextView rulesList;
     TextureView formationTree;
     
@@ -56,6 +59,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    
 	    topStack = new Stack<TextView>();
 	    bottomStack = new Stack<TextView>();
+	    
+	    oldTopStackSize = 0;
 	    
 	    rs = new RuleSelector();
 	    ra = new RuleApplicator();
@@ -91,19 +96,41 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					Node node = topTree.getRoot();
 					BitSet bs = rs.getApplicableRules(topTree, node);
 					
-					rulesList.setText(rs.rulesToString(bs, topTree, node)[0]);
+					String rules = "";
+					for (int i = 0; i < rs.rulesToString(bs, topTree, node).length; ++i) {
+						rules += rs.rulesToString(bs, topTree, node)[i] + "\n";
+					}
+					rulesList.setText(rules);
+					
+			        // Remove redo equivalences
+//					for (int i = topStack.size() - 1; i < oldTopStackSize; ++i) {
+//						topLinearLayout.removeViewAt(i);
+//						oldTopStackSize--;
+//					}
 					
 					ra.applyRandomRule(bs, topTree, (BinaryOperator) node);
 					addTextViewToTop(new TextView(context), topTree.toString());
 			        
 			        if (equivalenceComplete(topTree.toString(), end))
-			        	Log.d("DEBUG", "Complete");
+						rulesList.setText("COMPLETE");
 			        
+//				} else if (view.getTag() == "Undone") {
+//					int position = view.getId();
+//					for (int i = topStack.size() - 1; i <= position; ++i) {
+//						TextView ruleView = (TextView) topLinearLayout.findViewById(i);
+//						ruleView.setTextColor(Color.argb(255, 0, 0, 0));
+//						ruleView.setTag("");
+////						topLinearLayout.removeViewAt(i);
+////						topStack.pop();
+//					}
 				} else {
 //					// Undo to position in list clicked
 //					// TODO: Add redo functionality
 			        int position = view.getId();
 					for (int i = topStack.size() - 1; i > position; --i) {
+						TextView ruleView = (TextView) topLinearLayout.findViewById(i);
+						ruleView.setTextColor(Color.argb(100, 0, 0, 0));
+						ruleView.setTag("Undone");
 						topLinearLayout.removeViewAt(i);
 						topStack.pop();
 					}
@@ -115,6 +142,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    
 	    topLinearLayout.addView(textView);
 	    topStack.push(textView);
+	    oldTopStackSize++;
 	}
 	
 	public void addTextViewToBottom(TextView textView, String text) {
@@ -140,7 +168,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					addTextViewToBottom(new TextView(context), bottomTree.toString());
 			        
 			        if (equivalenceComplete(bottomTree.toString(), start))
-			        	Log.d("DEBUG", "Complete");
+						rulesList.setText("COMPLETE");
 			        
 				} else {
 					// Undo to position in list clicked

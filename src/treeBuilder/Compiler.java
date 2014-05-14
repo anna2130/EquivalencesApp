@@ -1,7 +1,7 @@
 package treeBuilder;
 
 import java.util.ArrayList;
-import java.util.SortedSet;
+import java.util.HashMap;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -12,27 +12,43 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
-import treeManipulation.RuleApplicator;
 import treeManipulation.TruthTable;
 
 public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s1 = "(avb)^a";
-		String s2 = "a";
+		String s2 = "(avb)^a";
+		String s1 = "b";
 		FormationTree tree1 = compiler.compile(s1);
-//		FormationTree tree2 = compiler.compile(s2);
-		System.out.println(tree1.toString() + "\n");
+		FormationTree tree2 = compiler.compile(s2);
+		System.out.println(tree1.toString());
+		System.out.println(tree2.toString() + "\n");
 		
-		TruthTable tt = new TruthTable();
-		ArrayList<Integer> vals = tt.getTruthValues(tree1);
-//		System.out.println(tt.testEquivalence(tree1, tree2));
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+//		ArrayList<int[]> vals = tt1.getTable();
+		System.out.println(tt1.testEquivalence(tt2));
 		
-		for (int i = 0; i < vals.size(); ++i) {
-			System.out.print(vals.get(i));
-		}
+//		for (int i = 0; i < vals.size(); ++i) {
+//			System.out.print(vals.get(i));
+//		}
 		System.out.println("\n");
+		
+//		int n = 3;
+//		String[] variables = new String[] {"p", "q", "r"};
+//        int rows = (int) Math.pow(2,n);
+        
+//        for (int i = n - 1; i >= 0; --i) {
+//        	String variable = variables[i];
+//        	int[] column = new int[rows];
+//        	
+//        	for (int j = 0; j < rows; ++j) {
+//        		System.out.print((j / (int) Math.pow(2, i)) % 2);
+//        	}
+//        	System.out.println("");
+//        }
+//    	System.out.println("");
 		
 //		Node node = tree1.findNode(0, 0);
 		

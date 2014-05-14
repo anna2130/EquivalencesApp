@@ -41,13 +41,13 @@ public class RuleApplicator {
 	 * 6.  Left Associativity of v
 	 * 7.  Right Associativity of v
 	 * 8.  ¬¬A 		|- 	A
-	 * 9.  A→B 	|- 	¬AvB 			-- Also equivalent to ¬(A^¬B). Separate rule?
+	 * 9.  A→B 		|- 	¬AvB 			-- Also equivalent to ¬(A^¬B). Separate rule?
 	 * 10. ¬(A→B) 	|-	A^¬B
-	 * 11. A↔B	|-  (A→B)^(B→A)
-	 * 12. A↔B	|-	(A^B)v(¬A^¬B)
-	 * 13. ¬(A↔B) |- 	A↔¬B
-	 * 14. ¬(A↔B) |-  ¬A↔B
-	 * 15. ¬(A↔B) |-  (A^¬B)v(¬A^B)	-- Exclusive or of A and B
+	 * 11. A↔B		|-  (A→B)^(B→A)
+	 * 12. A↔B		|-	(A^B)v(¬A^¬B)
+	 * 13. ¬(A↔B) 	|- 	A↔¬B
+	 * 14. ¬(A↔B) 	|-  ¬A↔B
+	 * 15. ¬(A↔B) 	|-  (A^¬B)v(¬A^B)	-- Exclusive or of A and B
 	 * 16. ¬(A^B)	|-  ¬Av¬B			-- De Morgan laws
 	 * 17. ¬(AvB)	|-	¬A^¬B
 	 * 18. A^(BvC) 	|- 	(A^B)v(A^C)		-- Distributitivity
