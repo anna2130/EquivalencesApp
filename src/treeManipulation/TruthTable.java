@@ -19,7 +19,7 @@ public class TruthTable {
 		table = getTruthValues(tree);
 		result = tree.toString();
 	}
-
+	
 	// Case 1: Both equivalences have the same number of same variables
 	// Case 2: Both equivalences have the same number but different variables
 	// Case 3: One equivalence has a subset of the others variables
@@ -36,6 +36,11 @@ public class TruthTable {
 			else
 				return tt2.testSubsetEquivalence(table, variables);
 		}
+	}
+	
+	public boolean testRuleEquivalence(TruthTable ruleTt) {
+		HashSet<ArrayList<Integer>> t2 = ruleTt.getTable();
+		return table.equals(t2);
 	}
 	
 	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
