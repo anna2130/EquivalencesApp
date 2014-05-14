@@ -33,32 +33,51 @@ public class TruthTable {
 			return true;
 		else {
 			if (variables.size() > v2.size()) 
-				return testSubsetEquivalence(t2, v2);
+				return testSubsetEquivalence(table, variables, t2, v2);
 			else if (variables.size() < v2.size()) 
-				return tt2.testSubsetEquivalence(table, variables);
+				return tt2.testSubsetEquivalence(t2, v2, table, variables);
 		}
 		return false;
 	}
 	
 	public boolean testRuleEquivalence(TruthTable tt2) {
+		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
 
 		if (equalsSet(t2))
 			return true;
-//		else {
-//			if (variables.size() > v2.size())
-//				return testSubsetEquivalence(t2, v2);
-//			else
-//				return tt2.testSubsetEquivalence(table, variables);
-//		}
-		
-		return table.equals(t2);
+		else {
+			if (variables.size() > v2.size()) {
+				SortedSet<String> newV1 = replace(variables);
+				SortedSet<String> newV2 = replace(v2);
+				return testSubsetEquivalence(table, newV1, t2, newV2);
+			} else if (variables.size() < v2.size()) {
+				SortedSet<String> newV1 = replace(variables);
+				SortedSet<String> newV2 = replace(v2);
+				return tt2.testSubsetEquivalence(t2, newV2, table, newV1);
+			}
+		}
+		return false;
 	}
 	
-	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
+	private SortedSet<String> replace(SortedSet<String> v1) {
+		SortedSet<String> result = new java.util.TreeSet<String>();
+		char c = 'a';
+		for (String v : v1) {
+			if (v.equals("┬") || v.equals("⊥"))
+				result.add(v);
+			else
+				result.add("" + c);
+			c++;
+		}
+		return result;
+	}
+	
+	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t1, SortedSet<String> v1, 
+			HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
 		HashSet<ArrayList<Integer>> reducedTable = new HashSet<ArrayList<Integer>>();
 		
-		Iterator<String> it1 = variables.iterator();
+		Iterator<String> it1 = v1.iterator();
 		Iterator<String> it2 = v2.iterator();
 		int i = 0;
 		HashSet<Integer> keptValues = new HashSet<Integer>();
@@ -76,9 +95,9 @@ public class TruthTable {
 			++i;
 		}
 		
-		keptValues.add(variables.size());
+		keptValues.add(v1.size());
 		
-		for (ArrayList<Integer> next : table) {
+		for (ArrayList<Integer> next : t1) {
 			ArrayList<Integer> arr = new ArrayList<Integer>();
 			
 			for (Integer val : keptValues)

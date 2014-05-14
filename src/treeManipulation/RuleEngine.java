@@ -80,10 +80,7 @@ public class RuleEngine {
 		Iterator<Rule> it = rules.iterator();
 		for (int i = 0; it.hasNext(); ++i) {
 			Rule r = it.next();
-//			System.out.println(r.getRule());
-//			System.out.println(tt.getTable());
-//			System.out.println(r.getTruthTable().getTable() + "\n");
-			if (tt.testEquivalence(r.getTruthTable())) {
+			if (tt.testRuleEquivalence(r.getTruthTable())) {
 				bs.set(i);
 			}
 		}

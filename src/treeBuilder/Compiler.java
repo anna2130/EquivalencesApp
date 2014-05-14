@@ -12,12 +12,13 @@ import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
 import treeManipulation.RuleEngine;
+import treeManipulation.TruthTable;
 
 public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 //		String s = "(r&q)&p";
-		String s1 = "a^a";
+		String s1 = "┬^a";
 //		String s2 = "a";
 		FormationTree tree1 = compiler.compile(s1);
 //		FormationTree tree2 = compiler.compile(s2);
@@ -25,6 +26,8 @@ public class Compiler {
 //		System.out.println(tree2.toString() + "\n");
 
 		Node node = tree1.findNode(0, 0);
+		TruthTable tt = new TruthTable(tree1);
+		System.out.println(tt);
 		RuleEngine re = new RuleEngine(tree1, compiler);
 		BitSet bs = re.getRulesBitSet(node);
 		System.out.println(bs);
