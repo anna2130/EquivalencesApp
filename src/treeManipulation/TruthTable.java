@@ -12,10 +12,12 @@ public class TruthTable {
 	
 	private SortedSet<String> variables;
 	private HashSet<ArrayList<Integer>> table;
+	private String result;
 	
 	public TruthTable(FormationTree tree) {
 		variables = tree.getVariables();
 		table = getTruthValues(tree);
+		result = tree.toString();
 	}
 
 	// Case 1: Both equivalences have the same number of same variables
@@ -116,5 +118,27 @@ public class TruthTable {
 	
 	public HashSet<ArrayList<Integer>> getTable() {
 		return table;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		for (String s : variables) {
+			sb.append(s);
+			sb.append(" ");
+		}
+		sb.append(result);
+		sb.append("\n");
+		
+		for (ArrayList<Integer> row : table) {
+			for (Integer i : row) {
+				sb.append(i);
+				sb.append(" ");
+			}
+			sb.append("\n");
+		}
+		
+		return sb.toString();
 	}
 }
