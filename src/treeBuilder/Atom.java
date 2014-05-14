@@ -26,7 +26,12 @@ public class Atom extends Node {
 	}
 	
 	public boolean getTruthValue(HashMap<String, Integer> values) {
-		return values.get(getValue()) == 1;
+		if (isTop())
+			return true;
+		else if (isBottom())
+			return false;
+		else
+			return values.get(getValue()) == 1;
 	}
 
 	@Override
@@ -38,7 +43,17 @@ public class Atom extends Node {
 
 	@Override
 	public boolean isAtom() {
-		return true;
+		return !isTop() && !isBottom();
+	}
+	
+	@Override
+	public boolean isTop() {
+		return getValue().equals("┬");
+	}
+	
+	@Override
+	public boolean isBottom() {
+		return getValue().equals("⊥");
 	}
 
 }

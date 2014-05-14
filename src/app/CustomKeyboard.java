@@ -51,9 +51,11 @@ class CustomKeyboard {
     /** The key (code) handler. */
     private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
-        public final static int CodeHide = -3;
-        public final static int CodeUndo = 55006;
-        public final static int CodeClear = 55007;
+        public final static int CodeHide 	= -3;
+        public final static int CodeTop 	= 55001;
+        public final static int CodeBot 	= 55002;
+        public final static int CodeUndo 	= 55006;
+        public final static int CodeClear	= 55007;
 
         @Override public void onKey(int primaryCode, int[] keyCodes) {
             // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
@@ -67,18 +69,20 @@ class CustomKeyboard {
             int start = edittext.getSelectionStart();
             
             // Apply the key to the edittext
-            if (primaryCode == CodeHide)
+            if (primaryCode == CodeTop)
+            	editable.insert(start, "┬");
+            else if (primaryCode == CodeBot)
+            	editable.insert(start, "⊥");
+            else if (primaryCode == CodeHide)
                 hideCustomKeyboard();
-            if (primaryCode == CodeClear) {
-                if( editable!=null )
+            else if (primaryCode == CodeClear) {
+                if( editable != null )
                 	editable.clear();
             } else if (primaryCode == CodeUndo) {
                 if(editable != null && start > 0) 
                 	editable.delete(start - 1, start);
-            } else {
+            } else
             	editable.insert(start, Character.toString((char) primaryCode));
-            	System.out.println("Char: " + Character.toString((char) primaryCode) + " " + primaryCode);
-            }
         }
 
         @Override public void onPress(int arg0) {

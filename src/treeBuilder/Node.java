@@ -113,6 +113,14 @@ public abstract class Node {
 		return false;
 	}
 	
+	public boolean isTop() {
+		return false;
+	}
+	
+	public boolean isBottom() {
+		return false;
+	}
+	
 	public abstract Node clone();
 	
 	public abstract boolean getTruthValue(HashMap<String, Integer> values);

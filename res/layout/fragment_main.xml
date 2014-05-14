@@ -1,10 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    xmlns:tools="http://schemas.android.com/tools"
-
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/relative01"
-        >
+        android:id="@+id/relative01" >
         
     <Button
         android:id="@+id/start_button"
@@ -12,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/start_button" 
-        android:onClick="startEquivalence"/>
+        android:onClick="startEquivalence" />
 
     <EditText
         android:id="@+id/start_equivalence"
@@ -22,10 +20,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"
         android:hint="@string/start_equivalence"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
+        android:ems="10" />
 
     <EditText
         android:id="@+id/end_equivalence"

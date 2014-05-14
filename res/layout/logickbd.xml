@@ -4,33 +4,30 @@
     android:keyHeight="10%p" >
 
     <Row>
-        <Key android:codes="97"    android:keyLabel="a" android:horizontalGap="3%p" />
-        <Key android:codes="98"    android:keyLabel="b" />
-        <Key android:codes="99"    android:keyLabel="c" />
-        <Key android:codes="100"    android:keyLabel="d" />
-        <Key android:codes="40"    android:keyLabel="(" android:horizontalGap="6.25%p" />
-        <Key android:codes="41"    android:keyLabel=")" />
-        <Key android:codes="172"  android:keyLabel="\u00AC" />
+        <Key android:codes="97"    	android:keyLabel="a" android:keyEdgeFlags="left" />
+        <Key android:codes="98"    	android:keyLabel="b" />
+        <Key android:codes="99"    	android:keyLabel="c" />
+        <Key android:codes="40"    	android:keyLabel="(" android:horizontalGap="12%p" />
+        <Key android:codes="41"    	android:keyLabel=")" />
+        <Key android:codes="55001" 	android:keyLabel="┬" />
+        <Key android:codes="55002" 	android:keyLabel="⊥" android:keyEdgeFlags="right" />
     </Row>
     <Row>
-        <Key android:codes="101"    android:keyLabel="e" android:horizontalGap="3%p" />
+        <Key android:codes="100"    android:keyLabel="d" android:keyEdgeFlags="left" />
+        <Key android:codes="101"    android:keyLabel="e" />
         <Key android:codes="102"    android:keyLabel="f" />
-        <Key android:codes="103"    android:keyLabel="g" />
-        <Key android:codes="104"    android:keyLabel="h" />
-        <Key android:codes="118"    android:keyLabel="\u2228" android:horizontalGap="6.25%p" />
+        <Key android:codes="118"    android:keyLabel="\u2228" android:horizontalGap="12%p" />
         <Key android:codes="094"    android:keyLabel="\u2227" />
-        <Key android:codes="55006"  android:keyLabel="UNDO" android:keyEdgeFlags="right"/>
+        <Key android:codes="172"  	android:keyLabel="\u00AC" />
+        <Key android:codes="55006"  android:keyLabel="UNDO" android:keyEdgeFlags="right" />
     </Row>
     <Row>
-        <Key android:codes="105"    android:keyLabel="i" android:horizontalGap="3%p"  />
-        <Key android:codes="106"    android:keyLabel="j" />
-        <Key android:codes="107"    android:keyLabel="k" />
-        <Key android:codes="108"    android:keyLabel="l" />
-        <Key android:codes="8594"   android:keyLabel="\u2192" android:horizontalGap="6.25%p" />
+        <Key android:codes="103"    android:keyLabel="g" android:keyEdgeFlags="left" />
+        <Key android:codes="104"    android:keyLabel="h" />
+        <Key android:codes="105"    android:keyLabel="i" />
+        <Key android:codes="-3"     android:keyLabel="HIDE" android:horizontalGap="12%p" />
+        <Key android:codes="8594"   android:keyLabel="\u2192" />
         <Key android:codes="8596"   android:keyLabel="\u2194" />
-        <Key android:codes="55007"  android:keyLabel="CLEAR" android:keyEdgeFlags="right"/>
-    </Row>
-    <Row>
-        <Key android:codes="-3"     android:keyLabel="HIDE" android:keyWidth="100%p"/>
+        <Key android:codes="55007"  android:keyLabel="CLEAR" android:keyEdgeFlags="right" />
     </Row>
 </Keyboard>

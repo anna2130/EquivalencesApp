@@ -11,4 +11,4 @@ expr: '(' expr ')' 			#EXPR
 	;
 
 BINOP: ('^' | 'v');
-ATOM:  ('a'..'z');
+ATOM:  ('a'..'z' | '┬' | '⊥');
