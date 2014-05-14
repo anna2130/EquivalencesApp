@@ -86,6 +86,42 @@ public class TruthTables {
 		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 0], [0, 0, 0]]", list.toString());
 	}
 
+	@Test
+	public void testAndTop() {
+		String s = "p^┬";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 0], [0, 0, 0]]", list.toString());
+	}
+	
+	@Test
+	public void testAndBottom() {
+		String s = "p^⊥";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[1, 1, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]]", list.toString());
+	}
+
+	@Test
+	public void testOrTop() {
+		String s = "pv┬";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 1], [0, 0, 1]]", list.toString());
+	}
+	
+	@Test
+	public void testOrBottom() {
+		String s = "pv⊥";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 0], [0, 0, 0]]", list.toString());
+	}
+	
 	// Test comparisons for equality
 
 	/* 0.  Commutativity of ^
@@ -97,7 +133,7 @@ public class TruthTables {
 	 * 6.  Left Associativity of v
 	 * 7.  Right Associativity of v
 	 */
-
+	
 	@Test
 	public void testAndCommutativityEquality() {
 		String s1 = "p^q";
@@ -408,6 +444,52 @@ public class TruthTables {
 	@Test
 	public void testAbsorptionOrRightEquality() {
 		String s1 = "(p^q)vp";
+		String s2 = "p";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		assertEquals("", true, tt1.testEquivalence(tt2));
+	}
+	
+	// Test top and bottom
+	
+	@Test
+	public void testAndTopEquality() {
+		String s1 = "p^┬";
+		String s2 = "p";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		assertEquals("", true, tt1.testEquivalence(tt2));
+	}
+
+	@Test
+	public void testAndBottomEquality() {
+		String s1 = "p^⊥";
+		String s2 = "⊥";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		assertEquals("", true, tt1.testEquivalence(tt2));
+	}
+
+	@Test
+	public void testOrTopEquality() {
+		String s1 = "pv┬";
+		String s2 = "┬";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		assertEquals("", true, tt1.testEquivalence(tt2));
+	}
+
+	@Test
+	public void testOrBottomEquality() {
+		String s1 = "pv⊥";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
