@@ -19,10 +19,6 @@ public class RuleSelector {
 	
 	public String[] rulesToString(BitSet bs, FormationTree tree, Node node) {
 		List<String> rules = new ArrayList<String>();
-		RuleViewer rv = new RuleViewer();
-		
-		String s = node.toString();
-		String nodeBefore = s.substring(1, s.length() - 1);
 		
 		for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
 		     switch (i) {
@@ -64,45 +60,45 @@ public class RuleSelector {
 							break;
 				case 18:	rules.add("(avb)^a  	|-	a				-- Absoption");
 							break;
-				case 19:	rules.add("avb			|- 	bva				-- Commutativity");
+				case 19:	rules.add("avb				|- 	bva				-- Commutativity");
 							break;
-				case 20:	rules.add("ava			|- 	a 				-- Idempotence");
+				case 20:	rules.add("ava				|- 	a 				-- Idempotence");
 							break;
-				case 21:	rules.add("┬va			|-  ┬");
+				case 21:	rules.add("┬va				|-  ┬");
 							break;
-				case 22:	rules.add("av┬			|-  ┬");
+				case 22:	rules.add("av┬				|-  ┬");
 							break;
-				case 23:	rules.add("av¬a			|-  ┬");
+				case 23:	rules.add("av¬a				|-  ┬");
 							break;
-				case 24:	rules.add("¬ava			|-  ┬");
+				case 24:	rules.add("¬ava				|-  ┬");
 							break;
-				case 25:	rules.add("av⊥			|-  a");
+				case 25:	rules.add("av⊥				|-  a");
 							break;
-				case 26:	rules.add("⊥va			|-  a");
+				case 26:	rules.add("⊥va				|-  a");
 							break;
-				case 27:	rules.add("av(bvc)		|-  (avb)vc			-- Associativity");
+				case 27:	rules.add("av(bvc)			|-  (avb)vc			-- Associativity");
 							break;
-				case 28:	rules.add("(avb)vc  	|- 	av(bvc)			-- Associativity");
+				case 28:	rules.add("(avb)vc  		|- 	av(bvc)			-- Associativity");
 							break;
 				case 29:	rules.add("(a^b)v(¬a^¬b)	|-	a↔b");
 							break;
 				case 30:	rules.add("(a^¬b)v(¬a^b) 	|-  ¬(a↔b)");
 							break;
-				case 31:	rules.add("¬av¬b	|-  ¬(a^b)			-- De Morgan laws");
+				case 31:	rules.add("¬av¬b			|-  ¬(a^b)			-- De Morgan laws");
 							break;
-				case 32:	rules.add("av(b^c)	|- 	(avb)^(avc)		-- Distributitivity");
+				case 32:	rules.add("av(b^c)			|- 	(avb)^(avc)		-- Distributitivity");
 							break;
-				case 33:	rules.add("(a^b)vc	|-	(avc)^(bvc)		-- Distributitivity");
+				case 33:	rules.add("(a^b)vc			|-	(avc)^(bvc)		-- Distributitivity");
 							break;
-				case 34:	rules.add("(a^b)v(a^c) 	|- 	a^(bvc)		-- Distributitivity");
+				case 34:	rules.add("(a^b)v(a^c) 		|- 	a^(bvc)		-- Distributitivity");
 							break;
-				case 35:	rules.add("(a^c)v(b^c)	|-  (avb)^c		-- Distributitivity");
+				case 35:	rules.add("(a^c)v(b^c)		|-  (avb)^c		-- Distributitivity");
 							break;
-				case 36:	rules.add("av(a^b)	|-  a				-- Absoption");
+				case 36:	rules.add("av(a^b)			|-  a				-- Absoption");
 							break;
-				case 37:	rules.add("(a^b)va	|-  a				-- Absoption");
+				case 37:	rules.add("(a^b)va			|-  a				-- Absoption");
 							break;
-				case 38:	rules.add("¬avb		|- 	a→b");
+				case 38:	rules.add("¬avb				|- 	a→b");
 							break;
 				case 39:	rules.add("¬┬		|-  ⊥");
 							break;
@@ -140,13 +136,13 @@ public class RuleSelector {
 							break;
 				case 56:	rules.add("a→b 		|- 	¬(av¬b)");
 							break;
-				case 57:	rules.add("a↔b				|-  (a→b)^(b→a)");
+				case 57:	rules.add("a↔b		|-  (a→b)^(b→a)");
 							break;
-				case 58:	rules.add("a↔b				|-	(a^b)v(¬a^¬b)");
+				case 58:	rules.add("a↔b		|-	(a^b)v(¬a^¬b)");
 							break;
-				case 59:	rules.add("a↔¬b 			|- 	¬(a↔b)");
+				case 59:	rules.add("a↔¬b 	|- 	¬(a↔b)");
 							break;
-				case 60:	rules.add("¬a↔b 			|-  ¬(a↔b)");
+				case 60:	rules.add("¬a↔b 	|-  ¬(a↔b)");
 							break;
 				case 61:	rules.add("a		|-  a^a");
 							break;

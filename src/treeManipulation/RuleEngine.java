@@ -3,6 +3,7 @@ package treeManipulation;
 import java.util.BitSet;
 import java.util.Random;
 
+import treeBuilder.Atom;
 import treeBuilder.BinaryOperator;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
@@ -23,14 +24,14 @@ public class RuleEngine {
 	/* The BitSet returns the rules applicable to a node in the order below:
 	 * 
 	 * Equivalences involving ^
-	 * 0.  a^b 		|- 	b^a				-- Commutativity
-	 * 1.  a^a		|-  a 				-- Idempotence
-	 * 2.  a^┬		|- 	a
-	 * 3.  ┬^a		|-  a
-	 * 4.  ⊥^a		|-  ⊥
-	 * 5.  a^⊥		|-  ⊥
-	 * 6.  a^¬a		|-  ⊥
-	 * 7.  ¬a^a		|-  ⊥				
+	 * 0.  a^b 			|- 	b^a				-- Commutativity
+	 * 1.  a^a			|-  a 				-- Idempotence
+	 * 2.  a^┬			|- 	a
+	 * 3.  ┬^a			|-  a
+	 * 4.  ⊥^a			|-  ⊥
+	 * 5.  a^⊥			|-  ⊥
+	 * 6.  a^¬a			|-  ⊥
+	 * 7.  ¬a^a			|-  ⊥				
 	 * 8.  a^(b^c)		|-  (a^b)^c			-- Associativity
 	 * 9.  (a^b)^c  	|- 	a^(b^c)			-- Associativity
 	 * 10. a^¬b 		|-	¬(a→b)
@@ -44,26 +45,26 @@ public class RuleEngine {
 	 * 18. (avb)^a  	|-	a				-- Absoption
 	 * 
 	 * Equivalences involving v
-	 * 19. avb		|- 	bva				-- Commutativity
-	 * 20. ava		|- 	a 				-- Idempotence
-	 * 21. ┬va		|-  ┬
-	 * 22. av┬		|-  ┬
-	 * 23. av¬a		|-  ┬
-	 * 24. ¬ava		|-  ┬
-	 * 25. av⊥		|-  a
-	 * 26. ⊥va		|-  a
-	 * 27. av(bvc)	|-  (avb)vc			-- Associativity
-	 * 28. (avb)vc  |- 	av(bvc)			-- Associativity
+	 * 19. avb				|- 	bva				-- Commutativity
+	 * 20. ava				|- 	a 				-- Idempotence
+	 * 21. ┬va				|-  ┬
+	 * 22. av┬				|-  ┬
+	 * 23. av¬a				|-  ┬
+	 * 24. ¬ava				|-  ┬
+	 * 25. av⊥				|-  a
+	 * 26. ⊥va				|-  a
+	 * 27. av(bvc)			|-  (avb)vc			-- Associativity
+	 * 28. (avb)vc  		|- 	av(bvc)			-- Associativity
 	 * 29. (a^b)v(¬a^¬b)	|-	a↔b
 	 * 30. (a^¬b)v(¬a^b) 	|-  ¬(a↔b)
-	 * 31. ¬av¬b	|-  ¬(a^b)			-- De Morgan laws
-	 * 32. av(b^c)	|- 	(avb)^(avc)		-- Distributitivity
-	 * 33. (a^b)vc	|-	(avc)^(bvc)		-- Distributitivity
-	 * 34. (a^b)v(a^c) 	|- 	a^(bvc)		-- Distributitivity
-	 * 35. (a^c)v(b^c)	|-  (avb)^c		-- Distributitivity
-	 * 36. av(a^b)	|-  a				-- Absoption
-	 * 37. (a^b)va	|-  a				-- Absoption
-	 * 38. ¬avb		|- 	a→b
+	 * 31. ¬av¬b			|-  ¬(a^b)			-- De Morgan laws
+	 * 32. av(b^c)			|- 	(avb)^(avc)		-- Distributitivity
+	 * 33. (a^b)vc			|-	(avc)^(bvc)		-- Distributitivity
+	 * 34. (a^b)v(a^c) 		|- 	a^(bvc)		-- Distributitivity
+	 * 35. (a^c)v(b^c)		|-  (avb)^c		-- Distributitivity
+	 * 36. av(a^b)			|-  a				-- Absoption
+	 * 37. (a^b)va			|-  a				-- Absoption
+	 * 38. ¬avb				|- 	a→b
 	 * 
 	 * Equivalences involving ¬
 	 * 39. ¬┬		|-  ⊥
@@ -88,10 +89,10 @@ public class RuleEngine {
 	 * 56. a→b 		|- 	¬(av¬b)
 	 * 
 	 * Equivalences involving ↔
-	 * 57. a↔b				|-  (a→b)^(b→a)
-	 * 58. a↔b				|-	(a^b)v(¬a^¬b)
-	 * 59. a↔¬b 			|- 	¬(a↔b)
-	 * 60. ¬a↔b 			|-  ¬(a↔b)
+	 * 57. a↔b		|-  (a→b)^(b→a)
+	 * 58. a↔b		|-	(a^b)v(¬a^¬b)
+	 * 59. a↔¬b 	|- 	¬(a↔b)
+	 * 60. ¬a↔b 	|-  ¬(a↔b)
 	 * 
 	 * Equivalences involving atoms
 	 * 61. a		|-  a^a
@@ -256,12 +257,7 @@ public class RuleEngine {
 	}
 	
 	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, 
-			Node node) {
-//		int numSetBits = bs.cardinality();
-//		int nextSetBit = bs.nextSetBit(0);
-//		
-//		while (numSetBits-- > 0 && nextSetBit != index)
-//			nextSetBit = bs.nextSetBit(nextSetBit + 1);
+			Node node, String input) {
 		
 		switch (index) {
 			case 0:		ra.applyCommutativity((BinaryOperator) node);
@@ -288,66 +284,138 @@ public class RuleEngine {
 						break;
 			case 11:	ra.applyAndImpliesToIff(tree, (BinaryOperator) node);
 						break;
-			case 12:	
+			case 12:	ra.applyDeMorganOrBackwards(tree, (BinaryOperator) node);
 						break;
-			case 13:
+			case 13:	ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) node);
 						break;
-			case 14:
+			case 14:	ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) node);
 						break;
-			case 15:
+			case 15:	ra.applyDistributivityOrLeftBackwards(tree, (BinaryOperator) node);
 						break;
-			case 16:
+			case 16:	ra.applyDistributivityOrRightBackwards(tree, (BinaryOperator) node);
 						break;
-			case 17:
+			case 17:	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
 						break;
-			case 18:
+			case 18:	ra.applyRightAbsorption(tree, (BinaryOperator) node);
 						break;
-						
-						
-//			case 4:		ra.applyCommutativity((BinaryOperator) node);
-//						break;
-//			case 5:		ra.applyIdempotence(tree, (BinaryOperator) node);
-//						break;
-//			case 6:		ra.applyLeftAssociativity(tree, (BinaryOperator) node);
-//						break;
-//			case 7:		ra.applyRightAssociativity(tree, (BinaryOperator) node);
-//						break;
-//			case 8:		ra.applyNotNot(tree,(UnaryOperator) node);
-//						break;
-//			case 9:		ra.applyImpliesToOr(tree, (BinaryOperator) node);
-//						break;
-//			case 10: 	ra.applyNotImplies(tree, (UnaryOperator) node);
-//						break;
-//			case 11: 	ra.applyIffToAndImplies(tree, (BinaryOperator) node);
-//						break;
-//			case 12:	ra.applyIffToOrAnd(tree, (BinaryOperator) node);
-//						break;
-//			case 13:	ra.applyNotIffToNotB(tree, (UnaryOperator) node);
-//						break;
-//			case 14: 	ra.applyNotIffToNotA(tree, (UnaryOperator) node);
-//						break;
-//			case 15: 	ra.applyNotIffToOrAnd(tree, (UnaryOperator) node);
-//						break;
-//			case 16:	ra.applyDeMorgansAnd(tree, (UnaryOperator) node);
-//						break;
-//			case 17:	ra.applyDeMorgansOr(tree, (UnaryOperator) node);
-//						break;
-//			case 18: 	ra.applyDistributivityAndLeft(tree, (BinaryOperator) node);
-//						break;
-//			case 19: 	ra.applyDistributivityAndRight(tree, (BinaryOperator) node);
-//						break;
-//			case 20:	ra.applyDistributivityOrLeft(tree, (BinaryOperator) node);
-//						break;
-//			case 21:	ra.applyDistributivityOrRight(tree, (BinaryOperator) node);
-//						break;
-//			case 22: 	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
-//						break;
-//			case 23: 	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
-//						break;
-//			case 24: 	ra.applyRightAbsorption(tree, (BinaryOperator) node);
-//						break;
-//			case 25: 	ra.applyRightAbsorption(tree, (BinaryOperator) node);
-//						break;
+			case 19:	ra.applyCommutativity((BinaryOperator) node);
+						break;
+			case 20:	ra.applyIdempotence(tree, (BinaryOperator) node);
+						break;
+			case 21:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 22:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 23:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 24:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 25:	ra.applyToLeftChild(tree, (BinaryOperator) node);
+						break;
+			case 26:	ra.applyToRightChild(tree, (BinaryOperator) node);
+						break;
+			case 27:	ra.applyLeftAssociativity(tree, (BinaryOperator) node);
+						break;
+			case 28:	ra.applyRightAssociativity(tree, (BinaryOperator) node);
+						break;
+			case 29:	ra.applyOrAndToIff(tree, (BinaryOperator) node);
+						break;
+			case 30:	ra.applyOrAndToNotIff(tree, (BinaryOperator) node);
+						break;
+			case 31:	ra.applyDeMorganAndBackwards(tree, (BinaryOperator) node);
+						break;
+			case 32:	ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) node);
+						break;
+			case 33:	ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) node);
+						break;
+			case 34:	ra.applyDistributivityAndLeftBackwards(tree, (BinaryOperator) node);
+						break;
+			case 35:	ra.applyDistributivityAndRightBackwards(tree, (BinaryOperator) node);
+						break;
+			case 36:	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
+						break;
+			case 37:	ra.applyRightAbsorption(tree, (BinaryOperator) node);
+						break;
+			case 38:	ra.applyOrToImplies(tree, (BinaryOperator) node);
+						break;
+			case 39:	ra.applyNotTop(tree, (UnaryOperator) node);
+						break;
+			case 40:	ra.applyNotBottom(tree, (UnaryOperator) node);
+						break;
+			case 41:	ra.applyNotNot(tree, (UnaryOperator) node);
+						break;
+			case 42:	ra.applyNotAtom(tree, (UnaryOperator) node);
+						break;
+			case 43:	ra.applyNotImplies(tree, (UnaryOperator) node);
+						break;
+			case 44:	ra.applyNotOrToImplies(tree, (UnaryOperator) node);
+						break;
+			case 45:	ra.applyNotIffToNotB(tree, (UnaryOperator) node);
+						break;
+			case 46:	ra.applyNotIffToNotA(tree, (UnaryOperator) node);
+						break;
+			case 47:	ra.applyNotIffToOrAnd(tree, (UnaryOperator) node);
+						break;
+			case 48:	ra.applyDeMorganAndForwards(tree, (UnaryOperator) node);
+						break;
+			case 49:	ra.applyDeMorganOrForwards(tree, (UnaryOperator) node);
+						break;
+			case 50:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 51:	ra.applyToRightChild(tree, (BinaryOperator) node);
+						break;
+			case 52:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 53:	ra.applyToTop(tree, (BinaryOperator) node);
+						break;
+			case 54:	ra.applyImpliesToNot(tree, (BinaryOperator) node);
+						break;
+			case 55:	ra.applyImpliesToOr(tree, (BinaryOperator) node);
+						break;
+			case 56:	ra.applyImpliesToNotOr(tree, (BinaryOperator) node);
+						break;
+			case 57:	ra.applyIffToAndImplies(tree, (BinaryOperator) node);
+						break;
+			case 58:	ra.applyIffToOrAnd(tree, (BinaryOperator) node);
+						break;
+			case 59:	ra.applyIffNotBToNotIff(tree, (BinaryOperator) node);
+						break;
+			case 60:	ra.applyIffNotAToNotIff(tree, (BinaryOperator) node);
+						break;
+			case 61:	ra.applyAndIdempotenceBackwards(tree, (Atom) node);
+						break;
+			case 62:	ra.applyAndTop(tree, (Atom) node);
+						break;
+			case 63:	ra.applyOrIdempotenceBackwards(tree, (Atom) node);
+						break;
+			case 64:	ra.applyOrBottom(tree, (Atom) node);
+						break;
+			case 65:	ra.applyNotNotBackwards(tree, (Atom) node);
+						break;
+			case 66:	ra.applyTopImplies(tree, (Atom) node);
+						break;
+			case 67:	ra.applyNotTop(tree, (Atom) node);
+						break;
+			case 68:	ra.applyNotBottom(tree, (Atom) node);
+						break;
+			case 69:	ra.applyAtomAndBottom(tree, (Atom) node, input);
+						break;
+			case 70:	ra.applyBottomToAndAtom(tree, (Atom) node, input);
+						break;
+			case 71:	ra.applyAtomOrTop(tree, (Atom) node, input);
+						break;
+			case 72:	ra.applyTopToOrAtom(tree, (Atom) node, input);
+						break;
+			case 73:	ra.applyTopToImpliesAtom(tree, (Atom) node, input);
+						break;
+			case 74:	ra.applyTopToImpliesAtomTop(tree, (Atom) node, input);
+						break;
+			case 75:	ra.applyTopToImpliesBottomAtom(tree, (Atom) node, input);
+						break;
+			case 76:	ra.applyAbsorptionOrBackwards(tree, (Atom) node, input);
+						break;
+			case 77:	ra.applyAbsorptionAndBackwards(tree, (Atom) node, input);
+						break;
 		}
 	}
 	
@@ -361,6 +429,7 @@ public class RuleEngine {
 		while (randomNum-- > 0)
 			nextSetBit = bs.nextSetBit(nextSetBit + 1);
 	    
-	    applyRuleFromBitSet(bs, nextSetBit, tree, node);
+		// TODO: Choose appropriate variable to pass through
+	    applyRuleFromBitSet(bs, nextSetBit, tree, node, null);
 	}
 }

@@ -145,16 +145,16 @@ public class RuleApplicator {
 
 	// 8.  a^(b^c)	|-  (a^b)^c			-- Associativity
 	// 27. av(bvc)	|-  (avb)vc			-- Associativity
-	public void applyRightAssociativity(FormationTree tree, BinaryOperator node) {
-		applyRightRotation(tree, node);
-	}
-
-	// 9.  (a^b)^c  |- 	a^(b^c)			-- Associativity
-	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
 	public void applyLeftAssociativity(FormationTree tree, BinaryOperator node) {
 		applyLeftRotation(tree, node);
 	}
 	
+	// 9.  (a^b)^c  |- 	a^(b^c)			-- Associativity
+	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
+	public void applyRightAssociativity(FormationTree tree, BinaryOperator node) {
+		applyRightRotation(tree, node);
+	}
+
 	// 17. a^(avb)  |-	a
 	// 36. av(a^b)	|-  a
 	public void applyLeftAbsorption(FormationTree tree, BinaryOperator node) {
