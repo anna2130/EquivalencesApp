@@ -460,14 +460,53 @@ public class RuleApplicator {
 	// TODO: Equivalences involving user input
 	
 	// 69. ⊥		|-  a^⊥
+	public void applyAtomAndBottom(FormationTree tree, Node node, String atom) {
+		replaceNode(tree, node, createNewAnd(createNewAtom(atom), node));
+	}
+	
 	// 70. ⊥		|-  a^¬a
+	public void applyBottomToAndAtom(FormationTree tree, Node node, String atom) {
+		UnaryOperator not = createNewNot(createNewAtom(atom));
+		replaceNode(tree, node, createNewAnd(createNewAtom(atom), not));
+	}
+	
 	// 71. ┬		|-  av┬
+	public void applyAtomOrTop(FormationTree tree, Node node, String atom) {
+		replaceNode(tree, node, createNewOr(createNewAtom(atom), node));
+	}
+	
 	// 72. ┬		|-  av¬a
+	public void applyTopToOrAtom(FormationTree tree, Node node, String atom) {
+		UnaryOperator not = createNewNot(createNewAtom(atom));
+		replaceNode(tree, node, createNewOr(createNewAtom(atom), not));
+	}
+	
 	// 73. ┬		|- 	a→a	
+	public void applyTopToImpliesAtom(FormationTree tree, Node node, String atom) {
+		replaceNode(tree, node, createNewImplies(createNewAtom(atom), createNewAtom(atom)));
+	}
+	
 	// 74. ┬		|- 	a→┬
+	public void applyTopToImpliesAtomTop(FormationTree tree, Node node, String atom) {
+		replaceNode(tree, node, createNewImplies(createNewAtom(atom), node));
+	}
+	
 	// 75. ┬		|- 	⊥→a
+	public void applyTopToImpliesBottomAtom(FormationTree tree, Node node, String atom) {
+		replaceNode(tree, node, createNewImplies(createNewBottom(), createNewAtom(atom)));
+	}
+	
 	// 76. a		|-  av(a^b)
+	public void applyAbsorptionOrBackwards(FormationTree tree, Node node, String atom) {
+		BinaryOperator and = createNewAnd(node, createNewAtom(atom));
+		replaceNode(tree, node, createNewOr(node.clone(), and));
+	}
+	
 	// 77. a  		|-	a^(avb)
+	public void applyAbsorptionAndBackwards(FormationTree tree, Node node, String atom) {
+		BinaryOperator or = createNewOr(node, createNewAtom(atom));
+		replaceNode(tree, node, createNewAnd(node.clone(), or));
+	}
 	
 	// TODO: Tree rotations
 	
