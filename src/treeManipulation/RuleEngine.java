@@ -29,7 +29,7 @@ public class RuleEngine {
 	 * 3.  ┬^a		|-  a
 	 * 4.  ⊥^a		|-  ⊥
 	 * 5.  a^⊥		|-  ⊥
-	 * 6.  a^¬a		|-  ⊥				-- Could do inverse operation here requiring user input (to define variable)
+	 * 6.  a^¬a		|-  ⊥
 	 * 7.  ¬a^a		|-  ⊥				
 	 * 8.  a^(b^c)		|-  (a^b)^c			-- Associativity
 	 * 9.  (a^b)^c  	|- 	a^(b^c)			-- Associativity
@@ -38,8 +38,8 @@ public class RuleEngine {
 	 * 12. ¬a^¬b		|-	¬(avb)			-- De Morgan laws
 	 * 13. a^(bvc) 		|- 	(a^b)v(a^c)		-- Distributitivity
 	 * 14. (avb)^c		|-  (a^c)v(b^c)		-- Distributitivity
-	 * 15. (avb)^(avc)	|- 	av(b^c)		-- Distributitivity
-	 * 16. (avc)^(bvc)	|-	(a^b)vc		-- Distributitivity
+	 * 15. (avb)^(avc)	|- 	av(b^c)			-- Distributitivity
+	 * 16. (avc)^(bvc)	|-	(a^b)vc			-- Distributitivity
 	 * 17. a^(avb)  	|-	a				-- Absoption
 	 * 18. (avb)^a  	|-	a				-- Absoption
 	 * 
@@ -79,7 +79,7 @@ public class RuleEngine {
 	 * 49. ¬(avb)	|-	¬a^¬b			-- De Morgan laws
 	 * 
 	 * Equivalences involving →
-	 * 50. a→a		|- 	┬				-- Could do inverse operation here requiring user input (to define variable)
+	 * 50. a→a		|- 	┬
 	 * 51. ┬→a		|- 	a
 	 * 52. a→┬		|- 	┬
 	 * 53. ⊥→a		|- 	┬

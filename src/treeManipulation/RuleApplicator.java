@@ -314,7 +314,7 @@ public class RuleApplicator {
 	// 43. ¬(a→b) 	|-	a^¬b
 	public void applyNotImplies(FormationTree tree, UnaryOperator node) {
 		BinaryOperator implies = (BinaryOperator) node.getChild();
-		UnaryOperator not = createNewNot(implies.getLeftChild());
+		UnaryOperator not = createNewNot(implies.getRightChild());
 		replaceNode(tree, node, createNewAnd(implies.getLeftChild(), not));
 	}
 	
@@ -394,11 +394,13 @@ public class RuleApplicator {
 	
 	// 58. a↔b				|-	(a^b)v(¬a^¬b)
 	public void applyIffToOrAnd(FormationTree tree, BinaryOperator node) {
-		BinaryOperator leftChild = createNewAnd(node.getLeftChild(), node.getRightChild());
-		UnaryOperator leftNot = createNewNot(node.getRightChild().clone());
-		UnaryOperator rightNot = createNewNot(node.getLeftChild().clone());
-		BinaryOperator rightChild = createNewAnd(leftNot, rightNot);
-		replaceNode(tree, node, createNewAnd(leftChild, rightChild));
+		Node leftChild = node.getLeftChild();
+		Node rightChild = node.getRightChild();
+		UnaryOperator leftNot = createNewNot(leftChild.clone());
+		UnaryOperator rightNot = createNewNot(rightChild.clone());
+		BinaryOperator leftAnd = createNewAnd(leftChild, rightChild);
+		BinaryOperator rightAnd = createNewAnd(leftNot, rightNot);
+		replaceNode(tree, node, createNewOr(leftAnd, rightAnd));
 	}
 	
 	// 59. a↔¬b 			|- 	¬(a↔b)

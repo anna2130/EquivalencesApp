@@ -100,20 +100,22 @@ public class RuleSelector {
 		Node leftChild = node.getChildren()[0];
 		Node rightChild = node.getChildren()[1];
 		
-		if (rightChild.isNot())
+		if (rightChild.isNot()) {
 			rightChild = ((UnaryOperator) rightChild).getChild();
-			
-		return tree.equalSubTrees(leftChild, rightChild);
+			return tree.equalSubTrees(leftChild, rightChild);
+		} else
+			return false;
 	}
 	
 	boolean leftIsNotOfRight(FormationTree tree, BinaryOperator node) {
 		Node leftChild = node.getChildren()[0];
 		Node rightChild = node.getChildren()[1];
 		
-		if (leftChild.isNot())
+		if (leftChild.isNot()) {
 			leftChild = ((UnaryOperator) rightChild).getChild();
-			
-		return tree.equalSubTrees(leftChild, rightChild);
+			return tree.equalSubTrees(leftChild, rightChild);
+		} else
+			return false;
 	}
 	
 	boolean canBeAbsorbedLeft(FormationTree tree, BinaryOperator node) {
