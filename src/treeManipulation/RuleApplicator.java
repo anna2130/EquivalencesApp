@@ -32,7 +32,6 @@ public class RuleApplicator {
 	
 	public void replaceNode(FormationTree tree, Node node, Node result) {
 		Node parent = result;
-		System.out.println("Replace node: " + node + " |- " + result);
 		
 		if (node.isRoot())
 			tree.setRoot(result);
@@ -170,7 +169,7 @@ public class RuleApplicator {
 	}
 	
 	// TODO: And Rules
-				
+
 	// 10. a^¬b 		|-	¬(a→b)
 	public void applyAndNotToNotImplies(FormationTree tree, BinaryOperator node) {
 		UnaryOperator rightChild = (UnaryOperator) node.getRightChild();
@@ -320,11 +319,11 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewAnd(implies.getLeftChild(), not));
 	}
 	
-	// 44. ¬(av¬b)	|- 	a→b
-	public void applyNotOrToImplies(FormationTree tree, UnaryOperator node) {
-		BinaryOperator or = (BinaryOperator) node.getChild();
-		UnaryOperator not = (UnaryOperator) or.getRightChild();
-		replaceNode(tree, node, createNewImplies(or.getLeftChild(), not.getChild()));
+	// 44. ¬(a^¬b)	|- 	a→b
+	public void applyNotAndToImplies(FormationTree tree, UnaryOperator node) {
+		BinaryOperator and = (BinaryOperator) node.getChild();
+		UnaryOperator not = (UnaryOperator) and.getRightChild();
+		replaceNode(tree, node, createNewImplies(and.getLeftChild(), not.getChild()));
 	}
 	
 	// 45. ¬(a↔b) 	|- 	a↔¬b
@@ -378,11 +377,11 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(not, node.getRightChild()));
 	}
 	
-	// 56. a→b 		|- 	¬(av¬b)
-	public void applyImpliesToNotOr(FormationTree tree, BinaryOperator node) {
+	// 56. a→b 		|- 	¬(a^¬b)
+	public void applyImpliesToNotAnd(FormationTree tree, BinaryOperator node) {
 		UnaryOperator not = createNewNot(node.getRightChild());
-		BinaryOperator or = createNewOr(node.getLeftChild(), not);
-		replaceNode(tree, node, createNewNot(or));
+		BinaryOperator and = createNewAnd(node.getLeftChild(), not);
+		replaceNode(tree, node, createNewNot(and));
 	}
 
 	// TODO: Iff Rules

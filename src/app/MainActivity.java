@@ -1,5 +1,7 @@
 package app;
 
+import org.antlr.v4.runtime.RecognitionException;
+
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
 import treeManipulation.TruthTable;
@@ -12,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.equivalencesapp.R;
 
@@ -77,15 +80,34 @@ public class MainActivity extends ActionBarActivity {
 		Compiler c = new Compiler();
 		FormationTree t1 = c.compile(startEquivalence);
 		FormationTree t2 = c.compile(endEquivalence);
-		TruthTable tt1 = new TruthTable(t1);
-		TruthTable tt2 = new TruthTable(t2);
 		
-		if (tt1.testEquivalence(tt2)) {
-			intent.putExtra(START_EQUIVALENCE, startEquivalence);
-			intent.putExtra(END_EQUIVALENCE, endEquivalence);
-		    startActivity(intent);
+		if (t1.hasError() || t2.hasError()) {
+			setErrorMessage("Incorrect syntax");
 		} else {
-			
+			if (t1 != null && t2 != null) {
+				TruthTable tt1 = new TruthTable(t1);
+				TruthTable tt2 = new TruthTable(t2);
+				
+				if (tt1.testEquivalence(tt2)) {
+					intent.putExtra(START_EQUIVALENCE, startEquivalence);
+					intent.putExtra(END_EQUIVALENCE, endEquivalence);
+				    startActivity(intent);
+				} else {
+					setErrorMessage("Not equivalent");
+				}
+			}
 		}
+	}
+	
+	public void setErrorMessage(String err) {
+		TextView error = (TextView) findViewById(R.id.error_message);
+		error.setText(err);
+		error.setVisibility(View.VISIBLE);
+	}
+	
+	public void hideErrorMessage() {
+		TextView error = (TextView) findViewById(R.id.error_message);
+		error.setText("Hide text");
+		error.setVisibility(View.INVISIBLE);
 	}
 }

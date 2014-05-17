@@ -356,7 +356,7 @@ public class RuleEngine {
 						break;
 			case 43:	ra.applyNotImplies(tree, (UnaryOperator) node);
 						break;
-			case 44:	ra.applyNotOrToImplies(tree, (UnaryOperator) node);
+			case 44:	ra.applyNotAndToImplies(tree, (UnaryOperator) node);
 						break;
 			case 45:	ra.applyNotIffToNotB(tree, (UnaryOperator) node);
 						break;
@@ -380,7 +380,7 @@ public class RuleEngine {
 						break;
 			case 55:	ra.applyImpliesToOr(tree, (BinaryOperator) node);
 						break;
-			case 56:	ra.applyImpliesToNotOr(tree, (BinaryOperator) node);
+			case 56:	ra.applyImpliesToNotAnd(tree, (BinaryOperator) node);
 						break;
 			case 57:	ra.applyIffToAndImplies(tree, (BinaryOperator) node);
 						break;

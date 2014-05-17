@@ -1,5 +1,6 @@
 package parser;
 
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.Stack;
@@ -117,4 +118,10 @@ public class ExprWalker extends ExprBaseListener {
 	@Override public void exitATOM_(ExprParser.ATOM_Context ctx) {
 		remove();
 	}
+	
+	@Override public void enterERROR(@NotNull ExprParser.ERRORContext ctx) {
+		tree.setErrorFlag(true);
+	}
+	
+	@Override public void exitERROR(@NotNull ExprParser.ERRORContext ctx) { }
 }

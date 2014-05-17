@@ -9,6 +9,7 @@ import treeManipulation.TruthTable;
 public class FormationTree {
 
 	private Node root;
+	private boolean error_flag;
 	
 	public FormationTree() {
 		this.root = null;
@@ -16,6 +17,14 @@ public class FormationTree {
 	
 	public FormationTree(Node root) {
 		this.root = root;
+	}
+	
+	public void setErrorFlag(boolean b) {
+		error_flag = b;
+	}
+	
+	public boolean hasError() {
+		return error_flag;
 	}
 	
 	public void setRoot(Node n) {

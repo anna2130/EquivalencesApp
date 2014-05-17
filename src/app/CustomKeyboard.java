@@ -78,9 +78,12 @@ class CustomKeyboard {
             else if (primaryCode == CodeClear) {
                 if( editable != null )
                 	editable.clear();
+                ((MainActivity) mHostActivity).hideErrorMessage();
             } else if (primaryCode == CodeUndo) {
                 if(editable != null && start > 0) 
                 	editable.delete(start - 1, start);
+                if (start == 0)
+                    ((MainActivity) mHostActivity).hideErrorMessage();
             } else
             	editable.insert(start, Character.toString((char) primaryCode));
         }

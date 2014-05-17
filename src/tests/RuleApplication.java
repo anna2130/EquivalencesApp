@@ -518,11 +518,11 @@ public class RuleApplication {
 		assertEquals("a^(a→b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ^ (2-2: a, 3-2: ¬ (6-3: b)))");
 	}
 
-	// 44. ¬(av¬b)	|- 	a→b
+	// 44. ¬(a^¬b)	|- 	a→b
 	@Test
 	public void applyNotOrToImplies() {
-		FormationTree tree = compiler.compile("¬(av¬b)");
-		ra.applyNotOrToImplies(tree,(UnaryOperator) tree.findNode(0, 0));
+		FormationTree tree = compiler.compile("¬(a^¬b)");
+		ra.applyNotAndToImplies(tree,(UnaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toString(), "a→b");
 	}
 	
@@ -713,10 +713,10 @@ public class RuleApplication {
 
 	// 56. a→b 		|- 	¬(av¬b)
 	@Test
-	public void applyImpliesToNotOr() {
+	public void applyImpliesToNotAnd() {
 		FormationTree tree = compiler.compile("a→b");
-		ra.applyImpliesToNotOr(tree,(BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "¬(av¬b)");
+		ra.applyImpliesToNotAnd(tree,(BinaryOperator) tree.findNode(0, 0));
+		assertEquals("", tree.toString(), "¬(a^¬b)");
 	}
 	
 	// TODO: Iff tests

@@ -156,6 +156,18 @@ public class ExprParser extends Parser {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitNOT(this);
 		}
 	}
+	public static class ERRORContext extends ExprContext {
+		public TerminalNode BINOP() { return getToken(ExprParser.BINOP, 0); }
+		public ERRORContext(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterERROR(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitERROR(this);
+		}
+	}
 	public static class ATOM_Context extends ExprContext {
 		public TerminalNode ATOM() { return getToken(ExprParser.ATOM, 0); }
 		public ATOM_Context(ExprContext ctx) { copyFrom(ctx); }
@@ -198,7 +210,7 @@ public class ExprParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(14);
+			setState(15);
 			switch (_input.LA(1)) {
 			case 5:
 				{
@@ -207,7 +219,7 @@ public class ExprParser extends Parser {
 				_prevctx = _localctx;
 
 				setState(7); match(5);
-				setState(8); expr(5);
+				setState(8); expr(6);
 				}
 				break;
 			case 2:
@@ -228,11 +240,19 @@ public class ExprParser extends Parser {
 				setState(13); match(ATOM);
 				}
 				break;
+			case BINOP:
+				{
+				_localctx = new ERRORContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(14); match(BINOP);
+				}
+				break;
 			default:
 				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(27);
+			setState(28);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			while ( _alt!=2 && _alt!=-1 ) {
@@ -240,16 +260,16 @@ public class ExprParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(25);
+					setState(26);
 					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 					case 1:
 						{
 						_localctx = new BINOP_Context(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(16);
-						if (!(4 >= _localctx._p)) throw new FailedPredicateException(this, "4 >= $_p");
-						setState(17); match(BINOP);
-						setState(18); expr(5);
+						setState(17);
+						if (!(5 >= _localctx._p)) throw new FailedPredicateException(this, "5 >= $_p");
+						setState(18); match(BINOP);
+						setState(19); expr(6);
 						}
 						break;
 
@@ -257,10 +277,10 @@ public class ExprParser extends Parser {
 						{
 						_localctx = new IMPLIESContext(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(19);
-						if (!(3 >= _localctx._p)) throw new FailedPredicateException(this, "3 >= $_p");
-						setState(20); match(3);
-						setState(21); expr(4);
+						setState(20);
+						if (!(4 >= _localctx._p)) throw new FailedPredicateException(this, "4 >= $_p");
+						setState(21); match(3);
+						setState(22); expr(5);
 						}
 						break;
 
@@ -268,16 +288,16 @@ public class ExprParser extends Parser {
 						{
 						_localctx = new IFFContext(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(22);
-						if (!(2 >= _localctx._p)) throw new FailedPredicateException(this, "2 >= $_p");
-						setState(23); match(4);
-						setState(24); expr(3);
+						setState(23);
+						if (!(3 >= _localctx._p)) throw new FailedPredicateException(this, "3 >= $_p");
+						setState(24); match(4);
+						setState(25); expr(4);
 						}
 						break;
 					}
 					} 
 				}
-				setState(29);
+				setState(30);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 			}
@@ -302,26 +322,26 @@ public class ExprParser extends Parser {
 	}
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return 4 >= _localctx._p;
+		case 0: return 5 >= _localctx._p;
 
-		case 1: return 3 >= _localctx._p;
+		case 1: return 4 >= _localctx._p;
 
-		case 2: return 2 >= _localctx._p;
+		case 2: return 3 >= _localctx._p;
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\t!\4\2\t\2\4\3\t"+
-		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\21\n\3\3\3\3\3\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\7\3\34\n\3\f\3\16\3\37\13\3\3\3\2\4\2\4\2\2#\2\6"+
-		"\3\2\2\2\4\20\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\7\2\2"+
-		"\n\21\5\4\3\2\13\f\7\4\2\2\f\r\5\4\3\2\r\16\7\3\2\2\16\21\3\2\2\2\17\21"+
-		"\7\t\2\2\20\b\3\2\2\2\20\13\3\2\2\2\20\17\3\2\2\2\21\35\3\2\2\2\22\23"+
-		"\6\3\2\3\23\24\7\b\2\2\24\34\5\4\3\2\25\26\6\3\3\3\26\27\7\5\2\2\27\34"+
-		"\5\4\3\2\30\31\6\3\4\3\31\32\7\6\2\2\32\34\5\4\3\2\33\22\3\2\2\2\33\25"+
-		"\3\2\2\2\33\30\3\2\2\2\34\37\3\2\2\2\35\33\3\2\2\2\35\36\3\2\2\2\36\5"+
-		"\3\2\2\2\37\35\3\2\2\2\5\20\33\35";
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\t\"\4\2\t\2\4\3\t"+
+		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\22\n\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\7\3\35\n\3\f\3\16\3 \13\3\3\3\2\4\2\4\2\2%\2"+
+		"\6\3\2\2\2\4\21\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\7\2"+
+		"\2\n\22\5\4\3\2\13\f\7\4\2\2\f\r\5\4\3\2\r\16\7\3\2\2\16\22\3\2\2\2\17"+
+		"\22\7\t\2\2\20\22\7\b\2\2\21\b\3\2\2\2\21\13\3\2\2\2\21\17\3\2\2\2\21"+
+		"\20\3\2\2\2\22\36\3\2\2\2\23\24\6\3\2\3\24\25\7\b\2\2\25\35\5\4\3\2\26"+
+		"\27\6\3\3\3\27\30\7\5\2\2\30\35\5\4\3\2\31\32\6\3\4\3\32\33\7\6\2\2\33"+
+		"\35\5\4\3\2\34\23\3\2\2\2\34\26\3\2\2\2\34\31\3\2\2\2\35 \3\2\2\2\36\34"+
+		"\3\2\2\2\36\37\3\2\2\2\37\5\3\2\2\2 \36\3\2\2\2\5\21\34\36";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

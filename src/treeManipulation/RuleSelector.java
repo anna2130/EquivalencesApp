@@ -110,7 +110,7 @@ public class RuleSelector {
 							break;
 				case 43:	rules.add("¬(a→b) 	|-	a^¬b");
 							break;
-				case 44:	rules.add("¬(av¬b)	|- 	a→b");
+				case 44:	rules.add("¬(a^¬b)	|- 	a→b");
 							break;
 				case 45:	rules.add("¬(a↔b) 	|- 	a↔¬b");
 							break;
@@ -134,7 +134,7 @@ public class RuleSelector {
 							break;
 				case 55:	rules.add("a→b 		|- 	¬avb");
 							break;
-				case 56:	rules.add("a→b 		|- 	¬(av¬b)");
+				case 56:	rules.add("a→b 		|- 	¬(a^¬b)");
 							break;
 				case 57:	rules.add("a↔b		|-  (a→b)^(b→a)");
 							break;

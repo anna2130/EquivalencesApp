@@ -82,6 +82,19 @@ public class ExprBaseListener implements ExprListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
+	@Override public void enterERROR(@NotNull ExprParser.ERRORContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitERROR(@NotNull ExprParser.ERRORContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
 	@Override public void enterBINOP_(@NotNull ExprParser.BINOP_Context ctx) { }
 	/**
 	 * {@inheritDoc}
