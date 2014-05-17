@@ -9,6 +9,7 @@
     <string name="start_equivalence">Start Equivalence</string>
     <string name="end_equivalence">End Equivalence</string>
     <string name="error_message">Not equivalent</string>
+    <string name="randomise">Randomise</string>
 
     <string name="title_activity_begin_equivance">BeginEquivanceActivity</string>
     <string name="title_activity_begin_equivalence">BeginEquivalenceActivity</string>

@@ -1,9 +1,8 @@
 package app;
 
-import org.antlr.v4.runtime.RecognitionException;
-
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
+import treeManipulation.RuleEngine;
 import treeManipulation.TruthTable;
 import android.app.Activity;
 import android.content.Intent;
@@ -30,6 +29,9 @@ public class MainActivity extends ActionBarActivity {
 	static Activity activity;
     static KeyboardView mKeyboardView;
 	
+    private Compiler c;
+    private RuleEngine re;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +41,9 @@ public class MainActivity extends ActionBarActivity {
 	    mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
 	    mCustomKeyboard.registerEditText(R.id.start_equivalence);
 	    mCustomKeyboard.registerEditText(R.id.end_equivalence);
+	    
+	    c = new Compiler();
+	    re = new RuleEngine();
 	}
 
 	@Override public void onBackPressed() {
@@ -75,9 +80,8 @@ public class MainActivity extends ActionBarActivity {
 		EditText endText = (EditText) findViewById(R.id.end_equivalence);
 		String startEquivalence = startText.getText().toString();
 		String endEquivalence = endText.getText().toString();
-		
-		// TODO: Check equivalences are valid and equivalent
-		Compiler c = new Compiler();
+
+		// TODO: Check equivalences are syntactically correct
 		FormationTree t1 = c.compile(startEquivalence);
 		FormationTree t2 = c.compile(endEquivalence);
 		
@@ -99,6 +103,34 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 	
+	public void randomiseStart(View view) {
+		EditText startText = (EditText) findViewById(R.id.start_equivalence);
+		EditText endText = (EditText) findViewById(R.id.end_equivalence);
+		randomise(endText, startText);
+	}
+
+	public void randomiseEnd(View view) {
+		EditText startText = (EditText) findViewById(R.id.start_equivalence);
+		EditText endText = (EditText) findViewById(R.id.end_equivalence);
+		randomise(startText, endText);
+	}
+	
+	public void randomise(EditText startText, EditText endText) {
+		Compiler c = new Compiler();
+		String start = startText.getText().toString();
+		String end;
+		
+		if (start.equals("")) {
+			end = c.generateRandomEquivalence(4, 3);
+		} else {
+			FormationTree tree = c.compile(start);
+			System.out.println(tree.toTreeString());
+			re.applyRandomRules(tree, 5);
+			end = tree.toString();
+		}
+		endText.setText(end);
+	}
+	
 	public void setErrorMessage(String err) {
 		TextView error = (TextView) findViewById(R.id.error_message);
 		error.setText(err);
@@ -107,7 +139,6 @@ public class MainActivity extends ActionBarActivity {
 	
 	public void hideErrorMessage() {
 		TextView error = (TextView) findViewById(R.id.error_message);
-		error.setText("Hide text");
 		error.setVisibility(View.INVISIBLE);
 	}
 }

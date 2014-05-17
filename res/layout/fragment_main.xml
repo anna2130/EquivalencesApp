@@ -55,5 +55,25 @@
 
         <requestFocus />
     </EditText>
+
+    <Button
+        android:id="@+id/randomise_start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/randomise_end_button"
+        android:layout_alignTop="@+id/end_equivalence"
+        android:text="@string/randomise" 
+        android:onClick="randomiseStart" />
+
+    <Button
+        android:id="@+id/randomise_end_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/start_equivalence"
+        android:layout_alignBottom="@+id/start_equivalence"
+        android:layout_marginLeft="37dp"
+        android:layout_toRightOf="@+id/start_equivalence"
+        android:text="@string/randomise" 
+        android:onClick="randomiseEnd" />
 	
 </RelativeLayout>

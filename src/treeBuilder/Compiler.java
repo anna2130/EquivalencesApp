@@ -1,14 +1,17 @@
 package treeBuilder;
 
+import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.TreeSet;
 
-import org.antlr.v4.runtime.ANTLRErrorStrategy;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -17,7 +20,18 @@ import parser.ExprParser;
 import parser.ExprWalker;
 import treeManipulation.RuleEngine;
 
-public class Compiler implements ANTLRErrorStrategy {
+public class Compiler {
+	
+	private ArrayList<String> variables;
+	private ArrayList<String> binaryOps;
+	private ArrayList<String> unaryOps;
+	
+	public Compiler() {
+		variables = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+		binaryOps = new ArrayList<String>(Arrays.asList("^", "v", "→", "↔"));
+		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
+	}
+	
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 		
@@ -25,17 +39,19 @@ public class Compiler implements ANTLRErrorStrategy {
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree copy = compiler.compile(s1);
 //		FormationTree tree2 = compiler.compile(s2);
-		System.out.println(tree1.toString() + "\n");
+//		System.out.println(tree1.toString() + "\n");
 //		System.out.println(tree2.toString() + "\n");
 
-		RuleEngine re = new RuleEngine();
+		System.out.println(compiler.generateRandomEquivalence(4, 3));
+		
+//		RuleEngine re = new RuleEngine();
 //		re.applyRandomRules(tree1, 5);
-		Node node = tree1.getRoot();
-		BitSet bs = re.getApplicableRules(tree1, node);
-		re.applyRuleFromBitSet(bs, 12, tree1, node, null);
+//		Node node = tree1.getRoot();
+//		BitSet bs = re.getApplicableRules(tree1, node);
+//		re.applyRuleFromBitSet(bs, 12, tree1, node, null);
 		
 //		System.out.println(tree1);
-		System.out.println("Trees are equal: " + tree1.equals(copy));
+//		System.out.println("Trees are equal: " + tree1.equals(copy));
 	}
 	
 	public FormationTree compile(String expr) throws RecognitionException {
@@ -59,48 +75,60 @@ public class Compiler implements ANTLRErrorStrategy {
         return tree;
 	}
 
-	@Override
-	public void reset(Parser recognizer) {
-		// TODO Auto-generated method stub
+	public String generateRandomEquivalence(int numVars, int depth) {
+		String equiv = generateSubEquivalence(numVars, depth);
+		return equiv.substring(1, equiv.length() - 1);
+	}
+	
+	private String generateSubEquivalence(int numVars, int depth) {
+		StringBuilder sb = new StringBuilder();
+		Random rand = new Random();
 		
-	}
+		sb.append("(");
+		int op = rand.nextInt(binaryOps.size() + unaryOps.size());
 
-	@Override
-	public Token recoverInline(Parser recognizer) throws RecognitionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void recover(Parser recognizer, RecognitionException e)
-			throws RecognitionException {
-		// TODO Auto-generated method stub
+		String sub1;
+		String sub2;
 		
+		if (depth == 0 || op < 1) {
+			sub1 = getRandomVariable(numVars);
+			sub2 = getRandomVariable(numVars);
+		} else {
+			sub1 = generateSubEquivalence(numVars, depth - 1);
+			sub2 = generateSubEquivalence(numVars, depth - 1);
+		}
+
+		// Create binary
+		if (op > 0) {
+			sb.append(sub1);
+			sb.append(getRandomBinaryOperator());
+			sb.append(sub2);
+		// Create unary
+		} else {
+			sb.append(getRandomUnaryOperator());
+			sb.append(sub1);
+		}
+
+		sb.append(")");
+		return sb.toString();
+	}
+	
+	private String getRandomVariable(int numVars) {
+		Random rand = new Random();
+		int j = rand.nextInt(numVars);
+		return variables.get(j);
 	}
 
-	@Override
-	public void sync(Parser recognizer) throws RecognitionException {
-		// TODO Auto-generated method stub
-		System.out.println("Sync");
-		
+	private String getRandomBinaryOperator() {
+		Random rand = new Random();
+		int i = rand.nextInt(binaryOps.size());
+		return binaryOps.get(i);
+	}
+	
+	private String getRandomUnaryOperator() {
+		Random rand = new Random();
+		int i = rand.nextInt(unaryOps.size());
+		return unaryOps.get(i);
 	}
 
-	@Override
-	public boolean inErrorRecoveryMode(Parser recognizer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void reportMatch(Parser recognizer) {
-		// TODO Auto-generated method stub
-		System.out.println("Matched");
-		
-	}
-
-	@Override
-	public void reportError(Parser recognizer, RecognitionException e) {
-		// TODO Auto-generated method stub
-		System.out.println("Report error");
-	}
 }
