@@ -244,23 +244,17 @@ public class RuleEngine {
 		}
 		
 		// Equivalences involving atoms
-		if (node.isAtom()) {
-			if (node.isBottom())
-				bs.set(67);
-			else if (node.isTop())
-				bs.set(68);
-			else
-				bs.set(61, 67);
-		}
-		
 		// Equivalences involving user input
 		if (node.isAtom()) {
-			if (node.isBottom())
+			bs.set(61, 67);
+			bs.set(76, 78);
+			if (node.isBottom()) {
+				bs.set(67);
 				bs.set(69, 71);
-			else if (node.isTop())
+			} else if (node.isTop()) {
+				bs.set(68);
 				bs.set(71, 76);
-			else
-				bs.set(76, 78);
+			}
 		}
 		
 		return bs;
