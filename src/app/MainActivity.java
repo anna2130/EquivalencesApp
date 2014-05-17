@@ -106,13 +106,13 @@ public class MainActivity extends ActionBarActivity {
 	public void randomiseStart(View view) {
 		EditText startText = (EditText) findViewById(R.id.start_equivalence);
 		EditText endText = (EditText) findViewById(R.id.end_equivalence);
-		randomise(endText, startText);
+		randomise(startText, endText);
 	}
 
 	public void randomiseEnd(View view) {
 		EditText startText = (EditText) findViewById(R.id.start_equivalence);
 		EditText endText = (EditText) findViewById(R.id.end_equivalence);
-		randomise(startText, endText);
+		randomise(endText, startText);
 	}
 	
 	public void randomise(EditText startText, EditText endText) {
@@ -121,11 +121,11 @@ public class MainActivity extends ActionBarActivity {
 		String end;
 		
 		if (start.equals("")) {
-			end = c.generateRandomEquivalence(4, 3);
+			end = c.generateRandomEquivalence(3, 1);
 		} else {
 			FormationTree tree = c.compile(start);
 			System.out.println(tree.toTreeString());
-			re.applyRandomRules(tree, 5);
+			re.applyRandomRules(tree, 3);
 			end = tree.toString();
 		}
 		endText.setText(end);

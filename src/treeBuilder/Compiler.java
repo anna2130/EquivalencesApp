@@ -1,12 +1,8 @@
 package treeBuilder;
 
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.TreeSet;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -18,7 +14,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
-import treeManipulation.RuleEngine;
 
 public class Compiler {
 	
@@ -27,7 +22,7 @@ public class Compiler {
 	private ArrayList<String> unaryOps;
 	
 	public Compiler() {
-		variables = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i"));
+		variables = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "┬", "⊥"));
 		binaryOps = new ArrayList<String>(Arrays.asList("^", "v", "→", "↔"));
 		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
 	}
@@ -35,7 +30,7 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 		
-		String s1 = "¬a^¬b";
+		String s1 = "a→b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree copy = compiler.compile(s1);
 //		FormationTree tree2 = compiler.compile(s2);
@@ -76,11 +71,26 @@ public class Compiler {
 	}
 
 	public String generateRandomEquivalence(int numVars, int depth) {
-		String equiv = generateSubEquivalence(numVars, depth);
+		ArrayList<String> vars = new ArrayList<String>();
+		
+		int size = variables.size();
+		Random rand;
+		for (int i = 0; i < numVars; ++i) {
+			rand = new Random();
+			String var = variables.get(rand.nextInt(size));
+			
+			while (vars.contains(var)) {
+				rand = new Random();
+				var = variables.get(rand.nextInt(size));
+			}
+			vars.add(var);
+		}
+		
+		String equiv = generateSubEquivalence(vars, depth);
 		return equiv.substring(1, equiv.length() - 1);
 	}
 	
-	private String generateSubEquivalence(int numVars, int depth) {
+	private String generateSubEquivalence(ArrayList<String> vars, int depth) {
 		StringBuilder sb = new StringBuilder();
 		Random rand = new Random();
 		
@@ -91,11 +101,11 @@ public class Compiler {
 		String sub2;
 		
 		if (depth == 0 || op < 1) {
-			sub1 = getRandomVariable(numVars);
-			sub2 = getRandomVariable(numVars);
+			sub1 = getRandomVariable(vars);
+			sub2 = getRandomVariable(vars);
 		} else {
-			sub1 = generateSubEquivalence(numVars, depth - 1);
-			sub2 = generateSubEquivalence(numVars, depth - 1);
+			sub1 = generateSubEquivalence(vars, depth - 1);
+			sub2 = generateSubEquivalence(vars, depth - 1);
 		}
 
 		// Create binary
@@ -113,10 +123,10 @@ public class Compiler {
 		return sb.toString();
 	}
 	
-	private String getRandomVariable(int numVars) {
+	private String getRandomVariable(ArrayList<String> vars) {
 		Random rand = new Random();
-		int j = rand.nextInt(numVars);
-		return variables.get(j);
+		int j = rand.nextInt(vars.size());
+		return vars.get(j);
 	}
 
 	private String getRandomBinaryOperator() {

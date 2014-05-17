@@ -3,24 +3,26 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/relative01" >
-        
-    <Button
-        android:id="@+id/start_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/start_button" 
-        android:onClick="startEquivalence" />
 
     <EditText
+        android:id="@+id/start_equivalence"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/end_equivalence"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="80dp"
+        android:ems="10"
+        android:hint="@string/start_equivalence" />
+    
+    <EditText
         android:id="@+id/end_equivalence"
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/start_equivalence"
-        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp"
         android:layout_marginTop="14dp"
-        android:hint="@string/end_equivalence"
-        android:ems="10" />
+        android:ems="10"
+        android:hint="@string/end_equivalence" />
     
     <android.inputmethodservice.KeyboardView
         android:id="@+id/keyboardview"
@@ -42,19 +44,8 @@
         android:text="@string/error_message"
         android:textAppearance="?android:attr/textAppearanceMedium" 
         android:visibility="invisible" />
-
-    <EditText
-        android:id="@+id/start_equivalence"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/end_equivalence"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="77dp"
-        android:ems="10"
-        android:hint="@string/start_equivalence" >
-
-        <requestFocus />
-    </EditText>
+        
+    <requestFocus />
 
     <Button
         android:id="@+id/randomise_start_button"
@@ -71,9 +62,19 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/start_equivalence"
         android:layout_alignBottom="@+id/start_equivalence"
-        android:layout_marginLeft="37dp"
+        android:layout_marginLeft="25dp"
         android:layout_toRightOf="@+id/start_equivalence"
-        android:text="@string/randomise" 
-        android:onClick="randomiseEnd" />
+        android:onClick="randomiseEnd"
+        android:text="@string/randomise" />
+    
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_below="@+id/error_message"
+        android:layout_centerHorizontal="true"
+        android:text="@string/start_button" 
+        android:onClick="startEquivalence" />
 	
 </RelativeLayout>

@@ -68,8 +68,8 @@ public class RuleEngine {
 	 * 31. ¬av¬b			|-  ¬(a^b)			-- De Morgan laws
 	 * 32. av(b^c)			|- 	(avb)^(avc)		-- Distributitivity
 	 * 33. (a^b)vc			|-	(avc)^(bvc)		-- Distributitivity
-	 * 34. (a^b)v(a^c) 		|- 	a^(bvc)		-- Distributitivity
-	 * 35. (a^c)v(b^c)		|-  (avb)^c		-- Distributitivity
+	 * 34. (a^b)v(a^c) 		|- 	a^(bvc)			-- Distributitivity
+	 * 35. (a^c)v(b^c)		|-  (avb)^c			-- Distributitivity
 	 * 36. av(a^b)			|-  a				-- Absoption
 	 * 37. (a^b)va			|-  a				-- Absoption
 	 * 38. ¬avb				|- 	a→b
@@ -83,7 +83,7 @@ public class RuleEngine {
 	 * 44. ¬(av¬b)	|- 	a→b
 	 * 45. ¬(a↔b) 	|- 	a↔¬b
 	 * 46. ¬(a↔b) 	|-  ¬a↔b
-	 * 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)	-- Exclusive or of A and b
+	 * 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)	-- Exclusive or of a and b
 	 * 48. ¬(a^b)	|-  ¬av¬b			-- De Morgan laws
 	 * 49. ¬(avb)	|-	¬a^¬b			-- De Morgan laws
 	 * 
