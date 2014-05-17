@@ -21,11 +21,17 @@ public class Compiler {
 		
 //		String s1 = "av(c^¬b)";
 		String s1 = "┬";
+//		String s2 = "¬(¬┬v⊥)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree copy = compiler.compile(s1);
 //		FormationTree tree2 = compiler.compile(s2);
 		System.out.println(tree1.toString() + "\n");
 //		System.out.println(tree2.toString() + "\n");
+
+//		TruthTable tt1 = new TruthTable(tree1);
+//		TruthTable tt2 = new TruthTable(tree2);
+		
+//		System.out.println("Equal: " + tree1.equals(tree2));
 
 //		Node node = tree1.findNode(0, 0);
 //		System.out.println(node.isAtom());
@@ -35,9 +41,9 @@ public class Compiler {
 		
 //		re.applyRuleToRandomNode(tree1);
 		re.applyRandomRules(tree1, 4);
-		
-		System.out.println(tree1.toTreeString());
-		System.out.println(tree1);
+//		
+//		System.out.println(tree1.toTreeString());
+//		System.out.println(tree1);
 		System.out.println("Trees are equal: " + tree1.equals(copy));
 	}
 	

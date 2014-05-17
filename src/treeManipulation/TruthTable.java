@@ -21,6 +21,12 @@ public class TruthTable {
 		result = tree.toString();
 	}
 	
+	public TruthTable(SortedSet<String> variables, HashSet<ArrayList<Integer>> table, String result) {
+		this.variables = variables;
+		this.table = table;
+		this.result = result;
+	}
+	
 	// Case 1: Both equivalences have the same number of same variables
 	// Case 2: Both equivalences have the same number but different variables
 	// Case 3: One equivalence has a subset of the others variables
@@ -29,9 +35,9 @@ public class TruthTable {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
 
-		System.out.println("Variables same: " + variables.equals(v2));
-		System.out.println("Set same: " + equalsSet(t2));
-
+		variables = replace(variables);
+		v2 = replace(v2);
+		
 		if (variables.equals(v2) && equalsSet(t2))
 			return true;
 		else {
@@ -46,18 +52,16 @@ public class TruthTable {
 	public boolean testRuleEquivalence(TruthTable tt2) {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
-
+		
 		if (equalsSet(t2))
 			return true;
 		else {
+			variables = replace(variables);
+			v2 = replace(v2);
 			if (variables.size() > v2.size()) {
-				SortedSet<String> newV1 = replace(variables);
-				SortedSet<String> newV2 = replace(v2);
-				return testSubsetEquivalence(table, newV1, t2, newV2);
+				return testSubsetEquivalence(table, variables, t2, v2);
 			} else if (variables.size() < v2.size()) {
-				SortedSet<String> newV1 = replace(variables);
-				SortedSet<String> newV2 = replace(v2);
-				return tt2.testSubsetEquivalence(t2, newV2, table, newV1);
+				return tt2.testSubsetEquivalence(t2, v2, table, variables);
 			}
 		}
 		return false;
@@ -66,11 +70,8 @@ public class TruthTable {
 	private SortedSet<String> replace(SortedSet<String> v1) {
 		SortedSet<String> result = new java.util.TreeSet<String>();
 		char c = 'a';
-		for (String v : v1) {
-			if (v.equals("┬") || v.equals("⊥"))
-				result.add(v);
-			else
-				result.add("" + c);
+		for (int i = 0; i < v1.size(); ++i) {
+			result.add("" + c);
 			c++;
 		}
 		return result;
@@ -97,7 +98,6 @@ public class TruthTable {
 			keptValues.add(i);
 			++i;
 		}
-		
 		keptValues.add(v1.size());
 		
 		for (ArrayList<Integer> next : t1) {
@@ -107,7 +107,6 @@ public class TruthTable {
 				arr.add(next.get(val));
 			reducedTable.add(arr);
 		}
-		
 		return reducedTable.equals(t2);
 	}
 	
