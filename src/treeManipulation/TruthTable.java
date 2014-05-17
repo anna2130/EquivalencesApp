@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.SortedSet;
 
 import treeBuilder.FormationTree;
@@ -12,7 +13,7 @@ import treeBuilder.FormationTree;
 public class TruthTable {
 	
 	private SortedSet<String> variables;
-	private HashSet<ArrayList<Integer>> table;
+	private LinkedHashSet<ArrayList<Integer>> table;
 	private String result;
 	
 	public TruthTable(FormationTree tree) {
@@ -21,7 +22,7 @@ public class TruthTable {
 		result = tree.toString();
 	}
 	
-	public TruthTable(SortedSet<String> variables, HashSet<ArrayList<Integer>> table, String result) {
+	public TruthTable(SortedSet<String> variables, LinkedHashSet<ArrayList<Integer>> table, String result) {
 		this.variables = variables;
 		this.table = table;
 		this.result = result;
@@ -110,9 +111,9 @@ public class TruthTable {
 		return reducedTable.equals(t2);
 	}
 	
-	public HashSet<ArrayList<Integer>> getTruthValues(FormationTree tree) {
+	public LinkedHashSet<ArrayList<Integer>> getTruthValues(FormationTree tree) {
 		int numVars = variables.size();
-		HashSet<ArrayList<Integer>> newTable = createTruthTable(numVars);
+		LinkedHashSet<ArrayList<Integer>> newTable = createTruthTable(numVars);
 		
 		for (ArrayList<Integer> row : newTable) {
 			HashMap<String, Integer> values = new HashMap<String, Integer>();
@@ -131,9 +132,9 @@ public class TruthTable {
 		return newTable;
 	}
 	
-	private HashSet<ArrayList<Integer>> createTruthTable(int numVars) {
+	private LinkedHashSet<ArrayList<Integer>> createTruthTable(int numVars) {
         int rows = (int) Math.pow(2, numVars);
-        HashSet<ArrayList<Integer>> table = new HashSet<ArrayList<Integer>>();
+        LinkedHashSet<ArrayList<Integer>> table = new LinkedHashSet<ArrayList<Integer>>();
 
         for (int i = 0; i < rows; ++i) {
         	ArrayList<Integer> row = new ArrayList<Integer>();

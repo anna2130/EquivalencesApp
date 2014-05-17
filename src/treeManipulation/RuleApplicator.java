@@ -223,7 +223,7 @@ public class RuleApplicator {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
 		BinaryOperator and = createNewAnd(leftChild.getLeftChild(), rightChild.getLeftChild());
-		replaceNode(tree, node, createNewOr(and, leftChild.getLeftChild()));
+		replaceNode(tree, node, createNewOr(and, leftChild.getRightChild()));
 	}
 
 	// TODO: Or Rules

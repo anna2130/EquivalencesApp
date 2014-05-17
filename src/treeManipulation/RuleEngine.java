@@ -20,6 +20,14 @@ public class RuleEngine {
 		rs = new RuleSelector();
 		noRules = rs.getNoRules();
 	}
+	
+	public RuleApplicator getRuleApplicator() {
+		return ra;
+	}
+	
+	public RuleSelector getRuleSelector() {
+		return rs;
+	}
 
 	/* The BitSet returns the rules applicable to a node in the order below:
 	 * 

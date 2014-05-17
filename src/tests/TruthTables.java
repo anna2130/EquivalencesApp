@@ -29,7 +29,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1], [0, 0]]", list.toString());
+		assertEquals("", "[[0, 0], [1, 1]]", list.toString());
 	}
 
 	@Test
@@ -38,7 +38,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 0], [0, 1]]", list.toString());
+		assertEquals("", "[[0, 1], [1, 0]]", list.toString());
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 0], [0, 1, 0], [0, 0, 0]]", list.toString());
+		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]]", list.toString());
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 1], [0, 0, 0]]", list.toString());
+		assertEquals("", "[[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 0], [0, 1, 1], [0, 0, 1]]", list.toString());
+		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 0], [1, 1, 1]]", list.toString());
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 0], [0, 1, 0], [0, 0, 1]]", list.toString());
+		assertEquals("", "[[0, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 1]]", list.toString());
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 0], [0, 0, 0]]", list.toString());
+		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 0], [0, 0, 0]]", list.toString());
+		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
 	@Test
@@ -101,7 +101,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0]]", list.toString());
+		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 0]]", list.toString());
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 1], [0, 0, 1]]", list.toString());
+		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
 	@Test
@@ -119,7 +119,36 @@ public class TruthTables {
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
-		assertEquals("", "[[1, 1, 1], [1, 0, 1], [0, 1, 0], [0, 0, 0]]", list.toString());
+		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 1], [1, 1, 1]]", list.toString());
+	}
+	
+	// Test Top and Bottom
+	
+	@Test
+	public void testTopOrNotBottom() {
+		String s = "┬v¬⊥";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
+	}
+
+	@Test
+	public void testNotTopOrBottom() {
+		String s = "¬┬v⊥";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 0]]", list.toString());
+	}
+
+	@Test
+	public void testNotNotTopOrBottom() {
+		String s = "¬(¬┬v⊥)";
+		FormationTree tree = compiler.compile(s);
+		TruthTable tt = new TruthTable(tree);
+		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
 	// Test comparisons for equality
