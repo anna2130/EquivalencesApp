@@ -171,9 +171,11 @@ public class RuleEngine {
 			bs.set(27, rs.isLeftAssociative(tree, binary, "v"));
 			bs.set(28, rs.isRightAssociative(tree, binary, "v"));
 			bs.set(29, leftChild.isAnd() && rightChild.isAnd()
+					&& rightGChildren[0].isNot() && rightGChildren[1].isNot()
 					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])
 					&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1].getChildren()[0]));
 			bs.set(30, leftChild.isAnd() && rightChild.isAnd()
+					&& rightGChildren[0].isNot() && leftGChildren[1].isNot()
 					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])
 					&& tree.equalSubTrees(leftGChildren[1].getChildren()[0], rightGChildren[1]));
 			bs.set(31, leftChild.isNot() && rightChild.isNot());
@@ -235,9 +237,9 @@ public class RuleEngine {
 		
 		// Equivalences involving atoms
 		if (node.isAtom()) {
-			if (node.isTop())
+			if (node.isBottom())
 				bs.set(67);
-			else if (node.isBottom())
+			else if (node.isTop())
 				bs.set(68);
 			else
 				bs.set(61, 67);
@@ -254,6 +256,10 @@ public class RuleEngine {
 		}
 		
 		return bs;
+	}
+	
+	public String[] rulesToString(BitSet bs, FormationTree tree, Node node) {
+		return rs.rulesToString(bs, tree, node);
 	}
 	
 	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, 
@@ -419,7 +425,23 @@ public class RuleEngine {
 		}
 	}
 	
-	public void applyRandomRule(BitSet bs, FormationTree tree, BinaryOperator node) {
+	public void applyRandomRules(FormationTree tree, int n) {
+		for (int i = 0; i < n; ++i) {
+			System.out.println("Apply " + i + " rule to: " + tree);
+			applyRuleToRandomNode(tree);
+			System.out.println("Replaced by: " + tree + "\n");
+		}
+	}
+	
+	public void applyRuleToRandomNode(FormationTree tree) {
+		Node node = tree.randomNode();
+		System.out.println("Random node: " + node);
+		BitSet bs = getApplicableRules(tree, node);
+		System.out.println("BitSet: " + bs);
+		applyRandomRule(bs, tree, node);
+	}
+	
+	public void applyRandomRule(BitSet bs, FormationTree tree, Node node) {
 		int numSetBits = bs.cardinality();
 		int nextSetBit = bs.nextSetBit(0);
 		
@@ -428,8 +450,13 @@ public class RuleEngine {
 	    
 		while (randomNum-- > 0)
 			nextSetBit = bs.nextSetBit(nextSetBit + 1);
-	    
-		// TODO: Choose appropriate variable to pass through
-	    applyRuleFromBitSet(bs, nextSetBit, tree, node, null);
+		
+		if (nextSetBit > 68)
+			applyRandomRule(bs, tree, node);
+		else {
+			// TODO: Choose appropriate variable to pass through
+			System.out.println("Apply rule: " + nextSetBit);
+		    applyRuleFromBitSet(bs, nextSetBit, tree, node, null);
+		}
 	}
 }

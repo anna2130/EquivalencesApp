@@ -29,6 +29,9 @@ public class TruthTable {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
 
+		System.out.println("Variables same: " + variables.equals(v2));
+		System.out.println("Set same: " + equalsSet(t2));
+
 		if (variables.equals(v2) && equalsSet(t2))
 			return true;
 		else {

@@ -43,7 +43,7 @@ public class Atom extends Node {
 
 	@Override
 	public boolean isAtom() {
-		return !isTop() && !isBottom();
+		return true;
 	}
 	
 	@Override

@@ -9,6 +9,7 @@ import treeBuilder.UnaryOperator;
 public class RuleApplicator {
 	
 	private void relabelNode(Node node) {
+//		System.out.println("Relabeling node: " + node);
 		if (node.hasChildren()) {
 			Node[] children = node.getChildren();
 			int key = node.getKey();
@@ -31,6 +32,7 @@ public class RuleApplicator {
 	
 	public void replaceNode(FormationTree tree, Node node, Node result) {
 		Node parent = result;
+		System.out.println("Replace node: " + node + " |- " + result);
 		
 		if (node.isRoot())
 			tree.setRoot(result);
@@ -61,7 +63,7 @@ public class RuleApplicator {
 
 	public UnaryOperator createNewUnary(String type, Node child) {
 		UnaryOperator result = new UnaryOperator(0, 0, type);
-		result.setChild(child);
+		result.setChild(child.clone());
 		return result;
 	}
 	
@@ -71,8 +73,8 @@ public class RuleApplicator {
 	
 	public BinaryOperator createNewBinary(String type, Node leftChild, Node rightChild) {
 		BinaryOperator result = new BinaryOperator(0, 0, type);
-		result.setLeftChild(leftChild);
-		result.setRightChild(rightChild);
+		result.setLeftChild(leftChild.clone());
+		result.setRightChild(rightChild.clone());
 		return result;
 	}
 	
@@ -195,7 +197,7 @@ public class RuleApplicator {
 		Node leftChild = node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
 		BinaryOperator leftAnd = createNewAnd(leftChild, rightChild.getLeftChild());
-		BinaryOperator rightAnd = createNewAnd(leftChild.clone(), rightChild.getRightChild());
+		BinaryOperator rightAnd = createNewAnd(leftChild, rightChild.getRightChild());
 		replaceNode(tree, node, createNewOr(leftAnd, rightAnd));
 	}
 	
@@ -204,7 +206,7 @@ public class RuleApplicator {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		Node rightChild = node.getRightChild();
 		BinaryOperator leftAnd = createNewAnd(leftChild.getLeftChild(), rightChild);
-		BinaryOperator rightAnd = createNewAnd(leftChild.getRightChild(), rightChild.clone());
+		BinaryOperator rightAnd = createNewAnd(leftChild.getRightChild(), rightChild);
 		replaceNode(tree, node, createNewOr(leftAnd, rightAnd));
 	}
 	
@@ -253,7 +255,7 @@ public class RuleApplicator {
 		Node leftChild = node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
 		BinaryOperator leftOr = createNewOr(leftChild, rightChild.getLeftChild());
-		BinaryOperator rightOr = createNewOr(leftChild.clone(), rightChild.getRightChild());
+		BinaryOperator rightOr = createNewOr(leftChild, rightChild.getRightChild());
 		replaceNode(tree, node, createNewAnd(leftOr, rightOr));
 	}
 	
@@ -262,7 +264,7 @@ public class RuleApplicator {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		Node rightChild = node.getRightChild();
 		BinaryOperator leftOr = createNewOr(leftChild.getLeftChild(), rightChild);
-		BinaryOperator rightOr = createNewOr(leftChild.getRightChild(), rightChild.clone());
+		BinaryOperator rightOr = createNewOr(leftChild.getRightChild(), rightChild);
 		replaceNode(tree, node, createNewAnd(leftOr, rightOr));
 	}
 	
@@ -343,7 +345,7 @@ public class RuleApplicator {
 	public void applyNotIffToOrAnd(FormationTree tree, UnaryOperator node) {
 		BinaryOperator iff = (BinaryOperator) node.getChild();
 		Node leftChild = createNewAnd(iff.getLeftChild(), createNewNot(iff.getRightChild()));
-		Node rightChild = createNewAnd(createNewNot(iff.getLeftChild().clone()), iff.getRightChild().clone());
+		Node rightChild = createNewAnd(createNewNot(iff.getLeftChild()), iff.getRightChild());
 		replaceNode(tree, node, createNewOr(leftChild, rightChild));
 	}
 	
@@ -388,7 +390,7 @@ public class RuleApplicator {
 	// 57. a↔b				|-  (a→b)^(b→a)
 	public void applyIffToAndImplies(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = createNewImplies(node.getLeftChild(), node.getRightChild());
-		BinaryOperator rightChild = createNewImplies(node.getRightChild().clone(), node.getLeftChild().clone());
+		BinaryOperator rightChild = createNewImplies(node.getRightChild(), node.getLeftChild());
 		replaceNode(tree, node, createNewAnd(leftChild, rightChild));
 	}
 	
@@ -396,8 +398,8 @@ public class RuleApplicator {
 	public void applyIffToOrAnd(FormationTree tree, BinaryOperator node) {
 		Node leftChild = node.getLeftChild();
 		Node rightChild = node.getRightChild();
-		UnaryOperator leftNot = createNewNot(leftChild.clone());
-		UnaryOperator rightNot = createNewNot(rightChild.clone());
+		UnaryOperator leftNot = createNewNot(leftChild);
+		UnaryOperator rightNot = createNewNot(rightChild);
 		BinaryOperator leftAnd = createNewAnd(leftChild, rightChild);
 		BinaryOperator rightAnd = createNewAnd(leftNot, rightNot);
 		replaceNode(tree, node, createNewOr(leftAnd, rightAnd));
@@ -421,7 +423,7 @@ public class RuleApplicator {
 	
 	// 61. a		|-  a^a
 	public void applyAndIdempotenceBackwards(FormationTree tree, Atom node) {
-		replaceNode(tree, node, createNewAnd(node, node.clone()));
+		replaceNode(tree, node, createNewAnd(node, node));
 	}
 	
 	// 62. a		|-  a^┬
@@ -431,7 +433,7 @@ public class RuleApplicator {
 	
 	// 63. a		|-  ava
 	public void applyOrIdempotenceBackwards(FormationTree tree, Atom node) {
-		replaceNode(tree, node, createNewOr(node, node.clone()));
+		replaceNode(tree, node, createNewOr(node, node));
 	}
 	
 	// 64. a		|-  av⊥
@@ -501,13 +503,13 @@ public class RuleApplicator {
 	// 76. a		|-  av(a^b)
 	public void applyAbsorptionOrBackwards(FormationTree tree, Node node, String atom) {
 		BinaryOperator and = createNewAnd(node, createNewAtom(atom));
-		replaceNode(tree, node, createNewOr(node.clone(), and));
+		replaceNode(tree, node, createNewOr(node, and));
 	}
 	
 	// 77. a  		|-	a^(avb)
 	public void applyAbsorptionAndBackwards(FormationTree tree, Node node, String atom) {
 		BinaryOperator or = createNewOr(node, createNewAtom(atom));
-		replaceNode(tree, node, createNewAnd(node.clone(), or));
+		replaceNode(tree, node, createNewAnd(node, or));
 	}
 	
 	// TODO: Tree rotations

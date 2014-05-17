@@ -8,13 +8,13 @@ import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
 import treeManipulation.RuleApplicator;
+import treeManipulation.RuleEngine;
 import treeManipulation.RuleSelector;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TextureView;
@@ -28,8 +28,7 @@ import com.example.equivalencesapp.R;
 public class BeginEquivalenceActivity extends ActionBarActivity {
 
 	Context context;
-	RuleSelector rs;
-	RuleApplicator ra;
+	RuleEngine re;
     Compiler compiler;
     
     FormationTree topTree;
@@ -62,8 +61,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    
 	    oldTopStackSize = 0;
 	    
-	    rs = new RuleSelector();
-	    ra = new RuleApplicator();
+	    re = new RuleEngine();
 	    compiler = new Compiler();
 	    topTree = compiler.compile(start);
 	    bottomTree = compiler.compile(end);
@@ -94,11 +92,11 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					// Currently apply random rule to current equivalence
 					// TODO: Set rules list and choose rule to apply
 					Node node = topTree.getRoot();
-					BitSet bs = rs.getApplicableRules(topTree, node);
+					BitSet bs = re.getApplicableRules(topTree, node);
 					
 					String rules = "";
-					for (int i = 0; i < rs.rulesToString(bs, topTree, node).length; ++i) {
-						rules += rs.rulesToString(bs, topTree, node)[i] + "\n";
+					for (int i = 0; i < re.rulesToString(bs, topTree, node).length; ++i) {
+						rules += re.rulesToString(bs, topTree, node)[i] + "\n";
 					}
 					rulesList.setText(rules);
 					
@@ -108,7 +106,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 //						oldTopStackSize--;
 //					}
 					
-					ra.applyRandomRule(bs, topTree, (BinaryOperator) node);
+					re.applyRandomRule(bs, topTree, (BinaryOperator) node);
 					addTextViewToTop(new TextView(context), topTree.toString());
 			        
 			        if (equivalenceComplete(topTree.toString(), end))
@@ -163,8 +161,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					// Currently apply random rule to current equivalence
 					// TODO: Set rules list and choose rule to apply
 					Node node = bottomTree.getRoot();
-					BitSet bs = rs.getApplicableRules(bottomTree, node);
-					ra.applyRandomRule(bs, bottomTree, (BinaryOperator) node);
+					BitSet bs = re.getApplicableRules(bottomTree, node);
+					re.applyRandomRule(bs, bottomTree, (BinaryOperator) node);
 					addTextViewToBottom(new TextView(context), bottomTree.toString());
 			        
 			        if (equivalenceComplete(bottomTree.toString(), start))

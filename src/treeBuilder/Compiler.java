@@ -1,6 +1,7 @@
 package treeBuilder;
 
 import java.util.BitSet;
+import java.util.Random;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -18,21 +19,26 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 		
-		String s1 = "a^a";
-//		String s2 = "a";
+//		String s1 = "av(c^¬b)";
+		String s1 = "┬";
 		FormationTree tree1 = compiler.compile(s1);
+		FormationTree copy = compiler.compile(s1);
 //		FormationTree tree2 = compiler.compile(s2);
-		System.out.println(tree1.toString());
+		System.out.println(tree1.toString() + "\n");
 //		System.out.println(tree2.toString() + "\n");
 
-		Node node = tree1.findNode(0, 0);
-		TruthTable tt = new TruthTable(tree1);
-		System.out.println(tt);
+//		Node node = tree1.findNode(0, 0);
+//		System.out.println(node.isAtom());
 		RuleEngine re = new RuleEngine();
-		BitSet bs = re.getApplicableRules(tree1, node);
-		System.out.println(bs);
+//		BitSet bs = re.getApplicableRules(tree1, node);
+//		System.out.println(bs);
+		
+//		re.applyRuleToRandomNode(tree1);
+		re.applyRandomRules(tree1, 4);
 		
 		System.out.println(tree1.toTreeString());
+		System.out.println(tree1);
+		System.out.println("Trees are equal: " + tree1.equals(copy));
 	}
 	
 	public FormationTree compile(String expr) {

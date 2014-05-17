@@ -208,7 +208,7 @@ public class RuleSelector {
 		Node rightChild = node.getChildren()[1];
 		
 		if (leftChild.isNot()) {
-			leftChild = ((UnaryOperator) rightChild).getChild();
+			leftChild = ((UnaryOperator) leftChild).getChild();
 			return tree.equalSubTrees(leftChild, rightChild);
 		} else
 			return false;

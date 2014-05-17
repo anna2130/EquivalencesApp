@@ -1,7 +1,10 @@
 package treeBuilder;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.SortedSet;
+
+import treeManipulation.TruthTable;
 
 public class FormationTree {
 
@@ -69,17 +72,49 @@ public class FormationTree {
 		return n;
 	}
 	
-//	public Node findParent(int key, int depth) {
-//		int parentKey = key >> 1;
-//		int parentDepth = depth - 1;
-//		
-//		return findNode(parentKey, parentDepth);
-//	}
+	public Node randomNode() {
+		int depth = maxDepth();
+		Random rand = new Random();
+		int randomDepth = 0;
+		
+		if (depth != 0)
+			randomDepth = rand.nextInt(depth + 1);
+		
+		Node node = root;
+		for (int i = 0; i < randomDepth; ++i) {
+			Node[] children = node.getChildren();
+			rand = new Random();
+			
+			if (node instanceof BinaryOperator) {
+			    int randomChild = rand.nextInt(2);
+			    node = children[randomChild];
+			} else if (node instanceof UnaryOperator)
+			    node = children[0];
+			else
+				return node;
+		}
+	    return node;
+	}
+	
+	public int maxDepth() {
+		int depth = root.getDepth();
+		
+		if (root.hasChildren()) {
+			Node[] children = root.getChildren();
+			for (int i = 0; i < children.length; ++i) {
+				int newDepth = children[i].maxDepth();
+				if (newDepth > depth)
+					depth = newDepth;
+			}
+		}
+		
+		return depth;
+	}
 	
 	public int numNodes() {
 		int numNodes = 1;
 		
-		if (root.hasChildren()) {			
+		if (root.hasChildren()) {
 			Node[] children = root.getChildren();
 			for (int i = 0; i < children.length; ++i) {
 				numNodes += children[i].numNodes();
@@ -95,6 +130,14 @@ public class FormationTree {
 	
 	public boolean getTruthValue(HashMap<String, Integer> values) {
 		return root.getTruthValue(values);
+	}
+	
+	public boolean equals(FormationTree tree) {
+		TruthTable tt1 = new TruthTable(this);
+		TruthTable tt2 = new TruthTable(tree);
+		System.out.println(tt1);
+		System.out.println(tt2);
+		return tt1.testEquivalence(tt2);
 	}
 	
 	public boolean equalSubTrees(Node n1, Node n2) {		

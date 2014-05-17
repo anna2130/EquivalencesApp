@@ -132,4 +132,19 @@ public abstract class Node {
 	
 	public abstract String toTreeString();
 
+	public int maxDepth() {
+		int depth = getDepth();
+		
+		if (hasChildren()) {
+			Node[] children = getChildren();
+			for (int i = 0; i < children.length; ++i) {
+				int newDepth = children[i].maxDepth();
+				if (newDepth > depth)
+					depth = newDepth;
+			}
+		}
+		
+		return depth;
+	}
+
 }
