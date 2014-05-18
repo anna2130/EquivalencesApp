@@ -1,5 +1,6 @@
 ATOM=7
 BINOP=6
+ERROR=8
 T__1=4
 T__0=5
 T__3=2

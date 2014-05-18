@@ -8,5 +8,7 @@
 	<classpathentry kind="lib" path="/usr/share/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="/usr/share/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+	<classpathentry kind="lib" path="/home/anna/Development/TreeLayout/org.abego.treelayout.core.jar"/>
+	<classpathentry kind="lib" path="/home/anna/Development/TreeLayout/org.abego.treelayout.demo.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

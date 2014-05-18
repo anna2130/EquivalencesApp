@@ -119,9 +119,9 @@ public class ExprWalker extends ExprBaseListener {
 		remove();
 	}
 	
-	@Override public void enterERROR(@NotNull ExprParser.ERRORContext ctx) {
+	@Override public void enterERROR_(@NotNull ExprParser.ERROR_Context ctx) {
 		tree.setErrorFlag(true);
 	}
 	
-	@Override public void exitERROR(@NotNull ExprParser.ERRORContext ctx) { }
+	@Override public void exitERROR_(@NotNull ExprParser.ERROR_Context ctx) { }
 }

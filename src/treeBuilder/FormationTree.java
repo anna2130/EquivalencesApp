@@ -132,7 +132,7 @@ public class FormationTree {
 		
 		return numNodes;
 	}
-	
+
 	public SortedSet<String> getVariables() {
 		return root.getVariables();
 	}
