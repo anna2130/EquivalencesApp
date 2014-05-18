@@ -7,9 +7,7 @@ import treeBuilder.BinaryOperator;
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
-import treeManipulation.RuleApplicator;
 import treeManipulation.RuleEngine;
-import treeManipulation.RuleSelector;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,11 +15,11 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import app.DrawView;
 
 import com.example.equivalencesapp.R;
 
@@ -44,11 +42,12 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
     int oldTopStackSize;
     
     TextView rulesList;
-    TextureView formationTree;
+	DrawView formationTree;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	    setContentView(R.layout.fragment_begin_equivalence);
 
 	    // Get the equivalences from the intent
 		context = this;
@@ -65,9 +64,10 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	    compiler = new Compiler();
 	    topTree = compiler.compile(start);
 	    bottomTree = compiler.compile(end);
+
+	    formationTree = (DrawView) findViewById(R.id.formation_tree);
 	    
 	    // Set the user interface layout for this Activity
-	    setContentView(R.layout.fragment_begin_equivalence);
 	    rulesList = (TextView) findViewById(R.id.rules_list);
 	    
 		addTextViewToTop(new TextView(context), start);

@@ -428,18 +428,13 @@ public class RuleEngine {
 	}
 	
 	public void applyRandomRules(FormationTree tree, int n) {
-		for (int i = 0; i < n; ++i) {
-			System.out.println("Apply " + i + " rule to: " + tree);
+		for (int i = 0; i < n; ++i)
 			applyRuleToRandomNode(tree);
-			System.out.println("Replaced by: " + tree + "\n");
-		}
 	}
 	
 	public void applyRuleToRandomNode(FormationTree tree) {
 		Node node = tree.randomNode();
-		System.out.println("Random node: " + node);
 		BitSet bs = getApplicableRules(tree, node);
-		System.out.println("BitSet: " + bs);
 		applyRandomRule(bs, tree, node);
 	}
 	
@@ -457,7 +452,6 @@ public class RuleEngine {
 			applyRandomRule(bs, tree, node);
 		else {
 			// TODO: Choose appropriate variable to pass through
-			System.out.println("Apply rule: " + nextSetBit);
 		    applyRuleFromBitSet(bs, nextSetBit, tree, node, null);
 		}
 	}

@@ -9,7 +9,6 @@ import treeBuilder.UnaryOperator;
 public class RuleApplicator {
 	
 	private void relabelNode(Node node) {
-//		System.out.println("Relabeling node: " + node);
 		if (node.hasChildren()) {
 			Node[] children = node.getChildren();
 			int key = node.getKey();
