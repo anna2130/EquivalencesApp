@@ -15,9 +15,9 @@ public class ExprParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__4=1, T__3=2, T__2=3, T__1=4, T__0=5, BINOP=6, ATOM=7, ERROR=8;
+		T__4=1, T__3=2, T__2=3, T__1=4, T__0=5, BINOP=6, ATOM=7;
 	public static final String[] tokenNames = {
-		"<INVALID>", "')'", "'('", "'→'", "'↔'", "'¬'", "BINOP", "ATOM", "ERROR"
+		"<INVALID>", "')'", "'('", "'→'", "'↔'", "'¬'", "BINOP", "ATOM"
 	};
 	public static final int
 		RULE_prog = 0, RULE_expr = 1;
@@ -156,16 +156,15 @@ public class ExprParser extends Parser {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitNOT(this);
 		}
 	}
-	public static class ERROR_Context extends ExprContext {
-		public TerminalNode ERROR() { return getToken(ExprParser.ERROR, 0); }
-		public ERROR_Context(ExprContext ctx) { copyFrom(ctx); }
+	public static class ERRORContext extends ExprContext {
+		public ERRORContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterERROR_(this);
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterERROR(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitERROR_(this);
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitERROR(this);
 		}
 	}
 	public static class ATOM_Context extends ExprContext {
@@ -211,8 +210,8 @@ public class ExprParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(15);
-			switch (_input.LA(1)) {
-			case 5:
+			switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
+			case 1:
 				{
 				_localctx = new NOTContext(_localctx);
 				_ctx = _localctx;
@@ -222,6 +221,7 @@ public class ExprParser extends Parser {
 				setState(8); expr(6);
 				}
 				break;
+
 			case 2:
 				{
 				_localctx = new EXPRContext(_localctx);
@@ -232,7 +232,8 @@ public class ExprParser extends Parser {
 				setState(11); match(1);
 				}
 				break;
-			case ATOM:
+
+			case 3:
 				{
 				_localctx = new ATOM_Context(_localctx);
 				_ctx = _localctx;
@@ -240,16 +241,14 @@ public class ExprParser extends Parser {
 				setState(13); match(ATOM);
 				}
 				break;
-			case ERROR:
+
+			case 4:
 				{
-				_localctx = new ERROR_Context(_localctx);
+				_localctx = new ERRORContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(14); match(ERROR);
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 			_ctx.stop = _input.LT(-1);
 			setState(28);
@@ -332,12 +331,12 @@ public class ExprParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\n\"\4\2\t\2\4\3\t"+
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\t\"\4\2\t\2\4\3\t"+
 		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\22\n\3\3\3\3\3\3\3"+
 		"\3\3\3\3\3\3\3\3\3\3\3\3\7\3\35\n\3\f\3\16\3 \13\3\3\3\2\4\2\4\2\2%\2"+
 		"\6\3\2\2\2\4\21\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\7\2"+
 		"\2\n\22\5\4\3\2\13\f\7\4\2\2\f\r\5\4\3\2\r\16\7\3\2\2\16\22\3\2\2\2\17"+
-		"\22\7\t\2\2\20\22\7\n\2\2\21\b\3\2\2\2\21\13\3\2\2\2\21\17\3\2\2\2\21"+
+		"\22\7\t\2\2\20\22\3\2\2\2\21\b\3\2\2\2\21\13\3\2\2\2\21\17\3\2\2\2\21"+
 		"\20\3\2\2\2\22\36\3\2\2\2\23\24\6\3\2\3\24\25\7\b\2\2\25\35\5\4\3\2\26"+
 		"\27\6\3\3\3\27\30\7\5\2\2\30\35\5\4\3\2\31\32\6\3\4\3\32\33\7\6\2\2\33"+
 		"\35\5\4\3\2\34\23\3\2\2\2\34\26\3\2\2\2\34\31\3\2\2\2\35 \3\2\2\2\36\34"+

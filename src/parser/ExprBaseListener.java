@@ -69,19 +69,6 @@ public class ExprBaseListener implements ExprListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void enterERROR_(@NotNull ExprParser.ERROR_Context ctx) { }
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
-	 */
-	@Override public void exitERROR_(@NotNull ExprParser.ERROR_Context ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
-	 */
 	@Override public void enterNOT(@NotNull ExprParser.NOTContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -89,6 +76,19 @@ public class ExprBaseListener implements ExprListener {
 	 * The default implementation does nothing.
 	 */
 	@Override public void exitNOT(@NotNull ExprParser.NOTContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterERROR(@NotNull ExprParser.ERRORContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitERROR(@NotNull ExprParser.ERRORContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

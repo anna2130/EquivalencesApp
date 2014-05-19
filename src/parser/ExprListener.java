@@ -53,17 +53,6 @@ public interface ExprListener extends ParseTreeListener {
 	void exitIMPLIES(@NotNull ExprParser.IMPLIESContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link ExprParser#ERROR_}.
-	 * @param ctx the parse tree
-	 */
-	void enterERROR_(@NotNull ExprParser.ERROR_Context ctx);
-	/**
-	 * Exit a parse tree produced by {@link ExprParser#ERROR_}.
-	 * @param ctx the parse tree
-	 */
-	void exitERROR_(@NotNull ExprParser.ERROR_Context ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link ExprParser#NOT}.
 	 * @param ctx the parse tree
 	 */
@@ -73,6 +62,17 @@ public interface ExprListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNOT(@NotNull ExprParser.NOTContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link ExprParser#ERROR}.
+	 * @param ctx the parse tree
+	 */
+	void enterERROR(@NotNull ExprParser.ERRORContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#ERROR}.
+	 * @param ctx the parse tree
+	 */
+	void exitERROR(@NotNull ExprParser.ERRORContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link ExprParser#BINOP_}.

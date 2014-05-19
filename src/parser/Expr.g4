@@ -8,9 +8,8 @@ expr: '(' expr ')' 			#EXPR
 	| expr '→' expr			#IMPLIES
 	| expr '↔' expr			#IFF
 	| ATOM					#ATOM_
-	| ERROR					#ERROR_
+	| 						#ERROR
 	;
 
 BINOP: ('^' | 'v');
 ATOM:  ('a'..'i' | '┬' | '⊥');
-ERROR: (BINOP | '(' | ')' | '¬' | '→' | '↔');

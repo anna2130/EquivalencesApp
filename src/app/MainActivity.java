@@ -80,6 +80,11 @@ public class MainActivity extends ActionBarActivity {
 		EditText endText = (EditText) findViewById(R.id.end_equivalence);
 		String startEquivalence = startText.getText().toString();
 		String endEquivalence = endText.getText().toString();
+		
+		if (startEquivalence.equals("") || endEquivalence.equals("")) {
+			System.out.println("Enter two equivalences");
+			setErrorMessage("Please enter two equivalent formulae");
+		} else {
 
 		// TODO: Check equivalences are syntactically correct
 		FormationTree t1 = c.compile(startEquivalence);
@@ -100,6 +105,7 @@ public class MainActivity extends ActionBarActivity {
 					setErrorMessage("Not equivalent");
 				}
 			}
+		}
 		}
 	}
 	
