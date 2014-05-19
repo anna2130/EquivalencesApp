@@ -26,6 +26,10 @@
             android:name="app.BeginEquivalenceActivity"
             android:label="@string/title_activity_begin_equivalence" >
         </activity>
+        <activity
+            android:name="com.example.equivalencesapp.DemoActivity"
+            android:label="@string/title_activity_demo" >
+        </activity>
     </application>
 
 </manifest>

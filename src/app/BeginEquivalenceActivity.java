@@ -13,13 +13,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.equivalencesapp.R;
@@ -71,6 +71,11 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 
 		// Set the user interface layout for this Activity
 		rulesList = (TextView) findViewById(R.id.rules_list);
+		
+//		Spinner dropdown = (Spinner) findViewById(R.id.rule_spinner);
+//		String[] items = new String[]{"1", "2", "three"};
+//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
+//		dropdown.setAdapter(adapter);
 
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);

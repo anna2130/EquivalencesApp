@@ -126,14 +126,17 @@ public class MainActivity extends ActionBarActivity {
 		String start = startText.getText().toString();
 		String end;
 		
+		FormationTree tree;
+		
 		if (start.equals("")) {
-			end = c.generateRandomEquivalence(3, 1);
+			end = c.generateRandomEquivalence(4, 1);
+			tree = c.compile(end);
 		} else {
-			FormationTree tree = c.compile(start);
-			System.out.println(tree.toTreeString());
-			re.applyRandomRules(tree, 3);
-			end = tree.toString();
+			tree = c.compile(start);
 		}
+		
+		re.applyRandomRules(tree, 3);
+		end = tree.toString();
 		endText.setText(end);
 	}
 	
