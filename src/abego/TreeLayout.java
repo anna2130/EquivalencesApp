@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import treeLayout.Bounds;
 import treeLayout.Point;
 import abego.Configuration.AlignmentInLevel;
 import abego.Configuration.Location;
 import abego.util.StringUtil;
+import android.graphics.RectF;
 
 /**
  * Implements the actual tree layout algorithm.
@@ -208,9 +208,9 @@ public class TreeLayout<TreeNode> {
 	 * 
 	 * @return the bounds of the tree layout
 	 */
-	public Bounds getBounds() {
-		return new Bounds(0, 0, boundsRight - boundsLeft,
-				boundsBottom - boundsTop);
+	public RectF getBounds() {
+		return new RectF(0, 0, (float) (boundsRight - boundsLeft),
+				(float) (boundsBottom - boundsTop));
 	}
 
 	// ------------------------------------------------------------------------
@@ -681,7 +681,7 @@ public class TreeLayout<TreeNode> {
 	// ------------------------------------------------------------------------
 	// nodeBounds
 
-	private Map<TreeNode, Bounds> nodeBounds;
+	private Map<TreeNode, RectF> nodeBounds;
 
 	/**
 	 * Returns the layout of the tree nodes by mapping each node of the tree to
@@ -692,10 +692,10 @@ public class TreeLayout<TreeNode> {
 	 * 
 	 * @return maps each node of the tree to its bounds (position and size).
 	 */
-	public Map<TreeNode, Bounds> getNodeBounds() {
+	public Map<TreeNode, RectF> getNodeBounds() {
 		if (nodeBounds == null) {
-			nodeBounds = this.useIdentity ? new IdentityHashMap<TreeNode, Bounds>()
-					: new HashMap<TreeNode, Bounds>();
+			nodeBounds = this.useIdentity ? new IdentityHashMap<TreeNode, RectF>()
+					: new HashMap<TreeNode, RectF>();
 			for (Entry<TreeNode, Point> entry : positions.entrySet()) {
 				TreeNode node = entry.getKey();
 				Point pos = entry.getValue();
@@ -703,7 +703,8 @@ public class TreeLayout<TreeNode> {
 				double h = getNodeHeight(node);
 				double x = pos.getX() - w / 2;
 				double y = pos.getY() - h / 2;
-				nodeBounds.put(node, new Bounds(x, y, w, h));
+				nodeBounds.put(node, new RectF((float) x, (float) (y + h), 
+						(float) (x + w), (float) y));
 			}
 		}
 		return nodeBounds;

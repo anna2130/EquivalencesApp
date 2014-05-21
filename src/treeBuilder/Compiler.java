@@ -12,13 +12,13 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import abego.DefaultConfiguration;
-import abego.FixedNodeExtentProvider;
-import abego.TreeLayout;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
-import treeLayout.Bounds;
+import abego.DefaultConfiguration;
+import abego.FixedNodeExtentProvider;
+import abego.TreeLayout;
+//import android.graphics.RectF;
 
 public class Compiler {
 	
@@ -58,12 +58,12 @@ public class Compiler {
 		System.out.println(treeLayout.getLevelCount() + " " + treeLayout.getSizeOfLevel(0));
 		System.out.println(configuration.getGapBetweenLevels(1) + " " + configuration.getAlignmentInLevel());
 		
-		System.out.println(treeLayout.getBounds().getHeight() + " " + treeLayout.getBounds().getWidth());
+		System.out.println(treeLayout.getBounds().height() + " " + treeLayout.getBounds().width());
 		
-		Map<Node, Bounds> map = treeLayout.getNodeBounds();
-		System.out.println(map.get(node));
-		System.out.println(map.get(left));
-		System.out.println(map.get(right));
+//		Map<Node, RectF> map = treeLayout.getNodeBounds();
+//		System.out.println(map.get(node));
+//		System.out.println(map.get(left));
+//		System.out.println(map.get(right));
 		
 //		FormationTree tree2 = compiler.compile(s2);
 //		System.out.println(tree1.toString() + "\n");
