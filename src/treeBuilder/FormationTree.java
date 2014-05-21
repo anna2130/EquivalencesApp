@@ -1,21 +1,25 @@
 package treeBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 
+import abego.AbstractTreeForTreeLayout;
 import treeManipulation.TruthTable;
 
-public class FormationTree {
+public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 
 	private Node root;
 	private boolean error_flag;
 	
-	public FormationTree() {
-		this.root = null;
-	}
+//	public FormationTree() {
+//		this.root = null;
+//	}
 	
 	public FormationTree(Node root) {
+		super(root);
 		this.root = root;
 	}
 	
@@ -176,4 +180,49 @@ public class FormationTree {
 	public String toTreeString() {
 		return root.toTreeString();
 	}
+
+	public List<Node> getChildrenList(Node node) {
+		ArrayList<Node> childrenList = new ArrayList<Node>();
+		Node[] children = node.getChildren();
+		if (children != null) {
+			for (Node child : children) {
+				childrenList.add(child);
+			}	
+		}
+		return childrenList;
+	}
+
+	public Node getParent(Node node) {
+		return node.getParent();
+	}
+//
+//	@Override
+//	public boolean isLeaf(Node node) {
+//		return node.isAtom();
+//	}
+//
+//	@Override
+//	public boolean isChildOfParent(Node node, Node parentNode) {
+//		return node.getParent().equals(parentNode);
+//	}
+//
+//	@Override
+//	public Iterable<Node> getChildren(Node node) {
+//		return getChildrenList(node);
+//	}
+//
+//	@Override
+//	public Iterable<Node> getChildrenReverse(Node node) {
+//		return IterableUtil.createReverseIterable(getChildrenList(node));
+//	}
+//
+//	@Override
+//	public Node getFirstChild(Node parentNode) {
+//		return getChildrenList(parentNode).get(0);
+//	}
+//
+//	@Override
+//	public Node getLastChild(Node parentNode) {
+//		return ListUtil.getLast(getChildrenList(parentNode));
+//	}
 }

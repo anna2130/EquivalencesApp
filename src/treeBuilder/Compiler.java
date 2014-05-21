@@ -2,6 +2,7 @@ package treeBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -11,9 +12,13 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import abego.DefaultConfiguration;
+import abego.FixedNodeExtentProvider;
+import abego.TreeLayout;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
+import treeLayout.Bounds;
 
 public class Compiler {
 	
@@ -31,13 +36,40 @@ public class Compiler {
 		Compiler compiler = new Compiler();
 		
 		String s1 = "a→b";
-		FormationTree tree1 = compiler.compile(s1);
-		FormationTree copy = compiler.compile(s1);
+		FormationTree tree = compiler.compile(s1);
+//		FormationTree copy = compiler.compile(s1);
+		Node node = tree.findNode(0, 0);
+		Node left = tree.findNode(0, 1);
+		Node right = tree.findNode(1, 1);
+		
+		// setup the tree layout configuration
+		double gapBetweenLevels = 50;
+		double gapBetweenNodes = 10;
+		DefaultConfiguration<Node> configuration = new DefaultConfiguration<Node>(
+				gapBetweenLevels, gapBetweenNodes);
+
+		// create the NodeExtentProvider for TextInBox nodes
+		FixedNodeExtentProvider<Node> nodeExtentProvider = new FixedNodeExtentProvider<>(20, 20);
+
+		// create the layout
+		TreeLayout<Node> treeLayout = new TreeLayout<Node>(tree,
+				nodeExtentProvider, configuration);
+
+		System.out.println(treeLayout.getLevelCount() + " " + treeLayout.getSizeOfLevel(0));
+		System.out.println(configuration.getGapBetweenLevels(1) + " " + configuration.getAlignmentInLevel());
+		
+		System.out.println(treeLayout.getBounds().getHeight() + " " + treeLayout.getBounds().getWidth());
+		
+		Map<Node, Bounds> map = treeLayout.getNodeBounds();
+		System.out.println(map.get(node));
+		System.out.println(map.get(left));
+		System.out.println(map.get(right));
+		
 //		FormationTree tree2 = compiler.compile(s2);
 //		System.out.println(tree1.toString() + "\n");
 //		System.out.println(tree2.toString() + "\n");
-
-		System.out.println(compiler.generateRandomEquivalence(4, 3));
+//
+//		System.out.println(compiler.generateRandomEquivalence(4, 3));
 		
 //		RuleEngine re = new RuleEngine();
 //		re.applyRandomRules(tree1, 5);
@@ -55,7 +87,7 @@ public class Compiler {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ExprParser parser = new ExprParser(tokens);
 		
-		FormationTree tree = new FormationTree();
+		FormationTree tree = new FormationTree(null);
 		ParseTree parseTree = null;
 		try {
 			parseTree = parser.prog();

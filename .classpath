@@ -4,11 +4,9 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry exported="true" kind="lib" path="/home/anna/Development/antlr-4.1-complete.jar" sourcepath="/home/anna/Development/antlr4-4.1/runtime/Java/src"/>
+	<classpathentry exported="true" kind="lib" path="/home/anna/Development/antlr-4.1-complete.jar" sourcepath="/home/anna/Development/antlr-4.1-complete.jar"/>
 	<classpathentry kind="lib" path="/usr/share/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="lib" path="/usr/share/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
-	<classpathentry kind="lib" path="/home/anna/Development/TreeLayout/org.abego.treelayout.core.jar"/>
-	<classpathentry kind="lib" path="/home/anna/Development/TreeLayout/org.abego.treelayout.demo.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
