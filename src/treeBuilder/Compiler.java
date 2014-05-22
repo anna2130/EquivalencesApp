@@ -49,16 +49,16 @@ public class Compiler {
 				gapBetweenLevels, gapBetweenNodes);
 
 		// create the NodeExtentProvider for TextInBox nodes
-		FixedNodeExtentProvider<Node> nodeExtentProvider = new FixedNodeExtentProvider<>(20, 20);
-
-		// create the layout
-		TreeLayout<Node> treeLayout = new TreeLayout<Node>(tree,
-				nodeExtentProvider, configuration);
-
-		System.out.println(treeLayout.getLevelCount() + " " + treeLayout.getSizeOfLevel(0));
-		System.out.println(configuration.getGapBetweenLevels(1) + " " + configuration.getAlignmentInLevel());
-		
-		System.out.println(treeLayout.getBounds().height() + " " + treeLayout.getBounds().width());
+//		FixedNodeExtentProvider<Node> nodeExtentProvider = new FixedNodeExtentProvider<>(20, 20);
+//
+//		// create the layout
+//		TreeLayout<Node> treeLayout = new TreeLayout<Node>(tree,
+//				nodeExtentProvider, configuration);
+//
+//		System.out.println(treeLayout.getLevelCount() + " " + treeLayout.getSizeOfLevel(0));
+//		System.out.println(configuration.getGapBetweenLevels(1) + " " + configuration.getAlignmentInLevel());
+//		
+//		System.out.println(treeLayout.getBounds().height() + " " + treeLayout.getBounds().width());
 		
 //		Map<Node, RectF> map = treeLayout.getNodeBounds();
 //		System.out.println(map.get(node));
