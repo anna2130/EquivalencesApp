@@ -73,9 +73,6 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 		bottomFormationTree = (DrawView) findViewById(R.id.bottom_formation_tree);
 		bottomFormationTree.setTree(bottomTree);
 		
-		// Set the user interface layout for this Activity
-		rulesList = (TextView) findViewById(R.id.rules_list);
-		
 //		Spinner dropdown = (Spinner) findViewById(R.id.rule_spinner);
 //		String[] items = new String[]{"1", "2", "three"};
 //		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
@@ -83,6 +80,13 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);
+
+		// Set the user interface layout for this Activity
+//		rulesList = (TextView) findViewById(R.id.rules_list);
+		rulesList = new TextView(this);
+		rulesList.setTextSize(20);
+		LinearLayout outerLayout = (LinearLayout) findViewById(R.id.linear_layout);
+		outerLayout.addView(rulesList, 2);
 	}
 
 	public void addTextViewToTop(TextView textView, String text) {
@@ -102,14 +106,19 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 				if (view.equals(topStack.peek())) {
 					// Currently apply random rule to current equivalence
 					// TODO: Set rules list and choose rule to apply
-					Node node = topTree.getRoot();
-					BitSet bs = re.getApplicableRules(topTree, node);
+					if (topFormationTree.getVisibility() == View.GONE)
+						topFormationTree.setVisibility(View.VISIBLE);
+					else
+						topFormationTree.setVisibility(View.GONE);
 
-					String rules = "";
-					for (int i = 0; i < re.rulesToString(bs, topTree, node).length; ++i) {
-						rules += re.rulesToString(bs, topTree, node)[i] + "\n";
-					}
-					rulesList.setText(rules);
+//					Node node = topTree.getRoot();
+//					BitSet bs = re.getApplicableRules(topTree, node);
+////
+//					String rules = "";
+//					for (int i = 0; i < re.rulesToString(bs, topTree, node).length; ++i) {
+//						rules += re.rulesToString(bs, topTree, node)[i] + "\n";
+//					}
+//					rulesList.setText(rules);
 
 					// Remove redo equivalences
 					//					for (int i = topStack.size() - 1; i < oldTopStackSize; ++i) {
@@ -117,7 +126,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					//						oldTopStackSize--;
 					//					}
 
-					re.applyRandomRule(bs, topTree, (BinaryOperator) node);
+//					re.applyRandomRule(bs, topTree, (BinaryOperator) node);
 					addTextViewToTop(new TextView(context), topTree.toString());
 
 					if (equivalenceComplete(topTree.toString(), end))
@@ -144,8 +153,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 						topStack.pop();
 					}
 
-					topTree = compiler.compile(topStack.peek().getText().toString());
-					topFormationTree.setTree(topTree);
+//					topTree = compiler.compile(topStack.peek().getText().toString());
+//					topFormationTree.setTree(topTree);
 				}
 			}
 		});
@@ -201,5 +210,9 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 
 	public boolean equivalenceComplete(String top, String bottom) {
 		return top.equals(bottom);
+	}
+
+	public void setRules(String rules) {
+		rulesList.setText(rules);
 	}
 }

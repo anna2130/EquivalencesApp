@@ -22,7 +22,7 @@ public class RuleSelector {
 		
 		for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i+1)) {
 		     switch (i) {
-				case 0:		rules.add("p^q 				|- 	b^p				-- Commutativity");
+				case 0:		rules.add("p^q 				|- 	q^p				-- Commutativity");
 							break;
 				case 1:		rules.add("p^p				|-  p 				-- Idempotence");
 							break;
@@ -32,7 +32,7 @@ public class RuleSelector {
 							break;
 				case 4:		rules.add("p^a				|-  ⊥");
 							break;
-				case 5:		rules.add("a^⊥				|-  ⊥");
+				case 5:		rules.add("p^⊥				|-  ⊥");
 							break;
 				case 6:		rules.add("p^¬p				|-  ⊥");
 							break;

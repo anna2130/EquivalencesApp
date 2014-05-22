@@ -22,32 +22,32 @@
                 android:orientation="vertical" >
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/rules_list"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dip" />
+            <!-- <LinearLayout -->
+            <!-- android:id="@+id/tree_layout" -->
+            <!-- android:layout_width="wrap_content" -->
+            <!-- android:layout_height="wrap_content" -->
+            <!-- android:orientation="vertical" > -->
 
-            <LinearLayout
-                android:id="@+id/tree_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
+            <app.DrawView
+                android:id="@+id/top_formation_tree"
+                android:layout_width="fill_parent"
+                android:layout_height="300dp"
+                android:tag="top"
+                custom:showTree="true" />
 
-                <app.DrawView
-                    android:id="@+id/top_formation_tree"
-                    android:tag="top"
-                    android:layout_width="fill_parent"
-                    android:layout_height="300dp"
-                    custom:showTree="true" />
-                
-                <app.DrawView
-                    android:id="@+id/bottom_formation_tree"
-                    android:tag="bottom"
-                    android:layout_width="fill_parent"
-                    android:layout_height="300dp"
-                    custom:showTree="true" />
-            </LinearLayout>
+<!--             <TextView -->
+<!--                 android:id="@+id/rules_list" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 android:layout_marginTop="15dip" /> -->
+
+            <app.DrawView
+                android:id="@+id/bottom_formation_tree"
+                android:layout_width="fill_parent"
+                android:layout_height="300dp"
+                android:tag="bottom"
+                custom:showTree="true" />
+            <!-- </LinearLayout> -->
 
             <LinearLayout
                 android:id="@+id/bottom_linear_layout"
@@ -58,18 +58,19 @@
         </LinearLayout>
     </ScrollView>
 
-<!--     <LinearLayout -->
-<!--         android:id="@+id/rule_layout" -->
-<!--         android:layout_width="wrap_content" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:orientation="vertical" > -->
+    <!-- <LinearLayout -->
+    <!-- android:id="@+id/rule_layout" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:orientation="vertical" > -->
 
-<!--         <Spinner -->
-<!--             android:id="@+id/rule_spinner" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:background="@android:drawable/btn_dropdown" -->
-<!--             android:spinnerMode="dropdown" /> -->
-<!--     </LinearLayout> -->
+
+    <!-- <Spinner -->
+    <!-- android:id="@+id/rule_spinner" -->
+    <!-- android:layout_width="match_parent" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:background="@android:drawable/btn_dropdown" -->
+    <!-- android:spinnerMode="dropdown" /> -->
+    <!-- </LinearLayout> -->
 
 </LinearLayout>

@@ -1,13 +1,18 @@
 package app;
 
+import java.util.BitSet;
 import java.util.HashMap;
+
+import com.example.equivalencesapp.R;
 
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
+import treeManipulation.RuleEngine;
+import abego.Configuration.Location;
 import abego.DefaultConfiguration;
 import abego.FixedNodeExtentProvider;
 import abego.TreeLayout;
-import abego.Configuration.Location;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,23 +23,30 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class DrawView extends View {
 	private Paint linePaint;
 	private Paint fontPaint;
 	private Paint backgroundPaint;
+	private Paint highlightPaint;
 
 	private FormationTree tree;
+	private Node selected;
+	
 	private int offset;
 	private int shift;
 	private int leeway;
-	private HashMap<RectF, Node> boundsMap;
 
 	private static double gapBetweenLevels = 60;
 	private static double gapBetweenNodes = 40;
 	private static float fontSize = 30;
 
 	private TreeLayout<Node> treeLayout;
+	private HashMap<RectF, Node> boundsMap;
+	
+	private RuleEngine re;
 
 	public DrawView(Context context) {
 		super(context);
@@ -70,7 +82,12 @@ public class DrawView extends View {
 		backgroundPaint.setColor(Color.WHITE);
 		backgroundPaint.setStrokeWidth(10);
 		
+		highlightPaint = new Paint();
+		highlightPaint.setColor(Color.CYAN);
+		highlightPaint.setStrokeWidth(10);
+		
 		boundsMap = new HashMap<RectF, Node>();
+		re = new RuleEngine();
 	}
 
 	@Override
@@ -82,6 +99,7 @@ public class DrawView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		System.out.println("onDraw called");
 		if (this.getTag().equals("bottom"))
 			setUpTreeLayout(Location.Bottom);
 		else
@@ -107,8 +125,18 @@ public class DrawView extends View {
 				System.out.println("Touched node: " + boundsMap.get(bound));
 				System.out.println("Bounds: " + bound.left + " " + bound.right + " " + bound.bottom + " " + bound.top);
 				
-				Node node = boundsMap.get(bound);
+				selected = boundsMap.get(bound);
+				BitSet bs = re.getApplicableRules(tree, selected);
+				BeginEquivalenceActivity activity = (BeginEquivalenceActivity) this.getContext();
+
+				String rules = "";
+				for (int i = 0; i < re.rulesToString(bs, tree, selected).length; ++i) {
+					rules += re.rulesToString(bs, tree, selected)[i] + "\n";
+				}
+				activity.setRules(rules);
 				
+				// forces redraw
+				this.invalidate();
 			}
 		}
 		
@@ -138,13 +166,17 @@ public class DrawView extends View {
 		RectF newBounds = new RectF(bounds.left + shift - leeway, bounds.top 
 				+ offset + leeway, bounds.right + shift + leeway, bounds.bottom + offset - leeway);
 
-		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, backgroundPaint);
+		if (node == selected)
+			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, highlightPaint);
+		else
+			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, backgroundPaint);
+			
 		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, linePaint);
 		canvas.drawText(node.getValue(), xpos + shift, ypos + offset, fontPaint);
 		
 		boundsMap.put(newBounds, node);
 	}
-
+	
 	public void setUpTreeLayout(Location location) {
 		// setup the tree layout configuration
 		DefaultConfiguration<Node> configuration = new DefaultConfiguration<Node>(
