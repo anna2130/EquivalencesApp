@@ -1,5 +1,6 @@
 package app;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import treeBuilder.FormationTree;
@@ -25,9 +26,11 @@ public class DrawView extends View {
 	private FormationTree tree;
 	private int offset;
 	private int shift;
+	private int leeway;
+	private HashMap<RectF, Node> boundsMap;
 
 	private static double gapBetweenLevels = 60;
-	private static double gapBetweenNodes = 35;
+	private static double gapBetweenNodes = 40;
 	private static float fontSize = 30;
 
 	private TreeLayout<Node> treeLayout;
@@ -50,6 +53,7 @@ public class DrawView extends View {
 	private void init(Context c){
 		tree = null;
 		offset = 20;
+		leeway = 10;
 
 		linePaint = new Paint();
 		linePaint.setColor(Color.BLACK);
@@ -64,6 +68,8 @@ public class DrawView extends View {
 		backgroundPaint = new Paint();
 		backgroundPaint.setColor(Color.WHITE);
 		backgroundPaint.setStrokeWidth(10);
+		
+		boundsMap = new HashMap<RectF, Node>();
 	}
 
 	@Override
@@ -89,8 +95,17 @@ public class DrawView extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		Map<Node, RectF> map = treeLayout.getNodeBounds();
-		System.out.println("Touched at: " + event.getX() + " " + event.getY());
+		float x = event.getX();
+		float y = event.getY();
+		for (RectF bound : boundsMap.keySet()) {
+			if (x > bound.left && x < bound.right && y > bound.bottom && y < bound.top) {
+				System.out.println(x + " " + y);
+				System.out.println("Touched node: " + boundsMap.get(bound));
+				System.out.println("Bounds: " + bound.left + " " + bound.right + " " + bound.bottom + " " + bound.top);
+			}
+		}
+		
+//		System.out.println("Touched at: " + event.getX() + " " + event.getY());
 		return super.onTouchEvent(event);
 	}
 
@@ -110,16 +125,18 @@ public class DrawView extends View {
 
 	public void paintNode(Canvas canvas, Node node) {
 		RectF bounds = getBoundsOfNode(node);
-		System.out.println("Node: " + node + " has bounds " + bounds);
-		//		canvas.drawRect((float) bounds.getX(),(float) (bounds.getY() + bounds.getHeight()),
-		//				(float) (bounds.getX() + bounds.getWidth()),(float) bounds.getY(), paint);
 
 		float xpos = bounds.centerX();
-		float ypos = ((bounds.bottom + bounds.top) / 2 - ((fontPaint.descent() + fontPaint.ascent()) / 2));
+		float ypos = ((bounds.bottom + bounds.top) / 2 - 
+				((fontPaint.descent() + fontPaint.ascent()) / 2));
+		RectF newBounds = new RectF(bounds.left + shift - leeway, bounds.top 
+				+ offset + leeway, bounds.right + shift + leeway, bounds.bottom + offset - leeway);
 
 		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, backgroundPaint);
 		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, linePaint);
 		canvas.drawText(node.getValue(), xpos + shift, ypos + offset, fontPaint);
+		
+		boundsMap.put(newBounds, node);
 	}
 
 	public void setUpTreeLayout() {
