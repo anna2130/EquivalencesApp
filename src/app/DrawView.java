@@ -23,9 +23,8 @@ public class DrawView extends View {
 	private Paint backgroundPaint;
 
 	private FormationTree tree;
-//	private int offset;
-//	private int shift;
-	private int canvasWidth;
+	private int offset;
+	private int shift;
 
 	private static double gapBetweenLevels = 60;
 	private static double gapBetweenNodes = 35;
@@ -50,7 +49,7 @@ public class DrawView extends View {
 
 	private void init(Context c){
 		tree = null;
-//		offset = 20;
+		offset = 20;
 
 		linePaint = new Paint();
 		linePaint.setColor(Color.BLACK);
@@ -76,11 +75,10 @@ public class DrawView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		canvasWidth = canvas.getWidth();
 		setUpTreeLayout();
-//		float rootX = getBoundsOfNode(tree.getRoot()).centerX();
-//		float canvasCenterX = canvas.getWidth() / 2;
-//		shift = (int) (canvasCenterX - rootX);
+		float rootX = getBoundsOfNode(tree.getRoot()).centerX();
+		float canvasCenterX = canvas.getWidth() / 2;
+		shift = (int) (canvasCenterX - rootX);
 		
 		paintEdges(canvas, tree.getRoot());
 		
@@ -103,7 +101,7 @@ public class DrawView extends View {
 			int y1 = (int) b1.centerY();
 			for (Node child : root.getChildren()) {
 				RectF b2 = getBoundsOfNode(child);
-				canvas.drawLine(x1, y1, b2.centerX(), b2.centerY(), linePaint);
+				canvas.drawLine(x1 + shift, y1 + offset, b2.centerX() + shift, b2.centerY() + offset, linePaint);
 
 				paintEdges(canvas, child);
 			}
@@ -119,9 +117,9 @@ public class DrawView extends View {
 		float xpos = bounds.centerX();
 		float ypos = ((bounds.bottom + bounds.top) / 2 - ((fontPaint.descent() + fontPaint.ascent()) / 2));
 
-		canvas.drawCircle(bounds.centerX(), bounds.centerY(), 25, backgroundPaint);
-		canvas.drawCircle(bounds.centerX(), bounds.centerY(), 25, linePaint);
-		canvas.drawText(node.getValue(), xpos, ypos, fontPaint);
+		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, backgroundPaint);
+		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, linePaint);
+		canvas.drawText(node.getValue(), xpos + shift, ypos + offset, fontPaint);
 	}
 
 	public void setUpTreeLayout() {
@@ -134,7 +132,7 @@ public class DrawView extends View {
 
 		// create the layout
 		treeLayout = new TreeLayout<Node>(tree,
-				nodeExtentProvider, configuration, canvasWidth);
+				nodeExtentProvider, configuration);
 	}
 
 	public RectF getBoundsOfNode(Node node) {

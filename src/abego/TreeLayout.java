@@ -44,7 +44,6 @@ import treeLayout.Point;
 import abego.Configuration.AlignmentInLevel;
 import abego.Configuration.Location;
 import abego.util.StringUtil;
-import android.graphics.Canvas;
 import android.graphics.RectF;
 
 /**
@@ -86,9 +85,6 @@ public class TreeLayout<TreeNode> {
 
 	// ------------------------------------------------------------------------
 	// tree
-	private int y_shift;
-	private int x_shift;
-	private int centerCanvas;
 
 	private final TreeForTreeLayout<TreeNode> tree;
 
@@ -303,7 +299,7 @@ public class TreeLayout<TreeNode> {
 			return y_relativeToRoot - boundsTop;
 		}
 
-		//		@Override
+//		@Override
 		// never called from outside
 		public void setLocation(double x_relativeToRoot, double y_relativeToRoot) {
 			this.x_relativeToRoot = x_relativeToRoot;
@@ -313,7 +309,7 @@ public class TreeLayout<TreeNode> {
 
 	// ------------------------------------------------------------------------
 	// The Algorithm
-
+	
 	private final boolean useIdentity;
 
 	private final Map<TreeNode, Double> mod;
@@ -640,7 +636,7 @@ public class TreeLayout<TreeNode> {
 	 */
 	private void secondWalk(TreeNode v, double m, int level, double levelStart) {
 		// construct the position from the prelim and the level information
-		
+
 		// The rootLocation affects the way how x and y are changed and in what
 		// direction.
 		double levelChangeSign = getLevelChangeSign();
@@ -666,11 +662,7 @@ public class TreeLayout<TreeNode> {
 			y = t;
 		}
 
-		if (v == tree.getRoot()) {
-			x_shift = (int) (centerCanvas - x);
-		}
-
-		positions.put(v, new NormalizedPositionNew(x + x_shift, y + y_shift));
+		positions.put(v, new NormalizedPositionNew(x, y));
 
 		// update the bounds
 		updateBounds(v, x, y);
@@ -732,67 +724,34 @@ public class TreeLayout<TreeNode> {
 	 *            equality ("equals(...)") when checking nodes. Within a tree
 	 *            each node must only be once (using this check).
 	 */
-//	public TreeLayout(TreeForTreeLayout<TreeNode> tree,
-//			NodeExtentProvider<TreeNode> nodeExtentProvider,
-//			Configuration<TreeNode> configuration, boolean useIdentity) {
-//		this.tree = tree;
-//		this.nodeExtentProvider = nodeExtentProvider;
-//		this.configuration = configuration;
-//		this.useIdentity = useIdentity;
-//		this.y_shift = 20;
-//
-//		if (this.useIdentity) {
-//			this.mod = new IdentityHashMap<TreeNode, Double>();
-//			this.thread = new IdentityHashMap<TreeNode, TreeNode>();
-//			this.prelim = new IdentityHashMap<TreeNode, Double>();
-//			this.change = new IdentityHashMap<TreeNode, Double>();
-//			this.shift = new IdentityHashMap<TreeNode, Double>();
-//			this.ancestor = new IdentityHashMap<TreeNode, TreeNode>();
-//			this.number = new IdentityHashMap<TreeNode, Integer>();
-//			this.positions = new IdentityHashMap<TreeNode, Point>();
-//		} else {
-//			this.mod = new HashMap<TreeNode, Double>();
-//			this.thread = new HashMap<TreeNode, TreeNode>();
-//			this.prelim = new HashMap<TreeNode, Double>();
-//			this.change = new HashMap<TreeNode, Double>();
-//			this.shift = new HashMap<TreeNode, Double>();
-//			this.ancestor = new HashMap<TreeNode, TreeNode>();
-//			this.number = new HashMap<TreeNode, Integer>();
-//			this.positions = new HashMap<TreeNode, Point>();
-//		}
-//
-//		// No need to explicitly set mod, thread and ancestor as their getters
-//		// are taking care of the initial values. This avoids a full tree walk
-//		// through and saves some memory as no entries are added for
-//		// "initial values".
-//
-//		TreeNode r = tree.getRoot();
-//		firstWalk(r, null);
-//		calcSizeOfLevels(r, 0);
-//		secondWalk(r, -getPrelim(r), 0, 0);
-//	}
-
 	public TreeLayout(TreeForTreeLayout<TreeNode> tree,
 			NodeExtentProvider<TreeNode> nodeExtentProvider,
-			Configuration<TreeNode> configuration, int canvasWidth) {
-		centerCanvas = canvasWidth / 2;
-		y_shift = 20;
-		x_shift = 0;
-		
+			Configuration<TreeNode> configuration, boolean useIdentity) {
 		this.tree = tree;
 		this.nodeExtentProvider = nodeExtentProvider;
 		this.configuration = configuration;
-		this.useIdentity = false;
+		this.useIdentity = useIdentity;
 
-		this.mod = new HashMap<TreeNode, Double>();
-		this.thread = new HashMap<TreeNode, TreeNode>();
-		this.prelim = new HashMap<TreeNode, Double>();
-		this.change = new HashMap<TreeNode, Double>();
-		this.shift = new HashMap<TreeNode, Double>();
-		this.ancestor = new HashMap<TreeNode, TreeNode>();
-		this.number = new HashMap<TreeNode, Integer>();
-		this.positions = new HashMap<TreeNode, Point>();
-
+		if (this.useIdentity) {
+			this.mod = new IdentityHashMap<TreeNode, Double>();
+			this.thread = new IdentityHashMap<TreeNode, TreeNode>();
+			this.prelim = new IdentityHashMap<TreeNode, Double>();
+			this.change = new IdentityHashMap<TreeNode, Double>();
+			this.shift = new IdentityHashMap<TreeNode, Double>();
+			this.ancestor = new IdentityHashMap<TreeNode, TreeNode>();
+			this.number = new IdentityHashMap<TreeNode, Integer>();
+			this.positions = new IdentityHashMap<TreeNode, Point>();
+		} else {
+			this.mod = new HashMap<TreeNode, Double>();
+			this.thread = new HashMap<TreeNode, TreeNode>();
+			this.prelim = new HashMap<TreeNode, Double>();
+			this.change = new HashMap<TreeNode, Double>();
+			this.shift = new HashMap<TreeNode, Double>();
+			this.ancestor = new HashMap<TreeNode, TreeNode>();
+			this.number = new HashMap<TreeNode, Integer>();
+			this.positions = new HashMap<TreeNode, Point>();
+		}
+		
 		// No need to explicitly set mod, thread and ancestor as their getters
 		// are taking care of the initial values. This avoids a full tree walk
 		// through and saves some memory as no entries are added for
@@ -803,7 +762,13 @@ public class TreeLayout<TreeNode> {
 		calcSizeOfLevels(r, 0);
 		secondWalk(r, -getPrelim(r), 0, 0);
 	}
-
+	
+	public TreeLayout(TreeForTreeLayout<TreeNode> tree,
+			NodeExtentProvider<TreeNode> nodeExtentProvider,
+			Configuration<TreeNode> configuration) {
+		this(tree, nodeExtentProvider, configuration, false);
+	}
+	
 	// ------------------------------------------------------------------------
 	// checkTree
 
@@ -831,7 +796,7 @@ public class TreeLayout<TreeNode> {
 	public void checkTree() {
 		Map<TreeNode, TreeNode> nodes = this.useIdentity ? new IdentityHashMap<TreeNode, TreeNode>()
 				:new HashMap<TreeNode,TreeNode>();
-
+		
 		// Traverse the tree and check if each node is only used once.
 		addUniqueNodes(nodes,tree.getRoot());
 	}
@@ -856,9 +821,9 @@ public class TreeLayout<TreeNode> {
 			}
 			sb.append("]");
 		}
-
+		
 		sb.append(StringUtil.quote(node != null ? node.toString() : null));
-
+		
 		if (dumpConfiguration.includeNodeSize) {
 			sb.append(" (size: ");
 			sb.append(getNodeWidth(node));
@@ -866,9 +831,9 @@ public class TreeLayout<TreeNode> {
 			sb.append(getNodeHeight(node));
 			sb.append(")");
 		}
-
+		
 		output.println(sb.toString());
-
+		
 		for (TreeNode n : tree.getChildren(node)) {
 			dumpTree(output, n, indent + 1, dumpConfiguration);
 		}
@@ -905,12 +870,12 @@ public class TreeLayout<TreeNode> {
 			this.includeNodeSize = includeNodeSize;
 			this.includeObjectToString = includePointer;
 		}
-
+		
 		public DumpConfigurationNew() {
 			this("    ",false,false);
 		}
 	}
-
+	
 	/**
 	 * Prints a dump of the tree to the given printStream, using the node's
 	 * "toString" method.
