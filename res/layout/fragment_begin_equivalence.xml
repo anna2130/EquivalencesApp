@@ -35,9 +35,17 @@
                 android:orientation="vertical" >
 
                 <app.DrawView
-                    android:id="@+id/formation_tree"
+                    android:id="@+id/top_formation_tree"
+                    android:tag="top"
                     android:layout_width="fill_parent"
-                    android:layout_height="500dp"
+                    android:layout_height="300dp"
+                    custom:showTree="true" />
+                
+                <app.DrawView
+                    android:id="@+id/bottom_formation_tree"
+                    android:tag="bottom"
+                    android:layout_width="fill_parent"
+                    android:layout_height="300dp"
                     custom:showTree="true" />
             </LinearLayout>
 

@@ -1,13 +1,13 @@
 package app;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
 import abego.DefaultConfiguration;
 import abego.FixedNodeExtentProvider;
 import abego.TreeLayout;
+import abego.Configuration.Location;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,6 +17,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 
 public class DrawView extends View {
 	private Paint linePaint;
@@ -81,7 +82,10 @@ public class DrawView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		setUpTreeLayout();
+		if (this.getTag().equals("bottom"))
+			setUpTreeLayout(Location.Bottom);
+		else
+			setUpTreeLayout(Location.Top);
 		float rootX = getBoundsOfNode(tree.getRoot()).centerX();
 		float canvasCenterX = canvas.getWidth() / 2;
 		shift = (int) (canvasCenterX - rootX);
@@ -102,10 +106,12 @@ public class DrawView extends View {
 				System.out.println(x + " " + y);
 				System.out.println("Touched node: " + boundsMap.get(bound));
 				System.out.println("Bounds: " + bound.left + " " + bound.right + " " + bound.bottom + " " + bound.top);
+				
+				Node node = boundsMap.get(bound);
+				
 			}
 		}
 		
-//		System.out.println("Touched at: " + event.getX() + " " + event.getY());
 		return super.onTouchEvent(event);
 	}
 
@@ -139,10 +145,10 @@ public class DrawView extends View {
 		boundsMap.put(newBounds, node);
 	}
 
-	public void setUpTreeLayout() {
+	public void setUpTreeLayout(Location location) {
 		// setup the tree layout configuration
 		DefaultConfiguration<Node> configuration = new DefaultConfiguration<Node>(
-				gapBetweenLevels, gapBetweenNodes);
+				gapBetweenLevels, gapBetweenNodes, location);
 
 		// create the NodeExtentProvider for TextInBox nodes
 		FixedNodeExtentProvider<Node> nodeExtentProvider = new FixedNodeExtentProvider<>(20, 20);
@@ -150,12 +156,17 @@ public class DrawView extends View {
 		// create the layout
 		treeLayout = new TreeLayout<Node>(tree,
 				nodeExtentProvider, configuration);
-	}
 
+		RectF bounds = treeLayout.getBounds();
+		LayoutParams params = (LayoutParams) this.getLayoutParams();
+		params.height = (int) (bounds.bottom - bounds.top + offset * 2);
+		this.setLayoutParams(params);
+	}
+	
 	public RectF getBoundsOfNode(Node node) {
 		return treeLayout.getNodeBounds().get(node);
 	}
-
+	
 	public void setTree(FormationTree tree) {
 		this.tree = tree;
 	}

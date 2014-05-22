@@ -11,15 +11,15 @@ import treeManipulation.RuleEngine;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.equivalencesapp.R;
@@ -43,7 +43,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	int oldTopStackSize;
 
 	TextView rulesList;
-	DrawView formationTree;
+	DrawView topFormationTree;
+	DrawView bottomFormationTree;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,9 +67,12 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 		topTree = compiler.compile(start);
 		bottomTree = compiler.compile(end);
 
-		formationTree = (DrawView) findViewById(R.id.formation_tree);
-		formationTree.setTree(topTree);
+		topFormationTree = (DrawView) findViewById(R.id.top_formation_tree);
+		topFormationTree.setTree(topTree);
 
+		bottomFormationTree = (DrawView) findViewById(R.id.bottom_formation_tree);
+		bottomFormationTree.setTree(bottomTree);
+		
 		// Set the user interface layout for this Activity
 		rulesList = (TextView) findViewById(R.id.rules_list);
 		
@@ -101,8 +105,6 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					Node node = topTree.getRoot();
 					BitSet bs = re.getApplicableRules(topTree, node);
 
-					formationTree = (DrawView) findViewById(R.id.formation_tree);
-					
 					String rules = "";
 					for (int i = 0; i < re.rulesToString(bs, topTree, node).length; ++i) {
 						rules += re.rulesToString(bs, topTree, node)[i] + "\n";
@@ -143,6 +145,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					}
 
 					topTree = compiler.compile(topStack.peek().getText().toString());
+					topFormationTree.setTree(topTree);
 				}
 			}
 		});
@@ -187,6 +190,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					}
 
 					bottomTree = compiler.compile(bottomStack.peek().getText().toString());
+					bottomFormationTree.setTree(bottomTree);
 				}
 			}
 		});
@@ -197,82 +201,5 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 
 	public boolean equivalenceComplete(String top, String bottom) {
 		return top.equals(bottom);
-	}
-
-	//	public SpannableString setClickableOperators(FormationTree tree, String start) {
-	//		SpannableString ss = new SpannableString(tree.toString());
-	//	    // Make each operator node clickable
-	//	    TreeIterator iterator = new TreeIterator(tree.getRoot());
-	//	    String s = start;
-	//	    int i = 0;
-	//	    
-	//	    while (iterator.hasNext()) {
-	//	    	final Node next = iterator.next();
-	//	    	
-	//	    	while (s.charAt(i) == '(' || s.charAt(i) == ')')
-	//	    		++i;
-	//	    	
-	//	    	if (!(next instanceof Atom)) {
-	//		    	ClickableSpan clickableSpan = new ClickableSpan() {
-	//			        @Override
-	//			        public void onClick(View textView) {
-	//			        	setRulesList(tree.toString(), next.getKey(), next.getDepth());
-	//			        }
-	//			    };
-	//			    ss.setSpan(clickableSpan, i, i+1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-	//	    	}
-	//	    	
-	//		    ++i;
-	//	    }
-	//	    return ss;
-	//	}
-
-	//	public void setRulesList(final FormationTree tree, int key, int depth) {
-	//		final Node node = tree.findNode(key, depth);
-	//		final BitSet bs = rs.getApplicableRules(tree, node);
-	//		String[] rules = rs.rulesToString(bs, tree, node);
-	//    	final ListView listview = (ListView) findViewById(R.id.rules_list);
-	//    	
-	//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-	//			android.R.layout.simple_list_item_1, android.R.id.text1, rules);
-	//		listview.setAdapter(adapter);
-	//		listview.setOnItemClickListener(new OnItemClickListener() {
-	//			@Override
-	//			public void onItemClick(AdapterView<?> parent, View view,
-	//					int position, long id) {
-	//				Log.d("DEBUG", ""+bs.toString()+" "+position);
-	//				
-	//				ra.applyRuleFromBitSet(bs, position, tree, (BinaryOperator) node);
-	//				
-	//				TextView topTextView = (TextView) findViewById(R.id.start_equivalence);
-	////			    topTextView.setText(setClickableOperators(tree, tree.toString()));
-	//				topTextView.setText(tree.toString());
-	//			    
-	//			    String[] rules = new String[] {};
-	//			    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-	//					android.R.layout.simple_list_item_1, android.R.id.text1, rules);
-	//				listview.setAdapter(adapter);
-	//			}
-	//		});
-	//	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.begin_equivalence, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 }
