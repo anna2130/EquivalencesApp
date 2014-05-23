@@ -73,7 +73,6 @@ public class Compiler {
 			vars.add(var);
 		}
 		
-		System.out.println(vars);
 		String equiv = generateSubEquivalence(vars, depth);
 		return equiv.substring(1, equiv.length() - 1);
 	}

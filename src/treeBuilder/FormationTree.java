@@ -14,10 +14,6 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 	private Node root;
 	private boolean error_flag;
 	
-//	public FormationTree() {
-//		this.root = null;
-//	}
-	
 	public FormationTree(Node root) {
 		super(root);
 		this.root = root;
@@ -148,8 +144,6 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 	public boolean equals(FormationTree tree) {
 		TruthTable tt1 = new TruthTable(this);
 		TruthTable tt2 = new TruthTable(tree);
-		System.out.println(tt1);
-		System.out.println(tt2);
 		return tt1.testEquivalence(tt2);
 	}
 	
@@ -195,34 +189,4 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 	public Node getParent(Node node) {
 		return node.getParent();
 	}
-//
-//	@Override
-//	public boolean isLeaf(Node node) {
-//		return node.isAtom();
-//	}
-//
-//	@Override
-//	public boolean isChildOfParent(Node node, Node parentNode) {
-//		return node.getParent().equals(parentNode);
-//	}
-//
-//	@Override
-//	public Iterable<Node> getChildren(Node node) {
-//		return getChildrenList(node);
-//	}
-//
-//	@Override
-//	public Iterable<Node> getChildrenReverse(Node node) {
-//		return IterableUtil.createReverseIterable(getChildrenList(node));
-//	}
-//
-//	@Override
-//	public Node getFirstChild(Node parentNode) {
-//		return getChildrenList(parentNode).get(0);
-//	}
-//
-//	@Override
-//	public Node getLastChild(Node parentNode) {
-//		return ListUtil.getLast(getChildrenList(parentNode));
-//	}
 }
