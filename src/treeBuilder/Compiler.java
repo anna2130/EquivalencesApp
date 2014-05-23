@@ -2,7 +2,6 @@ package treeBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Random;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -15,9 +14,6 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
-import abego.DefaultConfiguration;
-import abego.FixedNodeExtentProvider;
-import abego.TreeLayout;
 //import android.graphics.RectF;
 
 public class Compiler {
@@ -37,48 +33,7 @@ public class Compiler {
 		
 		String s1 = "a→b";
 		FormationTree tree = compiler.compile(s1);
-//		FormationTree copy = compiler.compile(s1);
-		Node node = tree.findNode(0, 0);
-		Node left = tree.findNode(0, 1);
-		Node right = tree.findNode(1, 1);
-		
-		// setup the tree layout configuration
-		double gapBetweenLevels = 50;
-		double gapBetweenNodes = 10;
-		DefaultConfiguration<Node> configuration = new DefaultConfiguration<Node>(
-				gapBetweenLevels, gapBetweenNodes);
-
-		// create the NodeExtentProvider for TextInBox nodes
-//		FixedNodeExtentProvider<Node> nodeExtentProvider = new FixedNodeExtentProvider<>(20, 20);
-//
-//		// create the layout
-//		TreeLayout<Node> treeLayout = new TreeLayout<Node>(tree,
-//				nodeExtentProvider, configuration);
-//
-//		System.out.println(treeLayout.getLevelCount() + " " + treeLayout.getSizeOfLevel(0));
-//		System.out.println(configuration.getGapBetweenLevels(1) + " " + configuration.getAlignmentInLevel());
-//		
-//		System.out.println(treeLayout.getBounds().height() + " " + treeLayout.getBounds().width());
-		
-//		Map<Node, RectF> map = treeLayout.getNodeBounds();
-//		System.out.println(map.get(node));
-//		System.out.println(map.get(left));
-//		System.out.println(map.get(right));
-		
-//		FormationTree tree2 = compiler.compile(s2);
-//		System.out.println(tree1.toString() + "\n");
-//		System.out.println(tree2.toString() + "\n");
-//
-//		System.out.println(compiler.generateRandomEquivalence(4, 3));
-		
-//		RuleEngine re = new RuleEngine();
-//		re.applyRandomRules(tree1, 5);
-//		Node node = tree1.getRoot();
-//		BitSet bs = re.getApplicableRules(tree1, node);
-//		re.applyRuleFromBitSet(bs, 12, tree1, node, null);
-		
-//		System.out.println(tree1);
-//		System.out.println("Trees are equal: " + tree1.equals(copy));
+		System.out.println(tree);
 	}
 	
 	public FormationTree compile(String expr) throws RecognitionException {

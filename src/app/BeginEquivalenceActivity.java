@@ -45,7 +45,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 	int oldTopStackSize;
 
-	PopupMenu rulesList;
+	PopupMenu topRulesList;
+	PopupMenu bottomRulesList;
 	DrawView topFormationTree;
 	DrawView bottomFormationTree;
 
@@ -82,8 +83,11 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);
 
-		rulesList = new PopupMenu(this, topFormationTree);
-		rulesList.setOnMenuItemClickListener(this);
+		topRulesList = new PopupMenu(this, topFormationTree);
+		topRulesList.setOnMenuItemClickListener(this);
+		
+		bottomRulesList = new PopupMenu(this, bottomFormationTree);
+		bottomRulesList.setOnMenuItemClickListener(this);
 	}
 
 	public void addTextViewToTop(TextView textView, String text) {
@@ -197,19 +201,33 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	public void setRules(SparseArray<String> rules, Node selected, FormationTree selectedTree) {
 		this.selected = selected;
 		this.selectedTree = selectedTree;
+		
 		int key;
 		for (int i = 0; i < rules.size(); ++i) {
 			key = rules.keyAt(i);
-			rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
+			if (selectedTree == topTree)
+				topRulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
+			else
+				bottomRulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
 		}
-		rulesList.show();
+		if (selectedTree == topTree)
+			topRulesList.show();
+		else
+			bottomRulesList.show();
 	}
 
 	@Override
 	public boolean onMenuItemClick(MenuItem item) {
 		int id = item.getItemId();
 		re.applyRuleFromBitSet(id, selectedTree, selected, null);
-		addTextViewToTop(new TextView(context), selectedTree.toString());
+
+		if (selectedTree == topTree) {
+			addTextViewToTop(new TextView(context), selectedTree.toString());
+			topRulesList.dismiss();
+		} else {
+			addTextViewToBottom(new TextView(context), selectedTree.toString());
+			bottomRulesList.dismiss();
+		}
 		
 		return true;
 	}
