@@ -8,23 +8,23 @@ import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
 import treeManipulation.RuleEngine;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.example.equivalencesapp.R;
 
-public class BeginEquivalenceActivity extends ActionBarActivity {
+public class BeginEquivalenceActivity extends Activity implements android.widget.PopupMenu.OnMenuItemClickListener {
 
 	Context context;
 	RuleEngine re;
@@ -34,6 +34,9 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	FormationTree bottomTree;
 	String start;
 	String end;
+	
+	Node selected;
+	FormationTree selectedTree;
 
 	Stack<TextView> topStack;
 	Stack<TextView> bottomStack;
@@ -42,7 +45,7 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 
 	int oldTopStackSize;
 
-	TextView rulesList;
+	PopupMenu rulesList;
 	DrawView topFormationTree;
 	DrawView bottomFormationTree;
 
@@ -72,26 +75,18 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 
 		bottomFormationTree = (DrawView) findViewById(R.id.bottom_formation_tree);
 		bottomFormationTree.setTree(bottomTree);
-		
-//		Spinner dropdown = (Spinner) findViewById(R.id.rule_spinner);
-//		String[] items = new String[]{"1", "2", "three"};
-//		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, items);
-//		dropdown.setAdapter(adapter);
 
+		topLinearLayout = (LinearLayout) findViewById(R.id.top_linear_layout);
+		bottomLinearLayout = (LinearLayout) findViewById(R.id.bottom_linear_layout);
+		
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);
 
-		// Set the user interface layout for this Activity
-//		rulesList = (TextView) findViewById(R.id.rules_list);
-		rulesList = new TextView(this);
-		rulesList.setTextSize(20);
-		LinearLayout outerLayout = (LinearLayout) findViewById(R.id.linear_layout);
-		outerLayout.addView(rulesList, 2);
+		rulesList = new PopupMenu(this, topFormationTree);
+		rulesList.setOnMenuItemClickListener(this);
 	}
 
 	public void addTextViewToTop(TextView textView, String text) {
-		topLinearLayout = (LinearLayout) findViewById(R.id.top_linear_layout);
-
 		textView.setId(topStack.size());
 		textView.setText(text);
 		textView.setTextSize(20);
@@ -110,27 +105,15 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 						topFormationTree.setVisibility(View.VISIBLE);
 					else
 						topFormationTree.setVisibility(View.GONE);
-
-//					Node node = topTree.getRoot();
-//					BitSet bs = re.getApplicableRules(topTree, node);
-////
-//					String rules = "";
-//					for (int i = 0; i < re.rulesToString(bs, topTree, node).length; ++i) {
-//						rules += re.rulesToString(bs, topTree, node)[i] + "\n";
-//					}
-//					rulesList.setText(rules);
-
+					
 					// Remove redo equivalences
 					//					for (int i = topStack.size() - 1; i < oldTopStackSize; ++i) {
 					//						topLinearLayout.removeViewAt(i);
 					//						oldTopStackSize--;
 					//					}
 
-//					re.applyRandomRule(bs, topTree, (BinaryOperator) node);
-					addTextViewToTop(new TextView(context), topTree.toString());
-
-					if (equivalenceComplete(topTree.toString(), end))
-						rulesList.setText("COMPLETE");
+//					if (equivalenceComplete(topTree.toString(), end))
+//						rulesList.setText("COMPLETE");
 
 					//				} else if (view.getTag() == "Undone") {
 					//					int position = view.getId();
@@ -153,8 +136,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 						topStack.pop();
 					}
 
-//					topTree = compiler.compile(topStack.peek().getText().toString());
-//					topFormationTree.setTree(topTree);
+					topTree = compiler.compile(topStack.peek().getText().toString());
+					topFormationTree.setTree(topTree);
 				}
 			}
 		});
@@ -165,7 +148,6 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 	}
 
 	public void addTextViewToBottom(TextView textView, String text) {
-		bottomLinearLayout = (LinearLayout) findViewById(R.id.bottom_linear_layout);
 
 		textView.setId(bottomStack.size());
 		textView.setText(text);
@@ -186,8 +168,8 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 					re.applyRandomRule(bs, bottomTree, (BinaryOperator) node);
 					addTextViewToBottom(new TextView(context), bottomTree.toString());
 
-					if (equivalenceComplete(bottomTree.toString(), start))
-						rulesList.setText("COMPLETE");
+//					if (equivalenceComplete(bottomTree.toString(), start))
+//						rulesList.setText("COMPLETE");
 
 				} else {
 					// Undo to position in list clicked
@@ -212,7 +194,23 @@ public class BeginEquivalenceActivity extends ActionBarActivity {
 		return top.equals(bottom);
 	}
 
-	public void setRules(String rules) {
-		rulesList.setText(rules);
+	public void setRules(SparseArray<String> rules, Node selected, FormationTree selectedTree) {
+		this.selected = selected;
+		this.selectedTree = selectedTree;
+		int key;
+		for (int i = 0; i < rules.size(); ++i) {
+			key = rules.keyAt(i);
+			rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
+		}
+		rulesList.show();
+	}
+
+	@Override
+	public boolean onMenuItemClick(MenuItem item) {
+		int id = item.getItemId();
+		re.applyRuleFromBitSet(id, selectedTree, selected, null);
+		addTextViewToTop(new TextView(context), selectedTree.toString());
+		
+		return true;
 	}
 }

@@ -8,6 +8,7 @@ import treeBuilder.BinaryOperator;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
 import treeBuilder.UnaryOperator;
+import android.util.SparseArray;
 
 public class RuleEngine {
 	
@@ -260,11 +261,11 @@ public class RuleEngine {
 		return bs;
 	}
 	
-	public String[] rulesToString(BitSet bs, FormationTree tree, Node node) {
-		return rs.rulesToString(bs, tree, node);
+	public SparseArray<String> rulesToStringMap(BitSet bs, FormationTree tree, Node node) {
+		return rs.rulesToStringMap(bs, tree, node);
 	}
 	
-	public void applyRuleFromBitSet(BitSet bs, int index, FormationTree tree, 
+	public void applyRuleFromBitSet(int index, FormationTree tree, 
 			Node node, String input) {
 		
 		switch (index) {
@@ -452,7 +453,7 @@ public class RuleEngine {
 			applyRandomRule(bs, tree, node);
 		else {
 			// TODO: Choose appropriate variable to pass through
-		    applyRuleFromBitSet(bs, nextSetBit, tree, node, null);
+		    applyRuleFromBitSet(nextSetBit, tree, node, null);
 		}
 	}
 }

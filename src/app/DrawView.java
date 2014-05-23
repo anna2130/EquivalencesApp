@@ -3,8 +3,6 @@ package app;
 import java.util.BitSet;
 import java.util.HashMap;
 
-import com.example.equivalencesapp.R;
-
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
 import treeManipulation.RuleEngine;
@@ -12,7 +10,6 @@ import abego.Configuration.Location;
 import abego.DefaultConfiguration;
 import abego.FixedNodeExtentProvider;
 import abego.TreeLayout;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -23,8 +20,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class DrawView extends View {
 	private Paint linePaint;
@@ -99,7 +94,6 @@ public class DrawView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		System.out.println("onDraw called");
 		if (this.getTag().equals("bottom"))
 			setUpTreeLayout(Location.Bottom);
 		else
@@ -121,19 +115,11 @@ public class DrawView extends View {
 		float y = event.getY();
 		for (RectF bound : boundsMap.keySet()) {
 			if (x > bound.left && x < bound.right && y > bound.bottom && y < bound.top) {
-				System.out.println(x + " " + y);
-				System.out.println("Touched node: " + boundsMap.get(bound));
-				System.out.println("Bounds: " + bound.left + " " + bound.right + " " + bound.bottom + " " + bound.top);
-				
 				selected = boundsMap.get(bound);
 				BitSet bs = re.getApplicableRules(tree, selected);
 				BeginEquivalenceActivity activity = (BeginEquivalenceActivity) this.getContext();
 
-				String rules = "";
-				for (int i = 0; i < re.rulesToString(bs, tree, selected).length; ++i) {
-					rules += re.rulesToString(bs, tree, selected)[i] + "\n";
-				}
-				activity.setRules(rules);
+				activity.setRules(re.rulesToStringMap(bs, tree, selected), selected, tree);
 				
 				// forces redraw
 				this.invalidate();
