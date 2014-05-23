@@ -21,6 +21,7 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.equivalencesapp.R;
 
@@ -279,6 +280,14 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		} else {
 			addTextViewToBottom(new TextView(context), selectedTree.toString());
 			bottomRulesList.dismiss();
+		}
+		
+		if (equivalenceComplete(topTree.toString(), bottomTree.toString())) {
+			CharSequence text = "Equivalence complete!";
+			int duration = Toast.LENGTH_LONG;
+
+			Toast toast = Toast.makeText(context, text, duration);
+			toast.show();
 		}
 	}
 	

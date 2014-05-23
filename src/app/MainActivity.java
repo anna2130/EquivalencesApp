@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
 		FormationTree tree;
 		
 		if (start.equals("")) {
-			end = c.generateRandomEquivalence(4, 1);
+			end = c.generateRandomEquivalence(6, 1);
 			tree = c.compile(end);
 		} else {
 			tree = c.compile(start);
