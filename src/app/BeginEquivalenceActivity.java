@@ -89,6 +89,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);
+		addLine(bottomLinearLayout, false, 0);
 
 		topRulesList = new PopupMenu(this, topFormationTree);
 		topRulesList.setOnMenuItemClickListener(this);
@@ -106,8 +107,24 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.WRAP_CONTENT,
 				LinearLayout.LayoutParams.WRAP_CONTENT);
-		llp.setMargins(5, 5, 5, 5);
+		int margin = 8;
+		llp.setMargins(margin, margin, margin, margin);
 		textView.setLayoutParams(llp);
+	}
+	
+	public void addLine(LinearLayout ll, boolean above, int tag) {
+		View line = new View(context);
+		
+		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
+				LinearLayout.LayoutParams.MATCH_PARENT, 1);
+		line.setLayoutParams(llp);
+		line.setBackgroundColor(Color.LTGRAY);
+		line.setTag(tag);
+		
+		if (above)
+			ll.addView(line, 0);
+		else
+			ll.addView(line);
 	}
 
 	public void setUpUndoneTextView(TextView undone, Stack<TextView> stack) {
@@ -147,6 +164,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 					for (int i = topStack.size() - 1; i > position; --i) {
 						TextView undone = (TextView) topLinearLayout.findViewById(i);
+						View line = topLinearLayout.findViewWithTag(i);
 						setUpUndoneTextView(undone, topRedoStack);
 
 						undone.setOnClickListener(new OnClickListener() {
@@ -162,7 +180,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 								}
 							}
 						});
-						topLinearLayout.removeViewAt(i);
+						topLinearLayout.removeView(undone);
+						topLinearLayout.removeView(line);
 						topRedoLinearLayout.addView(undone, 0);
 						topStack.pop();
 						topRedoStack.push(undone);
@@ -172,6 +191,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			}
 		});
 		topLinearLayout.addView(textView);
+		addLine(topLinearLayout, false, topStack.size());
 		topStack.push(textView);
 	}
 
@@ -189,6 +209,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 					for (int i = bottomStack.size() - 1; i > position; --i) {
 						TextView undone = (TextView) bottomLinearLayout.findViewById(i);
+						View line = bottomLinearLayout.findViewWithTag(i);
 						setUpUndoneTextView(undone, bottomRedoStack);
 
 						undone.setOnClickListener(new OnClickListener() {
@@ -205,6 +226,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 							}
 						});
 						bottomLinearLayout.removeView(undone);
+						bottomLinearLayout.removeView(line);
 						bottomRedoLinearLayout.addView(undone);
 						bottomStack.pop();
 						bottomRedoStack.push(undone);
@@ -214,6 +236,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			}
 		});
 		bottomLinearLayout.addView(textView, 0);
+		addLine(bottomLinearLayout, true, bottomStack.size());
 		bottomStack.push(textView);
 	}
 
