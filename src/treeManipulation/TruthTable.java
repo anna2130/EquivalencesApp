@@ -82,8 +82,7 @@ public class TruthTable {
 	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t1, SortedSet<String> v1, 
 			HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
 		HashSet<ArrayList<Integer>> reducedTable = new HashSet<ArrayList<Integer>>();
-		System.out.println(v1);
-		System.out.println(v2);
+
 		Iterator<String> it1 = v1.iterator();
 		Iterator<String> it2 = v2.iterator();
 		int i = 0;
@@ -97,7 +96,6 @@ public class TruthTable {
 				s1 = it1.next();
 				++i;
 			}
-			System.out.println("kept val: " + i);
 			keptValues.add(i);
 			++i;
 		}

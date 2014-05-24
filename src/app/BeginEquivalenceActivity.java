@@ -1,5 +1,6 @@
 package app;
 
+import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Stack;
 
@@ -44,7 +45,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	Stack<TextView> bottomStack;
 	Stack<TextView> topRedoStack;
 	Stack<TextView> bottomRedoStack;
-	
+
 	LinearLayout topLinearLayout;
 	LinearLayout bottomLinearLayout;
 	LinearLayout topRedoLinearLayout;
@@ -99,38 +100,42 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		textView.setId(id);
 		textView.setText(text);
 		textView.setTextSize(20);
+		textView.setGravity(Gravity.CENTER);
 		textView.setClickable(true);
-		textView.setLayoutParams(new LinearLayout.LayoutParams(
+		
+		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.WRAP_CONTENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT));
+				LinearLayout.LayoutParams.WRAP_CONTENT);
+		llp.setMargins(5, 5, 5, 5);
+		textView.setLayoutParams(llp);
 	}
-	
+
 	public void setUpUndoneTextView(TextView undone, Stack<TextView> stack) {
 		undone.setId(stack.size());
 		undone.setTextColor(Color.argb(100, 0, 0, 0));
 	}
-	
+
 	public void toggleVisibility(DrawView tree) {
 		if (tree.getVisibility() == View.GONE)
 			tree.setVisibility(View.VISIBLE);
 		else
 			tree.setVisibility(View.GONE);
 	}
-	
+
 	public void redo(TextView textView, LinearLayout ll, Stack<TextView> stack) {
 		textView.setTextColor(Color.argb(255, 0, 0, 0));
 		ll.removeView(textView);
 		stack.pop();
 	}
-	
+
 	public void setUpTree(FormationTree tree, Stack<TextView> stack, DrawView formationTree) {
 		tree = compiler.compile(stack.peek().getText().toString());
 		formationTree.setTree(tree);
 	}
-	
+
 	public void addTextViewToTop(TextView textView, String text) {
 		setUpTextView(textView, topStack.size(), text);
-		
+
 		textView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -139,16 +144,16 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 				} else {
 					// Undo/redo
 					int position = view.getId();
-					
+
 					for (int i = topStack.size() - 1; i > position; --i) {
 						TextView undone = (TextView) topLinearLayout.findViewById(i);
 						setUpUndoneTextView(undone, topRedoStack);
-						
+
 						undone.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								int undoPos = v.getId();
-								
+
 								for (int j = topRedoStack.size() - 1; j >= undoPos; --j) {
 									TextView textView = (TextView) topRedoLinearLayout.findViewById(j);
 									redo(textView, topRedoLinearLayout, topRedoStack);
@@ -169,7 +174,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		topLinearLayout.addView(textView);
 		topStack.push(textView);
 	}
-	
+
 	public void addTextViewToBottom(TextView textView, String text) {
 		setUpTextView(textView, bottomStack.size(), text);
 
@@ -181,16 +186,16 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 				} else {
 					// Undo/redo
 					int position = view.getId();
-					
+
 					for (int i = bottomStack.size() - 1; i > position; --i) {
 						TextView undone = (TextView) bottomLinearLayout.findViewById(i);
 						setUpUndoneTextView(undone, bottomRedoStack);
-						
+
 						undone.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
 								int undoPos = v.getId();
-								
+
 								for (int j = bottomRedoStack.size() - 1; j >= undoPos; --j) {
 									TextView textView = (TextView) bottomRedoLinearLayout.findViewById(j);
 									redo(textView, bottomRedoLinearLayout, bottomRedoStack);
@@ -226,7 +231,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			rulesList = topRulesList;
 		else
 			rulesList = bottomRulesList;
-		
+
 		rulesList.getMenu().clear();
 
 		int key;
@@ -269,7 +274,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		topRedoLinearLayout.removeAllViews();
 		return true;
 	}
-	
+
 	public void itemClicked() {
 		if (selectedTree == topTree) {
 			addTextViewToTop(new TextView(context), selectedTree.toString());
@@ -278,7 +283,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			addTextViewToBottom(new TextView(context), selectedTree.toString());
 			bottomRulesList.dismiss();
 		}
-		
+
 		// check for completion
 		if (equivalenceComplete(topTree.toString(), bottomTree.toString())) {
 			CharSequence text = "Equivalence complete!";
@@ -288,22 +293,22 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
 		}
-		
-		// check for cycles
-		if (selectedTree == topTree) {
-			for (TextView textView : topStack) {
-				if (textView.getText().toString().equals(topTree)) {
-					CharSequence text = "Cycle found!";
-					int duration = Toast.LENGTH_LONG;
 
-					Toast toast = Toast.makeText(context, text, duration);
-					toast.setGravity(Gravity.CENTER, 0, 0);
-					toast.show();
-				}
+		// check for cycles
+		Stack<TextView> selectedStack = (selectedTree == topTree) ? topStack : bottomStack;
+
+		Iterator<TextView> it = selectedStack.iterator();
+		for (int i = 0; i < selectedStack.size() - 1 && it.hasNext(); ++i) {
+			TextView textView = it.next();
+			if (textView.getText().toString().equals(selectedTree.toString())) {
+				generateToast("Cycle found!", Toast.LENGTH_LONG);
 			}
-		} else {
-		
 		}
 	}
-	
+
+	public void generateToast(CharSequence text, int duration) {
+		Toast toast = Toast.makeText(context, text, duration);
+		toast.setGravity(Gravity.CENTER, 0, 0);
+		toast.show();
+	}
 }

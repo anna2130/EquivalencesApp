@@ -15,7 +15,8 @@
             android:id="@+id/top_linear_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+    		android:gravity="center" >
         </LinearLayout>
 
         <app.DrawView
@@ -52,9 +53,10 @@
 
         <LinearLayout
             android:id="@+id/bottom_linear_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+    		android:gravity="center" >
         </LinearLayout>
     </LinearLayout>
 

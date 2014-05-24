@@ -41,8 +41,8 @@ public class Compiler {
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
 		System.out.println(tt1.testEquivalence(tt2));
-		System.out.println(tt1);
-		System.out.println(tt2);
+//		System.out.println(tt1);
+//		System.out.println(tt2);
 	}
 	
 	public FormationTree compile(String expr) throws RecognitionException {

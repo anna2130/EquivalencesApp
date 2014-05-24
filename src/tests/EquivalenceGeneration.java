@@ -63,9 +63,46 @@ public class EquivalenceGeneration {
 	}
 
 	@Test
-	public void testZeroGeneration() {
-		String s = compiler.generateRandomEquivalence(1, 0);
-		System.out.println(s);
-		//		assertEquals(expected, actual);
+	public void testZeroIteration() {
+		boolean b = true;
+		for (int i = 0; i < n; ++i) {
+			String s = compiler.generateRandomEquivalence(1, 0);
+			FormationTree tree = compiler.compile(s);
+			b = b && (tree.maxDepth() == 1);
+		}
+		assertTrue(b);
+	}
+
+	@Test
+	public void testOneIteration() {
+		boolean b = true;
+		for (int i = 0; i < n; ++i) {
+			String s = compiler.generateRandomEquivalence(1, 1);
+			FormationTree tree = compiler.compile(s);
+			b = b && (tree.maxDepth() <= 2);
+		}
+		assertTrue(b);
+	}
+
+	@Test
+	public void testTwoIteration() {
+		boolean b = true;
+		for (int i = 0; i < n; ++i) {
+			String s = compiler.generateRandomEquivalence(1, 2);
+			FormationTree tree = compiler.compile(s);
+			b = b && (tree.maxDepth() <= 3);
+		}
+		assertTrue(b);
+	}
+
+	@Test
+	public void testTwoVariables() {
+		boolean b = true;
+		for (int i = 0; i < n; ++i) {
+			String s = compiler.generateRandomEquivalence(2, 0);
+			FormationTree tree = compiler.compile(s);
+			b = b && (tree.maxDepth() == 1);
+		}
+		assertTrue(b);
 	}
 }
