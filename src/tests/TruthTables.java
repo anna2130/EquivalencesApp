@@ -1,6 +1,6 @@
 package tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,12 +8,8 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import treeBuilder.Atom;
-import treeBuilder.BinaryOperator;
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
-import treeBuilder.Node;
-import treeBuilder.UnaryOperator;
 import treeManipulation.TruthTable;
 
 public class TruthTables {
@@ -167,7 +163,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 1.  a^a		|-  a 				-- Idempotence	
@@ -179,7 +175,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 8.  a^(b^c)	|-  (a^b)^c			-- Associativity
@@ -191,7 +187,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 9.  (a^b)^c  |- 	a^(b^c)			-- Associativity
@@ -203,7 +199,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 10. a^¬b 		|-	¬(a→b)
@@ -215,7 +211,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 11. (a→b)^(b→a)	|-  a↔b
@@ -227,7 +223,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 12. ¬a^¬b		|-	¬(avb)			-- De Morgan laws
@@ -239,7 +235,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 13. a^(bvc) 		|- 	(a^b)v(a^c)		-- Distributitivity
@@ -251,7 +247,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 14. (avb)^c		|-  (a^c)v(b^c)		-- Distributitivity
@@ -263,7 +259,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 15. (avb)^(avc)	|- 	av(b^c)		-- Distributitivity
@@ -275,7 +271,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 16. (avc)^(bvc)	|-	(a^b)vc		-- Distributitivity
@@ -287,7 +283,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// TODO: Or tests
@@ -301,7 +297,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 20. ava		|- 	a 				-- Idempotence
@@ -313,7 +309,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 27. av(bvc)	|-  (avb)vc			-- Associativity
@@ -325,7 +321,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
@@ -337,7 +333,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 29. (a^b)v(¬a^¬b)	|-	a↔b
@@ -349,7 +345,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 30. (a^¬b)v(¬a^b) 	|-  ¬(a↔b)
@@ -361,7 +357,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 31. ¬av¬b	|-  ¬(a^b)			-- De Morgan laws
@@ -373,7 +369,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 32. av(b^c)	|- 	(avb)^(avc)		-- Distributitivity
@@ -385,7 +381,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 33. (a^b)vc	|-	(avc)^(bvc)		-- Distributitivity
@@ -397,7 +393,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 34. (a^b)v(a^c) 	|- 	a^(bvc)		-- Distributitivity
@@ -409,7 +405,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 35. (a^c)v(b^c)	|-  (avb)^c		-- Distributitivity
@@ -421,7 +417,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 38. ¬avb		|- 	a→b
@@ -433,7 +429,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// TODO: Not tests
@@ -447,7 +443,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 40. ¬⊥		|-  ┬
@@ -459,7 +455,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 41. ¬¬a 		|- 	a
@@ -471,7 +467,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// 42. ¬a		|-  a→⊥
@@ -483,7 +479,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 43. ¬(a→b) 	|-	a^¬b
@@ -495,7 +491,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 44. ¬(a^¬b)	|- 	a→b
@@ -507,7 +503,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 45. ¬(a↔b) 	|- 	a↔¬b
@@ -519,7 +515,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 46. ¬(a↔b) 	|-  ¬a↔b
@@ -531,7 +527,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)	-- Exclusive or of a and b
@@ -543,7 +539,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 48. ¬(a^b)	|-  ¬av¬b			-- De Morgan laws
@@ -555,7 +551,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 49. ¬(avb)	|-	¬a^¬b			-- De Morgan laws
@@ -567,7 +563,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	
@@ -582,7 +578,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 55. a→b 		|- 	¬avb	
@@ -594,7 +590,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 56. a→b 		|- 	¬(a^¬b)
@@ -606,7 +602,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	// TODO: Iff tests
@@ -620,7 +616,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 58. a↔b				|-	(a^b)v(¬a^¬b)
@@ -632,7 +628,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 59. a↔¬b 			|- 	¬(a↔b)
@@ -644,7 +640,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 60. ¬a↔b 			|-  ¬(a↔b)
@@ -656,7 +652,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// TODO: Atom tests
@@ -670,7 +666,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}	
 	
 	// 62. a		|-  a^┬
@@ -682,7 +678,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}	
 	
 	// 63. a		|-  ava
@@ -694,7 +690,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}	
 	
 	// 64. a		|-  av⊥
@@ -706,7 +702,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}	
 	
 	// 65. a		|-  ¬¬a
@@ -718,7 +714,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}	
 	
 	// 66. a		|-  ┬→a
@@ -730,7 +726,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// TODO: User input tests
@@ -744,7 +740,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 70. ⊥		|-  a^¬a
@@ -756,7 +752,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 71. ┬		|-  av┬
@@ -768,7 +764,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 72. ┬		|-  av¬a
@@ -780,7 +776,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 73. ┬		|- 	a→a
@@ -792,7 +788,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 74. ┬		|- 	a→┬
@@ -804,7 +800,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 75. ┬		|- 	⊥→a
@@ -816,7 +812,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 76. a		|-  av(a^b)
@@ -828,7 +824,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// 77. a  		|-	a^(avb)
@@ -840,7 +836,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// TODO: Old tests
@@ -853,7 +849,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -864,7 +860,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -875,7 +871,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -886,7 +882,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -897,7 +893,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -908,7 +904,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -919,7 +915,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	@Test
@@ -930,7 +926,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -941,7 +937,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -952,7 +948,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -963,7 +959,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -974,7 +970,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -985,7 +981,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -996,7 +992,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	@Test
@@ -1007,7 +1003,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	@Test
@@ -1018,7 +1014,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 
 	@Test
@@ -1029,7 +1025,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", true, tt1.testEquivalence(tt2));
+		assertTrue(tt1.testEquivalence(tt2));
 	}
 	
 	// Test failures
@@ -1042,7 +1038,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", false, tt1.testEquivalence(tt2));
+		assertFalse(tt1.testEquivalence(tt2));
 	}
 	
 	@Test
@@ -1053,7 +1049,7 @@ public class TruthTables {
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
 		TruthTable tt2 = new TruthTable(tree2);
-		assertEquals("", false, tt1.testEquivalence(tt2));
+		assertFalse(tt1.testEquivalence(tt2));
 	}
 
 }

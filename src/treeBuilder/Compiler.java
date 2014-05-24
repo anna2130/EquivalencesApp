@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
-//import android.graphics.RectF;
+import treeManipulation.TruthTable;
 
 public class Compiler {
 	
@@ -30,10 +30,19 @@ public class Compiler {
 	
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
-		
-		String s1 = "a→b";
-		FormationTree tree = compiler.compile(s1);
-		System.out.println(tree);
+
+		String s2 = "((hv(a^┬))^⊥)^⊥";
+		String s1 = "⊥^(┬v┬)";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		System.out.println(tree1);
+		System.out.println(tree2);
+
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		System.out.println(tt1.testEquivalence(tt2));
+		System.out.println(tt1);
+		System.out.println(tt2);
 	}
 	
 	public FormationTree compile(String expr) throws RecognitionException {
@@ -110,19 +119,19 @@ public class Compiler {
 		return sb.toString();
 	}
 	
-	private String getRandomVariable(ArrayList<String> vars) {
+	public String getRandomVariable(ArrayList<String> vars) {
 		Random rand = new Random();
 		int j = rand.nextInt(vars.size());
 		return vars.get(j);
 	}
 
-	private String getRandomBinaryOperator() {
+	public String getRandomBinaryOperator() {
 		Random rand = new Random();
 		int i = rand.nextInt(binaryOps.size());
 		return binaryOps.get(i);
 	}
 	
-	private String getRandomUnaryOperator() {
+	public String getRandomUnaryOperator() {
 		Random rand = new Random();
 		int i = rand.nextInt(unaryOps.size());
 		return unaryOps.get(i);

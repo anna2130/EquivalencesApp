@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -177,15 +178,11 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			public void onClick(View view) {
 				if (view.equals(bottomStack.peek())) {
 					toggleVisibility(bottomFormationTree);
-					//					if (equivalenceComplete(bottomTree.toString(), start))
-					//						rulesList.setText("COMPLETE");
 				} else {
 					// Undo/redo
 					int position = view.getId();
-					System.out.println(position);
 					
 					for (int i = bottomStack.size() - 1; i > position; --i) {
-						System.out.println("For loop: " + i);
 						TextView undone = (TextView) bottomLinearLayout.findViewById(i);
 						setUpUndoneTextView(undone, bottomRedoStack);
 						
@@ -282,12 +279,30 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			bottomRulesList.dismiss();
 		}
 		
+		// check for completion
 		if (equivalenceComplete(topTree.toString(), bottomTree.toString())) {
 			CharSequence text = "Equivalence complete!";
 			int duration = Toast.LENGTH_LONG;
 
 			Toast toast = Toast.makeText(context, text, duration);
+			toast.setGravity(Gravity.CENTER, 0, 0);
 			toast.show();
+		}
+		
+		// check for cycles
+		if (selectedTree == topTree) {
+			for (TextView textView : topStack) {
+				if (textView.getText().toString().equals(topTree)) {
+					CharSequence text = "Cycle found!";
+					int duration = Toast.LENGTH_LONG;
+
+					Toast toast = Toast.makeText(context, text, duration);
+					toast.setGravity(Gravity.CENTER, 0, 0);
+					toast.show();
+				}
+			}
+		} else {
+		
 		}
 	}
 	

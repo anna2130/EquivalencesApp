@@ -43,6 +43,12 @@ public class MainActivity extends Activity {
 	    
 	    c = new Compiler();
 	    re = new RuleEngine();
+	    
+		EditText startText = (EditText) findViewById(R.id.start_equivalence);
+		EditText endText = (EditText) findViewById(R.id.end_equivalence);
+		
+		startText.setText("((hv(a^┬))^⊥)^⊥");
+		endText.setText("⊥^(┬v┬)");
 	}
 
 	@Override public void onBackPressed() {
@@ -101,6 +107,9 @@ public class MainActivity extends Activity {
 					intent.putExtra(END_EQUIVALENCE, endEquivalence);
 				    startActivity(intent);
 				} else {
+					System.out.println(tt1);
+					System.out.println(tt2);
+					System.out.println(tt1.testEquivalence(tt2));
 					setErrorMessage("Not equivalent");
 				}
 			}

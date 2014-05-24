@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import treeBuilder.FormationTree;
 
@@ -36,10 +37,10 @@ public class TruthTable {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
 
-		variables = replace(variables);
-		v2 = replace(v2);
+		SortedSet<String> testV1 = replace(variables);
+		SortedSet<String> testV2 = replace(v2);
 		
-		if (variables.equals(v2) && equalsSet(t2))
+		if (testV1.equals(testV2) && equalsSet(t2))
 			return true;
 		else {
 			if (variables.size() > v2.size()) 
@@ -49,7 +50,7 @@ public class TruthTable {
 		}
 		return false;
 	}
-	
+
 	public boolean testRuleEquivalence(TruthTable tt2) {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
@@ -81,11 +82,12 @@ public class TruthTable {
 	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t1, SortedSet<String> v1, 
 			HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
 		HashSet<ArrayList<Integer>> reducedTable = new HashSet<ArrayList<Integer>>();
-		
+		System.out.println(v1);
+		System.out.println(v2);
 		Iterator<String> it1 = v1.iterator();
 		Iterator<String> it2 = v2.iterator();
 		int i = 0;
-		HashSet<Integer> keptValues = new HashSet<Integer>();
+		SortedSet<Integer> keptValues = new TreeSet<Integer>();
 		
 		while (it1.hasNext() && it2.hasNext()) {
 			String s1 = it1.next();
@@ -95,7 +97,7 @@ public class TruthTable {
 				s1 = it1.next();
 				++i;
 			}
-			
+			System.out.println("kept val: " + i);
 			keptValues.add(i);
 			++i;
 		}
