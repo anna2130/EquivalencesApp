@@ -11,7 +11,6 @@
     <string name="randomise">Randomise</string>
     <string name="title_activity_begin_equivance">BeginEquivanceActivity</string>
     <string name="title_activity_begin_equivalence">BeginEquivalenceActivity</string>
-    <string name="title_activity_demo">DemoActivity</string>
-    <string name="hello_world">Hello world!</string>
+    <color name="ltgray">#cccccc</color>
 
 </resources>

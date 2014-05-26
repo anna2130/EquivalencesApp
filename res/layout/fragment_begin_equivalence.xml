@@ -32,16 +32,22 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" 
             android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp" >
+    		android:gravity="center" >
         </LinearLayout>
+        
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/ltgray" >
+        </View>
 
         <LinearLayout
             android:id="@+id/bottom_redo_linear_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" 
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp" >
+            android:layout_marginBottom="25dp"
+    		android:gravity="center" >
         </LinearLayout>
         
         <app.DrawView
