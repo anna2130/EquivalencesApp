@@ -30,8 +30,9 @@ public class DrawView extends View {
 	private FormationTree tree;
 	private Node selected;
 
-	private int offset;
-	private int shift;
+	private int yOffset;
+	private int xOffset;
+	private int centerShift;
 	private int leeway;
 
 	private static double gapBetweenLevels = 60;
@@ -42,6 +43,9 @@ public class DrawView extends View {
 	private HashMap<RectF, Node> boundsMap;
 
 	private RuleEngine re;
+
+	float x1,x2;
+	float y1, y2;
 
 	public DrawView(Context context) {
 		super(context);
@@ -60,7 +64,8 @@ public class DrawView extends View {
 
 	private void init(Context c){
 		tree = null;
-		offset = 20;
+		yOffset = 20;
+		xOffset = 0;
 		leeway = 10;
 
 		linePaint = new Paint();
@@ -102,7 +107,7 @@ public class DrawView extends View {
 			setUpTreeLayout(Location.Top);
 		float rootX = getBoundsOfNode(tree.getRoot()).centerX();
 		float canvasCenterX = canvas.getWidth() / 2;
-		shift = (int) (canvasCenterX - rootX);
+		centerShift = (int) (canvasCenterX - rootX) + xOffset;
 
 		paintEdges(canvas, tree.getRoot());
 
@@ -113,6 +118,28 @@ public class DrawView extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		int eventaction = event.getAction();
+
+		switch (eventaction) {
+		case MotionEvent.ACTION_DOWN:
+			x1 = event.getX();
+			return true;
+		case MotionEvent.ACTION_UP:
+			x2 = event.getX();
+
+			//if left to right sweep event on screen
+			if (x2 - x1 > 20) {
+				xOffset += 250;
+				this.invalidate();
+				return true;
+			// if right to left sweep event on screen
+			} else if (x1 - x2 > 20) {
+				xOffset -= 250;
+				this.invalidate();
+				return true;
+			}
+		}
+
 		float x = event.getX();
 		float y = event.getY();
 		for (RectF bound : boundsMap.keySet()) {
@@ -139,7 +166,7 @@ public class DrawView extends View {
 			int y1 = (int) b1.centerY();
 			for (Node child : root.getChildren()) {
 				RectF b2 = getBoundsOfNode(child);
-				canvas.drawLine(x1 + shift, y1 + offset, b2.centerX() + shift, b2.centerY() + offset, linePaint);
+				canvas.drawLine(x1 + centerShift, y1 + yOffset, b2.centerX() + centerShift, b2.centerY() + yOffset, linePaint);
 
 				paintEdges(canvas, child);
 			}
@@ -153,21 +180,21 @@ public class DrawView extends View {
 		float xpos = bounds.centerX();
 		float ypos = ((bounds.bottom + bounds.top) / 2 - 
 				((fontPaint.descent() + fontPaint.ascent()) / 2));
-		RectF newBounds = new RectF(bounds.left + shift - leeway, bounds.top 
-				+ offset + leeway, bounds.right + shift + leeway, bounds.bottom + offset - leeway);
+		RectF newBounds = new RectF(bounds.left + centerShift - leeway, bounds.top 
+				+ yOffset + leeway, bounds.right + centerShift + leeway, bounds.bottom + yOffset - leeway);
 
-		float xBound = bounds.centerX() + shift;
-		if (xBound < radius || xBound > getMeasuredWidth() - radius) {
-			System.out.println("Out of bounds node: " + node);
-		}
+		//		float xBound = bounds.centerX() + centerShift;
+		//		if (xBound < radius || xBound > getMeasuredWidth() - radius) {
+		//			System.out.println("Out of bounds node: " + node);
+		//		}
 
 		if (node == selected)
-			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, radius, highlightPaint);
+			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, highlightPaint);
 		else
-			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, radius, backgroundPaint);
+			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, backgroundPaint);
 
-		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, radius, linePaint);
-		canvas.drawText(node.getValue(), xpos + shift, ypos + offset, fontPaint);
+		canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);
+		canvas.drawText(node.getValue(), xpos + centerShift, ypos + yOffset, fontPaint);
 
 		boundsMap.put(newBounds, node);
 	}
@@ -190,7 +217,7 @@ public class DrawView extends View {
 
 		RectF bounds = treeLayout.getBounds();
 		LayoutParams params = (LayoutParams) this.getLayoutParams();
-		params.height = (int) (bounds.bottom - bounds.top + offset * 2);
+		params.height = (int) (bounds.bottom - bounds.top + yOffset * 2);
 		this.setLayoutParams(params);
 	}
 
