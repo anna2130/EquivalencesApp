@@ -148,6 +148,7 @@ public class DrawView extends View {
 
 	public void paintNode(Canvas canvas, Node node) {
 		RectF bounds = getBoundsOfNode(node);
+		int radius = 25;
 
 		float xpos = bounds.centerX();
 		float ypos = ((bounds.bottom + bounds.top) / 2 - 
@@ -155,12 +156,17 @@ public class DrawView extends View {
 		RectF newBounds = new RectF(bounds.left + shift - leeway, bounds.top 
 				+ offset + leeway, bounds.right + shift + leeway, bounds.bottom + offset - leeway);
 
-		if (node == selected)
-			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, highlightPaint);
-		else
-			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, backgroundPaint);
+		float xBound = bounds.centerX() + shift;
+		if (xBound < radius || xBound > getMeasuredWidth() - radius) {
+			System.out.println("Out of bounds node: " + node);
+		}
 
-		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, linePaint);
+		if (node == selected)
+			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, radius, highlightPaint);
+		else
+			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, radius, backgroundPaint);
+
+		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, radius, linePaint);
 		canvas.drawText(node.getValue(), xpos + shift, ypos + offset, fontPaint);
 
 		boundsMap.put(newBounds, node);

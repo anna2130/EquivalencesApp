@@ -109,20 +109,34 @@ public class MainActivity extends Activity {
 		String end;
 
 		FormationTree tree;
-
+		// If other equivalence is empty, generate new equivalence from scratch
 		if (start.equals("")) {
 			end = c.generateRandomEquivalence(6, 2);
 			tree = c.compile(end);
+			
+			// limit length of geneated equivalence
+			while (tree.toString().length() > 25) {
+				end = c.generateRandomEquivalence(6, 2);
+				tree = c.compile(end);
+			}
 		} else {
+			// else compile other equivalence
 			tree = c.compile(start);
 		}
 
-		re.applyRandomRules(tree, 3);
-		end = tree.toString();
-		if (end.equals(start)) {
-			randomise(startText, endText);
+		// TODO: Doesn't pick up on incorrect syntax beginning with atom?
+		if (tree.hasError()) {
+			setErrorMessage("Incorrect syntax");
 		} else {
-			endText.setText(end);
+			// apply random rules to other equivalence
+			re.applyRandomRules(tree, 3);
+			
+			end = tree.toString();
+			if (end.equals(start)) {
+				randomise(startText, endText);
+			} else {
+				endText.setText(end);
+			}
 		}
 	}
 

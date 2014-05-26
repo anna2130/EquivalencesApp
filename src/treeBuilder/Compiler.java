@@ -14,7 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
-import treeManipulation.TruthTable;
+import treeManipulation.RuleEngine;
 
 public class Compiler {
 	
@@ -31,18 +31,12 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 
-		String s2 = "((hv(a^┬))^⊥)^⊥";
-		String s1 = "⊥^(┬v┬)";
-		FormationTree tree1 = compiler.compile(s1);
-		FormationTree tree2 = compiler.compile(s2);
-		System.out.println(tree1);
-		System.out.println(tree2);
-
-		TruthTable tt1 = new TruthTable(tree1);
-		TruthTable tt2 = new TruthTable(tree2);
-		System.out.println(tt1.testEquivalence(tt2));
-//		System.out.println(tt1);
-//		System.out.println(tt2);
+		String s = compiler.generateRandomEquivalence(8, 2);
+		FormationTree tree = compiler.compile(s);
+		RuleEngine re = new RuleEngine();
+		System.out.println(tree);
+		re.applyRandomRules(tree, 5);
+		System.out.println(tree);
 	}
 	
 	public FormationTree compile(String expr) throws RecognitionException {
@@ -81,7 +75,6 @@ public class Compiler {
 			}
 			vars.add(var);
 		}
-		
 		String equiv = generateSubEquivalence(vars, depth);
 		return equiv.substring(1, equiv.length() - 1);
 	}

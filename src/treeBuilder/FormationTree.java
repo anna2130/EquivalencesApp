@@ -189,4 +189,8 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 	public Node getParent(Node node) {
 		return node.getParent();
 	}
+	
+	public FormationTree clone() {
+		return new FormationTree(root.clone());
+	}
 }

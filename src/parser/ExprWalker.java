@@ -119,11 +119,11 @@ public class ExprWalker extends ExprBaseListener {
 		remove();
 	}
 	
-//	@Override public void enterERROR_(@NotNull ExprParser.ERROR_Context ctx) {
+//	@Override public void enterERROR2(@NotNull ExprParser.ERROR2Context ctx) {
 //		tree.setErrorFlag(true);
 //		System.out.println("Error!!!");
 //	}
-
+	
 	@Override public void enterERROR(@NotNull ExprParser.ERRORContext ctx) {
 		tree.setErrorFlag(true);
 		System.out.println("Error!!!");
