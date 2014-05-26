@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.example.equivalencesapp.R;
 
-public class BeginEquivalenceActivity extends Activity implements android.widget.PopupMenu.OnMenuItemClickListener {
+public class BeginEquivalenceActivity extends Activity implements android.widget.PopupMenu.OnMenuItemClickListener, android.widget.PopupMenu.OnDismissListener {
 
 	Context context;
 	RuleEngine re;
@@ -38,6 +38,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	String start;
 	String end;
 
+	View centerLine;
 	Node selected;
 	FormationTree selectedTree;
 
@@ -87,14 +88,17 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		topRedoLinearLayout = (LinearLayout) findViewById(R.id.top_redo_linear_layout);
 		bottomRedoLinearLayout = (LinearLayout) findViewById(R.id.bottom_redo_linear_layout);
 
+		centerLine = findViewById(R.id.redo_line);
 		addTextViewToTop(new TextView(context), start);
 		addTextViewToBottom(new TextView(context), end);
 		addLine(bottomLinearLayout, false, 0);
 
 		topRulesList = new PopupMenu(this, topFormationTree);
 		topRulesList.setOnMenuItemClickListener(this);
+		topRulesList.setOnDismissListener(this);
 		bottomRulesList = new PopupMenu(this, bottomFormationTree);
 		bottomRulesList.setOnMenuItemClickListener(this);
+		bottomRulesList.setOnDismissListener(this);
 	}
 
 	public void setUpTextView(TextView textView, int id, String text) {
@@ -103,7 +107,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		textView.setTextSize(20);
 		textView.setGravity(Gravity.CENTER);
 		textView.setClickable(true);
-		
+
 		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.WRAP_CONTENT,
 				LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -111,16 +115,16 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		llp.setMargins(margin, margin, margin, margin);
 		textView.setLayoutParams(llp);
 	}
-	
+
 	public void addLine(LinearLayout ll, boolean above, int tag) {
 		View line = new View(context);
-		
+
 		LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.MATCH_PARENT, 1);
 		line.setLayoutParams(llp);
 		line.setBackgroundColor(Color.LTGRAY);
 		line.setTag(tag);
-		
+
 		if (above)
 			ll.addView(line, 0);
 		else
@@ -132,6 +136,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		undone.setId(id);
 		line.setTag(id);
 		undone.setTextColor(Color.argb(100, 0, 0, 0));
+		centerLine.setVisibility(View.VISIBLE);
 	}
 
 	public void toggleVisibility(DrawView tree) {
@@ -182,6 +187,9 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 									redo(textView, topRedoLinearLayout, topRedoStack, line);
 									addTextViewToTop(new TextView(context), textView.getText().toString());
 									setUpTree(topTree, topStack, topFormationTree);
+
+									if (j == 0)
+										centerLine.setVisibility(View.INVISIBLE);
 								}
 							}
 						});
@@ -230,6 +238,9 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 									redo(textView, bottomRedoLinearLayout, bottomRedoStack, line);
 									addTextViewToBottom(new TextView(context), textView.getText().toString());
 									setUpTree(bottomTree, bottomStack, bottomFormationTree);
+
+									if (j == 0)
+										centerLine.setVisibility(View.INVISIBLE);
 								}
 							}
 						});
@@ -246,7 +257,6 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		});
 		bottomLinearLayout.addView(textView, 0);
 		addLine(bottomLinearLayout, true, bottomStack.size());
-		System.out.println("Adding " + textView.getId() + " " + id);
 		bottomStack.push(textView);
 	}
 
@@ -301,20 +311,22 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 				String variable = splits[1];
 				re.applyRuleFromBitSet(id, selectedTree, selected, variable);
 				itemClicked();
-			} else
+			} else {
+				System.out.println("Returning false on click");
 				return false;
+			}
 		}
 		topRedoLinearLayout.removeAllViews();
+		bottomRedoLinearLayout.removeAllViews();
+		centerLine.setVisibility(View.INVISIBLE);
 		return true;
 	}
 
 	public void itemClicked() {
 		if (selectedTree == topTree) {
 			addTextViewToTop(new TextView(context), selectedTree.toString());
-			topRulesList.dismiss();
 		} else {
 			addTextViewToBottom(new TextView(context), selectedTree.toString());
-			bottomRulesList.dismiss();
 		}
 
 		// check for completion
@@ -343,5 +355,16 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		Toast toast = Toast.makeText(context, text, duration);
 		toast.setGravity(Gravity.CENTER, 0, 0);
 		toast.show();
+	}
+
+	@Override
+	public void onDismiss(PopupMenu menu) {
+		if (menu == topRulesList) {
+			topFormationTree.deselectNode();
+			topFormationTree.invalidate();
+		} else {
+			bottomFormationTree.deselectNode();
+			bottomFormationTree.invalidate();
+		}
 	}
 }

@@ -25,7 +25,6 @@ import android.inputmethodservice.KeyboardView;
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.text.Editable;
 import android.text.InputType;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,7 +56,8 @@ class CustomKeyboard {
         public final static int CodeUndo 	= 55006;
         public final static int CodeClear	= 55007;
 
-        @Override public void onKey(int primaryCode, int[] keyCodes) {
+        @Override 
+        public void onKey(int primaryCode, int[] keyCodes) {
             // NOTE We can say '<Key android:codes="49,50" ... >' in the xml file; all codes come in keyCodes, the first in this list in primaryCode
             // Get the EditText and its Editable
             View focusCurrent = mHostActivity.getWindow().getCurrentFocus();
@@ -145,7 +145,6 @@ class CustomKeyboard {
 
     /** Make the CustomKeyboard invisible. */
     public void hideCustomKeyboard() {
-    	Log.d("", "Hide");
         mKeyboardView.setVisibility(View.GONE);
         mKeyboardView.setEnabled(false);
     }

@@ -29,7 +29,7 @@ public class DrawView extends View {
 
 	private FormationTree tree;
 	private Node selected;
-	
+
 	private int offset;
 	private int shift;
 	private int leeway;
@@ -40,7 +40,7 @@ public class DrawView extends View {
 
 	private TreeLayout<Node> treeLayout;
 	private HashMap<RectF, Node> boundsMap;
-	
+
 	private RuleEngine re;
 
 	public DrawView(Context context) {
@@ -67,20 +67,20 @@ public class DrawView extends View {
 		linePaint.setColor(Color.BLACK);
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeWidth(2);
-		
+
 		fontPaint = new Paint();
 		fontPaint.setColor(Color.BLACK);
 		fontPaint.setTextSize(fontSize);
 		fontPaint.setTextAlign(Align.CENTER);
-		
+
 		backgroundPaint = new Paint();
 		backgroundPaint.setColor(Color.WHITE);
 		backgroundPaint.setStrokeWidth(10);
-		
+
 		highlightPaint = new Paint();
 		highlightPaint.setColor(Color.CYAN);
 		highlightPaint.setStrokeWidth(10);
-		
+
 		boundsMap = new HashMap<RectF, Node>();
 		re = new RuleEngine();
 	}
@@ -94,6 +94,8 @@ public class DrawView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		boundsMap.clear();
+
 		if (this.getTag().equals("bottom"))
 			setUpTreeLayout(Location.Bottom);
 		else
@@ -101,9 +103,9 @@ public class DrawView extends View {
 		float rootX = getBoundsOfNode(tree.getRoot()).centerX();
 		float canvasCenterX = canvas.getWidth() / 2;
 		shift = (int) (canvasCenterX - rootX);
-		
+
 		paintEdges(canvas, tree.getRoot());
-		
+
 		for (Node node : treeLayout.getNodeBounds().keySet()) {
 			paintNode(canvas, node);
 		}
@@ -120,12 +122,13 @@ public class DrawView extends View {
 				BeginEquivalenceActivity activity = (BeginEquivalenceActivity) this.getContext();
 
 				activity.setRules(re.rulesToStringMap(bs, tree, selected), selected, tree);
-				
+
 				// forces redraw
 				this.invalidate();
+				break;
 			}
 		}
-		
+
 		return super.onTouchEvent(event);
 	}
 
@@ -156,13 +159,17 @@ public class DrawView extends View {
 			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, highlightPaint);
 		else
 			canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, backgroundPaint);
-			
+
 		canvas.drawCircle(bounds.centerX() + shift, bounds.centerY() + offset, 25, linePaint);
 		canvas.drawText(node.getValue(), xpos + shift, ypos + offset, fontPaint);
-		
+
 		boundsMap.put(newBounds, node);
 	}
-	
+
+	public void deselectNode() {
+		selected = null;
+	}
+
 	public void setUpTreeLayout(Location location) {
 		// setup the tree layout configuration
 		DefaultConfiguration<Node> configuration = new DefaultConfiguration<Node>(
@@ -180,11 +187,11 @@ public class DrawView extends View {
 		params.height = (int) (bounds.bottom - bounds.top + offset * 2);
 		this.setLayoutParams(params);
 	}
-	
+
 	public RectF getBoundsOfNode(Node node) {
 		return treeLayout.getNodeBounds().get(node);
 	}
-	
+
 	public void setTree(FormationTree tree) {
 		this.tree = tree;
 	}
