@@ -90,12 +90,12 @@ public class DrawView extends View {
 		re = new RuleEngine();
 	}
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		int w = MeasureSpec.getSize(widthMeasureSpec);
-		int h = MeasureSpec.getSize(heightMeasureSpec);
-		setMeasuredDimension(w, h);
-	}
+//	@Override
+//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//		int w = MeasureSpec.getSize(widthMeasureSpec);
+//		int h = MeasureSpec.getSize(heightMeasureSpec);
+//		setMeasuredDimension(w, h);
+//	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
