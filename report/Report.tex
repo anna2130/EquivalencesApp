@@ -258,17 +258,40 @@ Once we have made more progress on our tool we will look into finding out what p
 
 \chapter{Parser}
 \section{Parser Generation}
-\subsection{ANTLR4 and alternatives}
+
+A parser generator is a tool which creates a parser from an inputted grammar. This is necessary so that we can parse the logic equivalences entered in to our application and create an internal tree representation.
+
+\subsection{ANTLR4}
+
+ANTLR is a widely used powerful parser generator that can be used to read, process, execute or translate structured text. It is used by a variety of companies such as Twitter for query parsing and Hadoop in data analysis systems. ANTLR supports a wide range of languages including Java making it a very suitable choice for our project.
+
+From a grammar ANTLR generates a parser for that language and has the ability to automatically build parse trees representing the input. More interestingly, ANTLR also generates tree walkers which can be customised to visit the nodes of those trees and perform actions on those nodes. We use this functionality to build our own custom tree as described in Section \ref{sub:walker}.
+
+ANTLR uses EBNF for its input grammar notation and uses an LL(*) parsing algorithm. This allows direct left recursion so that expressing our required syntax is easy and natural. 
+
+\subsection{Alternatives to ANTLR4}
+\label{sub:alternatives_to_antlr4}
+
+ANTLR4 provides many benefits over previous versions and alternatives. ANTLR4 uses a new variation of the LL(*) parsing algorithm that was used in ANTLR3. It uses an adaptive algorithm that is much stronger than the static grammar analysis algorithm used in ANTLR3. This means that ANTLR4 will accept much more natural looking grammars and provides a lot more flexibility than in previous versions. The ability to write much more natural expression rules increases the usability as in previous versions it was often a struggle to write a grammar that ANTLR would accept. ANTLR4 aimed to focus more on ease-of-use and chose simplicity over complexity where possible. This is a large reason for choosing this parser generator over the alternatives.
+
+Although there are a few other tools that can generate source code similar to ANTLR that you can load into a debugger and step through, none of them have adaptive LL(*) parsers as ANTLR4 does. Which means if we chose an alternative such as JavaCC we would need to configure our grammar to suit a weaker LL(k) parsing strategy. JavaCC is limited to the LL(k) class of grammars because it generates top-down parsers which means left recursion cannot be used. This would make generating the grammar more difficult and the result would be less natural.
+
+Through our research we established that ANTLR4 provided the most sophisticated and easy-to-use parser generator for our project.
 
 \section{Grammar}
+
 \subsection{Tokens}
+
 \subsection{Order of Precedence}
+
 \subsection{Error Handling - Incorrect grammar syntax to handle errors semantically}
+
 \subsection{Extension to First Order Logic}
 
 \section{Parser}
 \subsection{Parser}
 \subsection{Walker}
+\label{sub:walker}
 
 \chapter{Internal Tree Representation}
 \section{Compiler}
@@ -284,7 +307,7 @@ Once we have made more progress on our tool we will look into finding out what p
 \subsection{Atoms}
 
 \chapter{Tree Manipulation}
-\section{The Rule Engine} % (fold)
+\section{The Rule Engine}
 \label{sec:the_rule_engine}
 
 \section{Rule Selection - which rules can be applied to a node}
