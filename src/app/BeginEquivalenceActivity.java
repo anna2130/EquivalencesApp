@@ -29,33 +29,35 @@ import com.example.equivalencesapp.R;
 
 public class BeginEquivalenceActivity extends Activity implements android.widget.PopupMenu.OnMenuItemClickListener, android.widget.PopupMenu.OnDismissListener {
 
-	Context context;
-	RuleEngine re;
-	Compiler compiler;
+	private Context context;
+	private RuleEngine re;
+	private Compiler compiler;
 
-	FormationTree topTree;
-	FormationTree bottomTree;
-	String start;
-	String end;
+	private FormationTree topTree;
+	private FormationTree bottomTree;
+	private String start;
+	private String end;
 
-	View centerLine;
-	Node selected;
-	FormationTree selectedTree;
+	private View centerLine;
+	private Node selected;
+	private FormationTree selectedTree;
 
-	Stack<TextView> topStack;
-	Stack<TextView> bottomStack;
-	Stack<TextView> topRedoStack;
-	Stack<TextView> bottomRedoStack;
+	private Stack<TextView> topStack;
+	private Stack<TextView> bottomStack;
+	private Stack<TextView> topRedoStack;
+	private Stack<TextView> bottomRedoStack;
 
-	LinearLayout topLinearLayout;
-	LinearLayout bottomLinearLayout;
-	LinearLayout topRedoLinearLayout;
-	LinearLayout bottomRedoLinearLayout;
+	private LinearLayout topLinearLayout;
+	private LinearLayout bottomLinearLayout;
+	private LinearLayout topRedoLinearLayout;
+	private LinearLayout bottomRedoLinearLayout;
 
-	PopupMenu topRulesList;
-	PopupMenu bottomRulesList;
-	DrawView topFormationTree;
-	DrawView bottomFormationTree;
+	private PopupMenu topRulesList;
+	private PopupMenu bottomRulesList;
+	private DrawView topFormationTree;
+	private DrawView bottomFormationTree;
+	
+	public static int min_user_input_required = 69;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -282,7 +284,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 			key = rules.keyAt(i);
 
 			// is user input required for new atom
-			if (key < 69) {
+			if (key < min_user_input_required) {
 				rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
 			} else {
 				SubMenu sub = rulesList.getMenu().addSubMenu(Menu.NONE, key, Menu.NONE, rules.get(key));
@@ -301,7 +303,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	public boolean onMenuItemClick(MenuItem item) {
 		int id = item.getItemId();
 
-		if (id < 69) {
+		if (id < min_user_input_required) {
 			re.applyRuleFromBitSet(id, selectedTree, selected, null);
 			itemClicked();
 		} else {
@@ -312,7 +314,6 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 				re.applyRuleFromBitSet(id, selectedTree, selected, variable);
 				itemClicked();
 			} else {
-				System.out.println("Returning false on click");
 				return false;
 			}
 		}

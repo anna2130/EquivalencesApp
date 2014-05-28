@@ -284,7 +284,9 @@ Once we have made more progress on our tool we will look into finding out what p
 \subsection{Atoms}
 
 \chapter{Tree Manipulation}
-\section{The Rule Engine}
+\section{The Rule Engine} % (fold)
+\label{sec:the_rule_engine}
+
 \section{Rule Selection - which rules can be applied to a node}
 \section{Rule Application - how rules are applied to a node}
 \section{Random Rule Application}
@@ -373,11 +375,19 @@ Fulfilling this aesthetic requires us breaking Wetherell and Shannon's aim of mi
 
 \subsection{Reingold and Tilford's Algorithm}
 
+The proposed algorithm was based on the following heuristic: 
+
+``Two subtrees of a node should be formed independently, and then places as close together as possble''\cite{tidierdrawingsws}.
+
+This is applied during a postorder traversal of the tree by taking the two subtrees of a node and calculating the contours of those subtrees. The two subtrees are then positioned so they overlap at their roots before moving them apart until no two points are touching. This is done recursively at each level moving down the levels of the tree until the bottom of the shortest subtree is reached. Once the process is finished the position of the subtrees can be fixed relative to their parent node which is centered over them. Once the postorder traversal is complete a preorder traversal occurs to convert the relative positions to absolute coordinates.
+
 \subsection{Walker's Algorithm}
+
+Extending Reingold and Tilford's algorithm to to rooted ordered trees of unbounded degree as described in their paper produces layouts where some subtrees of the tree could have been dispersed better to create a more attractive layout. In 1990 Walker's algorithm solved this problem by spacing out subtrees whenever possible, however in the initial algorithm presented the runtime was quadratic. Walker's algorithm was improved upon by Christoph Buchheim, Michael J\"unger and Sebastian Leipert so it would run in linear time\cite{improvingwalkers}. This is the algorithm we use in our application. 
 
 \subsection{Abego TreeLayout}
 
-Abego TreeLayout is an external library which efficiently creates compact and highly cusomisable tree layouts. It's based on Walker's algorithm with enhancements suggested by Buchheim, Jünger, and Leipert\cite{treelayoutlineartime}. The software builds tree layouts in linear time so that even trees with many nodes are built quickly. TreeLayout separates the layout of the tree from the actual rendering, therefore it is suitable for drawing trees in an Android application because it is not limited to a specific output or format.
+Abego TreeLayout is an external library which efficiently creates compact and highly cusomisable tree layouts. It is based on Walker's algorithm with the enhancements previously mentioned suggested by Buchheim, J\"unger, and Leipert\cite{treelayoutlineartime}. The software builds tree layouts in linear time so that even trees with many nodes are built quickly. TreeLayout separates the layout of the tree from the actual rendering, therefore it is suitable for drawing trees in an Android application because it is not limited to a specific output or format.
 
 \begin{figure}[ht]
     \centering
@@ -402,13 +412,14 @@ We created a custom view DrawView to draw the trees to the screen in the applica
 
 In {\tt onDraw()} we determine whether we are drawing the top or bottom formation tree and call {\tt setUpTreeLayout()} (shown in Listing \ref{setuptreelayout}) which uses the Abego TreeLayout to manage the layout.
 
-To use TreeLayout we create a TreeLayout instance with our tree (accessible through the {\tt TreeForTreeLayout} inferface), a {\tt FixedNodeExtentProvider} (defines a fixed size for each node) and a {\tt DefaultConfiguration} (configures the layout by defining parameters such as {\tt gapBetweenNodes} and {\tt gapBetweenLevels}).
+To use TreeLayout we create a {\tt TreeLayout} instance with our tree (accessible through the {\tt TreeForTreeLayout} inferface), a {\tt FixedNodeExtentProvider} (defines a fixed size for each node) and a {\tt DefaultConfiguration} (configures the layout by defining parameters such as {\tt gapBetweenNodes} and {\tt gapBetweenLevels}).
 
 \begin{listing}[ht]
 \begin{minted}{java}
 public void setUpTreeLayout(Location location) {
-    DefaultConfiguration<Node> configuration = new DefaultConfiguration<Node>(
-            gapBetweenLevels, gapBetweenNodes, location);
+    DefaultConfiguration<Node> configuration = new 
+            DefaultConfiguration<Node>(gapBetweenLevels, 
+            gapBetweenNodes, location);
 
     FixedNodeExtentProvider<Node> nodeExtentProvider = new 
             FixedNodeExtentProvider<>(20, 20);
@@ -422,14 +433,60 @@ public void setUpTreeLayout(Location location) {
 \label{setuptreelayout}
 \end{listing}
 
-TreeLayout calculates the position of each node so we can then paint the nodes and edges to the screen.
+TreeLayout calculates the position of each node so we can then paint the nodes and edges to the screen using Android Canvas.
 
 \subsection{Responding to Touch Events}
 
-By overriding {\tt onTouchEvent()} in DrawView we can get the event action performed on the view. Using this we can check if the touched position is within the bounds of any of the nodes drawn to the screen. If the position is within the bounds of a node we display applicable rules for that node by calling {\tt setRules()} on the current activity. Selecting a node also forces a redraw so that we can highlight the selected node.
+By overriding {\tt onTouchEvent()} in DrawView we can get the event action performed on the view. Using this we can check if the touched position is within the bounds of any of the nodes drawn to the screen. If the position is within the bounds of a node we display applicable rules for that node by calling {\tt setRules()} on the current activity ({\tt BeginEquivalenceActivity}). Selecting a node also forces a redraw so that we can highlight the selected node.
 
 \section{Rule Application}
-\subsection{How rules are displayed within the app}
+
+\subsection{Rule Display}
+
+The rules are displayed in a PopupMenu on screen either above or below the selected tree. The rules are generated by the {\tt RuleEngine} as described in Section \ref{sec:the_rule_engine}.
+
+Calling {\tt setRules()} adds the generated rules iteratively to the PopupMenu. If the rule requires user input (eg. $\top := \bot \to a$) a SubMenu is created with the variables that can be applied as shown in Listing \ref{rulessetup}. Each entry in the PopupMenu contains the String representing the rule and the rule key. The key is required so we know which rule to apply on touch events.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+public void setRules(SparseArray<String> rules, Node selected, 
+        FormationTree selectedTree) {
+    ...
+
+    int key;
+    for (int i = 0; i < rules.size(); ++i) {
+        key = rules.keyAt(i);
+
+        if (key < min_user_input_required) {
+            rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, 
+                    rules.get(key));
+        } else {
+            SubMenu sub = rulesList.getMenu().addSubMenu(Menu.NONE, 
+                    key, Menu.NONE, rules.get(key));
+            SortedSet<String> vars = topTree.getVariables();
+            vars.addAll(bottomTree.getVariables());
+
+            for (String v : vars) {
+                sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) 
+                        + " using " + v);
+            }
+        }
+    }
+    rulesList.show();
+}
+\end{minted}
+\caption{Rules being added to the rulesList PopupMenu in setRules}
+\label{rulessetup}
+\end{listing}
+
+\subsection{Responding to PopupMenu Touch Events}
+\label{sub:responding_to_popupmenu_touch_events}
+
+Overriding {\tt onMenuItemClick()} in {\tt BeginEquivalenceActivity} allows us to determine which item was selected from the PopupMenu and and apply that rule to the selected node. We can determine which rule should be applied by taking the key of selected item and applying that rule from our BitSet of rules using the {\tt RuleEngine} as described in Section \ref{sec:the_rule_engine}.
+
+Applying a rule to the selected node adds a new TextView to the respective list of equivalences (either top or bottom). Once the rule has been applied the application will check for completion and cycles (described in Section \ref{sub:detecting_cycles}). If either are found a Toast (a simple popup for displaying feedback) will be displayed alerting the user.
+
+We also override {\tt onDimiss()} so that when a user dismisses the PopupMenu without selecting a rule we can also redraw the formation tree to deselect the selected node. 
 
 \section{Difficulty}
 \subsection{Length of generated equivalences}
@@ -438,6 +495,7 @@ By overriding {\tt onTouchEvent()} in DrawView we can get the event action perfo
 
 \section{Help}
 \subsection{Detecting cycles}
+\label{sub:detecting_cycles}
 
 \begin{comment}
 \chapter{Project Plan}
@@ -597,8 +655,14 @@ We need to ask people who understand logic (e.g. lecturers) so we can confirm th
   \emph{Drawing Presentable Trees}.
   http://billmill.org/pymag-trees
 
+\bibitem{improvingwalkers}
+  Buchheim C, J\"unger M, Leipert S. 
+  \emph{Improving Walker's Algorithm to Run in Linear Time}
+  Graph Drawing Lecture Notes in Computer Science Volume 2528, 
+  2002, pp 344-353
+
 \bibitem{treelayoutlineartime}
-  Buchheim C, Jünger M, Leipert S. 
+  Buchheim C, J\"unger M, Leipert S. 
   \emph{Drawing rooted trees in linear time}. 
   Software—Practice and Experience 2006; 36(6):651–665
 
