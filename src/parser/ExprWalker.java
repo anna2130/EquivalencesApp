@@ -15,13 +15,11 @@ public class ExprWalker extends ExprBaseListener {
 	private FormationTree tree;
 	private Stack<Boolean> binary;
 	private int key;
-//	private int index;
 	private boolean increment;
 	
 	public ExprWalker(FormationTree tree) {
 		this.tree = tree;
 		key = 0;
-//		index = 0;
 		binary = new Stack<Boolean>();
 	}
 	

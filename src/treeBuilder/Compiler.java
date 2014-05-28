@@ -39,20 +39,14 @@ public class Compiler {
 		System.out.println(tree);
 	}
 	
-	public FormationTree compile(String expr) throws RecognitionException {
+	public FormationTree compile(String expr) {
 		CharStream input = new ANTLRInputStream(expr);
 		ExprLexer lexer = new ExprLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		ExprParser parser = new ExprParser(tokens);
 		
 		FormationTree tree = new FormationTree(null);
-		ParseTree parseTree = null;
-		try {
-			parseTree = parser.prog();
-		} catch (RecognitionException e) {
-			System.out.println("Caught exception");
-			return null;
-		}
+		ParseTree parseTree = parser.prog();
 		
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(new ExprWalker(tree), parseTree);
