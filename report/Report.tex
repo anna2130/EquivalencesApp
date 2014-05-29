@@ -384,8 +384,75 @@ public FormationTree compile(String expr) {
 \section{Formation Tree}
 \label{sec:formation_tree}
 
-\subsection{Node indexing - proof no two nodes can have the same depth and key}
-\subsection{Tree operations, eg. adding a new node}
+To build our internal representation of the logical formula we define a class {\tt FormationTree}. This is a slightly modified binary tree that stores the root node and an error flag as well as performing all of the tree operations required - such as adding a new node (detailed in Section \ref{sub:tree_operations}).
+
+\subsection{Node Index}
+\label{sub:node_index}
+
+In the final application we will be manipulating individual nodes in the tree. If there are two nodes with the same values and subtrees we need to be sure we're applying a rule to the correct node. Therefore, it is essential that all nodes in the tree have a unique index.
+
+\subsubsection{[Key, Depth] Pairs}
+
+We represent this index as a [key, depth] pair. We define this pair using the three following principles:
+
+\textbf{Principle 1:} A node's depth is defined as the level at which it is found in the tree. 
+
+\textbf{Principle 2:} A node's key is defined by its horizontal position in its level with the leftmost node beginning at 0 and increasing incrementally.
+
+\textbf{Principle 3:} Index's are also applied to gaps in the tree - where nodes could be placed in the future. So the leftmost leaf will only have a key of 0 if it is the child of all the leftmost nodes in the tree.
+
+For example, a formula `a$\land$b' would only have three nodes - the and connective ($\land$) would have a key and depth of 0 and the atoms `a' and `b' would be at depth 1. As `a' is the leftmost node it will be assigned a key value of 0, and `b' will be assigned 1. The example's key and depths are shown in Figure \ref{keydepths}. 
+
+By Principle 3 the incrementation of keys includes all gaps where it is possible for future nodes to be placed - so in our example it were possible for the node `a' to not exist, b would still have the index [1, 1] and would not be upgraded to [0, 1] as there is still a gap for a left child to exist in.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.4\textwidth]{keydepths.png}
+    \caption{Tree representation of `a$\land$b' showing the key and depth at each node}
+    \label{keydepths}
+\end{figure}
+
+\subsubsection{Binary Representation of Index}
+
+The index of a node can be represented in binary to enable us to navigate around the tree easily. The depth represents how many bits should be read and the key defines the binary number. The depth is required so that two nodes with the same key cannot be read as the same. 
+
+In the above example `$\land$' and `a' both have the same key, but their binary representations would be different. `$\land$' does not have a representation as it is the root (length of binary read is zero) and `a' would be 0. If `a' had a children the left child's index would be read as 00 and the right child's as 01. We go into more detail about navigating the tree using the binary representation of indexes in Section \ref{sub:tree_operations}.
+
+\subsubsection{Determining Child and Parent Indexes}
+
+Using this implementation of indexing not only guarantees that no two nodes will have the same index, but also we can easily work out the index of any child node, given we have the parent's index. For example, if we have a subtree of `c$\to$d' and we know the parent's ($\to$) index is [3, 2] and we want to calculate the index of the child node `c' we perform the following actions:
+
+\begin{enumerate}
+    \item \textbf{Key:} We perform a logical left-shift on the parent key (3 << 1 = 6)
+    \item \textbf{Depth:} Increment the parent depth (2++ = 3)
+\end{enumerate}
+
+So the resulting index becomes [6, 3]. To calculate the right child `d' we can simply increment the key of the left child to become [7, 3].
+
+We can also find the parent node's index given a child node by performing the opposite operations. A logical right-shift finds the parent key and decrementing the depth finds the parent depth.
+
+TODO: Draw diagram of left-shift example
+
+\subsection{Tree Operations}
+\label{sub:tree_operations}
+
+\subsubsection{Finding a Node}
+
+Finding a node based on it's index is extremely straight forward using our node indexing scheme. We define a method {\tt findNode()} which simply steps through the tree using the binary representation of the index as a map.
+
+For each level in the tree starting at the root node we take the left most bit of the key and this tells us whether we should take the left or right child route. An unset bit and a set bit represent the left and right children respectively. After we have taken that path and moved to the next level we use a mask to remove the left most bit from the key so that it does not conflict with the next level's left most bit.
+
+Once the required depth is reached the current node is returned.
+
+To find the node defined by index [1, 1] in Figure \ref{keydepths} we would begin at the root node and take the left most bit of the binary representation to determine our path. The binary representation of this node is 1. As the left most bit of this is 1 we take the right path putting us at the node `b'. This is at the required level so the tree walk completes and we return node `b'.
+
+\subsubsection{Adding a New Node}
+
+We define a method {\tt addNode()} to handle the addition of new nodes to the tree. The node passed in will already have its index set up so here we simply need to assign it to the correct position.
+
+If the root of the tree does not exist then the node becomes the new root. Otherwise, we calculate the parent node's index as described in Section \ref{sub:node_index} and use {\tt findNode()} to obtain the parent node that will already exist in the tree. We set this as the new node's parent.
+
+Either the parent node is a unary operator and we set the child of that node to be our new node, or it is a binary operator and we must determine if the the new node is a left or right child. If the node's key is divisible by 2 then the node is a left child, else it's a right child. We then set parent's child respectively. 
 
 \section{Nodes}
 \subsection{Binary Operators}

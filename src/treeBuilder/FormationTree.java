@@ -44,20 +44,16 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 			int parentKey = n.getKey() >> 1;
 			int depth = n.getDepth() - 1;
 			Node parent = findNode(parentKey, depth);
-			
+			n.setParent(parent);
+
 			if (parent instanceof UnaryOperator) {
 				((UnaryOperator) parent).setChild(n);
-				n.setParent(parent);
 			} else {
-				if (n.getKey() % 2 == 0) {
+				if (n.getKey() % 2 == 0)
 					((BinaryOperator) parent).setLeftChild(n);
-					n.setParent(parent);
-				} else {
+				else
 					((BinaryOperator) parent).setRightChild(n);
-					n.setParent(parent);
-				}
 			}
-			
 		} else {
 			root = n;
 		}
