@@ -17,12 +17,10 @@ import treeManipulation.RuleEngine;
 
 public class Compiler {
 	
-	private ArrayList<String> variables;
 	private ArrayList<String> binaryOps;
 	private ArrayList<String> unaryOps;
 	
 	public Compiler() {
-		variables = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "┬", "⊥"));
 		binaryOps = new ArrayList<String>(Arrays.asList("^", "v", "→", "↔"));
 		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
 	}
@@ -34,7 +32,8 @@ public class Compiler {
 		FormationTree tree = compiler.compile(s);
 		RuleEngine re = new RuleEngine();
 		System.out.println(tree);
-		re.applyRandomRules(tree, 5);
+		
+		re.applyRandomRules(tree, 15);
 		System.out.println(tree);
 	}
 	
@@ -56,16 +55,12 @@ public class Compiler {
 	public String generateRandomEquivalence(int numVars, int depth) {
 		ArrayList<String> vars = new ArrayList<String>();
 		
-		int size = variables.size();
-		Random rand;
 		for (int i = 0; i < numVars; ++i) {
-			rand = new Random();
-			String var = variables.get(rand.nextInt(size));
+			String var = Variable.randomVariable().getValue();
 			
-			while (vars.contains(var)) {
-				rand = new Random();
-				var = variables.get(rand.nextInt(size));
-			}
+			while (vars.contains(var))
+				var = Variable.randomVariable().getValue();
+			
 			vars.add(var);
 		}
 		String equiv = generateSubEquivalence(vars, depth);

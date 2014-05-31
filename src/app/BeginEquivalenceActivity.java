@@ -57,7 +57,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	private DrawView topFormationTree;
 	private DrawView bottomFormationTree;
 	
-	public static int min_user_input_required = 69;
+	public static int min_user_input_required;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +79,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		compiler = new Compiler();
 		topTree = compiler.compile(start);
 		bottomTree = compiler.compile(end);
+		
+		min_user_input_required = re.getMinUserInputRequired();
 
 		topFormationTree = (DrawView) findViewById(R.id.top_formation_tree);
 		topFormationTree.setTree(topTree);

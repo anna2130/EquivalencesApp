@@ -143,7 +143,6 @@ public abstract class Node {
 					depth = newDepth;
 			}
 		}
-		
 		return depth;
 	}
 

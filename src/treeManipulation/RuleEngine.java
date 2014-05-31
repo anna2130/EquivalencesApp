@@ -1,7 +1,9 @@
 package treeManipulation;
 
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.SortedSet;
 
 import treeBuilder.Atom;
 import treeBuilder.BinaryOperator;
@@ -11,21 +13,27 @@ import treeBuilder.UnaryOperator;
 import android.util.SparseArray;
 
 public class RuleEngine {
-	
+
 	RuleApplicator ra;
 	RuleSelector rs;
 	int noRules;
 	
+	private static int min_user_input_required = 69;
+
 	public RuleEngine() {
 		ra = new RuleApplicator();
 		rs = new RuleSelector();
 		noRules = rs.getNoRules();
 	}
 	
+	public int getMinUserInputRequired() {
+		return min_user_input_required;
+	}
+
 	public RuleApplicator getRuleApplicator() {
 		return ra;
 	}
-	
+
 	public RuleSelector getRuleSelector() {
 		return rs;
 	}
@@ -124,10 +132,10 @@ public class RuleEngine {
 	 * 76. a		|-  av(a^b)
 	 * 77. a  		|-	a^(avb)
 	 */
-	
+
 	public BitSet getApplicableRules(FormationTree tree, Node node) {
 		BitSet bs = new BitSet(noRules);
-		
+
 		// Equivalences involving ^
 		if (node.isAnd()) {
 			BinaryOperator binary = (BinaryOperator) node;
@@ -135,7 +143,7 @@ public class RuleEngine {
 			Node rightChild = binary.getRightChild();
 			Node[] leftGChildren = leftChild.getChildren();
 			Node[] rightGChildren = rightChild.getChildren();
-			
+
 			bs.set(0);
 			bs.set(1, rs.isIdempotent(tree, binary));
 			bs.set(2, rightChild.isTop());
@@ -160,15 +168,15 @@ public class RuleEngine {
 			bs.set(17, rightChild.isOr() && tree.equalSubTrees(leftChild, rightGChildren[0]));
 			bs.set(18, leftChild.isOr() && tree.equalSubTrees(leftGChildren[0], rightChild));
 		}
-		
+
 		// Equivalences involving ^
-		if (node.isOr()) {
+		else if (node.isOr()) {
 			BinaryOperator binary = (BinaryOperator) node;
 			Node leftChild = binary.getLeftChild();
 			Node rightChild = binary.getRightChild();
 			Node[] leftGChildren = leftChild.getChildren();
 			Node[] rightGChildren = rightChild.getChildren();
-			
+
 			bs.set(19);
 			bs.set(20, rs.isIdempotent(tree, binary));
 			bs.set(21, leftChild.isTop());
@@ -198,12 +206,12 @@ public class RuleEngine {
 			bs.set(37, leftChild.isAnd() && tree.equalSubTrees(leftGChildren[0], rightChild));
 			bs.set(38, leftChild.isNot());
 		}
-		
+
 		// Equivalences involving ¬
 		if (node.isNot()) {
 			Node child = ((UnaryOperator) node).getChild();
 			Node[] grandChildren = child.getChildren();
-			
+
 			bs.set(39, child.isTop());
 			bs.set(40, child.isBottom());
 			bs.set(41, child.isNot());
@@ -216,13 +224,13 @@ public class RuleEngine {
 			bs.set(48, child.isAnd());
 			bs.set(49, child.isOr());
 		}
-		
+
 		// Equivalences involving →
-		if (node.isImplies()) {
+		else if (node.isImplies()) {
 			BinaryOperator binary = (BinaryOperator) node;
 			Node leftChild = binary.getLeftChild();
 			Node rightChild = binary.getRightChild();
-			
+
 			bs.set(50, rs.isIdempotent(tree, binary));
 			bs.set(51, leftChild.isTop());
 			bs.set(52, rightChild.isTop());
@@ -231,9 +239,9 @@ public class RuleEngine {
 			bs.set(55);
 			bs.set(56);
 		}
-		
+
 		// Equivalences involving ↔
-		if (node.isIff()) {
+		else if (node.isIff()) {
 			BinaryOperator binary = (BinaryOperator) node;
 			Node leftChild = binary.getLeftChild();
 			Node rightChild = binary.getRightChild();
@@ -243,10 +251,10 @@ public class RuleEngine {
 			bs.set(59, rightChild.isNot());
 			bs.set(60, leftChild.isNot());
 		}
-		
+
 		// Equivalences involving atoms
 		// Equivalences involving user input
-		if (node.isAtom()) {
+		else if (node.isAtom()) {
 			bs.set(61, 67);
 			bs.set(76, 78);
 			if (node.isBottom()) {
@@ -257,203 +265,209 @@ public class RuleEngine {
 				bs.set(71, 76);
 			}
 		}
-		
+
 		return bs;
 	}
-	
+
 	public SparseArray<String> rulesToStringMap(BitSet bs, FormationTree tree, Node node) {
 		return rs.rulesToStringMap(bs, tree, node);
 	}
-	
+
 	public void applyRuleFromBitSet(int index, FormationTree tree, 
 			Node node, String input) {
-		
+
 		switch (index) {
-			case 0:		ra.applyCommutativity((BinaryOperator) node);
-						break;
-			case 1:		ra.applyIdempotence(tree, (BinaryOperator) node);
-						break;
-			case 2:		ra.applyToLeftChild(tree, (BinaryOperator) node); 
-						break;
-			case 3:		ra.applyToRightChild(tree, (BinaryOperator) node);
-						break;
-			case 4:		ra.applyToBottom(tree, node);
-						break;
-			case 5:		ra.applyToBottom(tree, node);
-						break;
-			case 6:		ra.applyToBottom(tree, node);
-						break;
-			case 7:		ra.applyToBottom(tree, node);
-						break;
-			case 8:		ra.applyLeftAssociativity(tree, (BinaryOperator) node);
-						break;
-			case 9:		ra.applyRightAssociativity(tree, (BinaryOperator) node);
-						break;
-			case 10:	ra.applyAndNotToNotImplies(tree, (BinaryOperator) node);
-						break;
-			case 11:	ra.applyAndImpliesToIff(tree, (BinaryOperator) node);
-						break;
-			case 12:	ra.applyDeMorganOrBackwards(tree, (BinaryOperator) node);
-						break;
-			case 13:	ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) node);
-						break;
-			case 14:	ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) node);
-						break;
-			case 15:	ra.applyDistributivityOrLeftBackwards(tree, (BinaryOperator) node);
-						break;
-			case 16:	ra.applyDistributivityOrRightBackwards(tree, (BinaryOperator) node);
-						break;
-			case 17:	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
-						break;
-			case 18:	ra.applyRightAbsorption(tree, (BinaryOperator) node);
-						break;
-			case 19:	ra.applyCommutativity((BinaryOperator) node);
-						break;
-			case 20:	ra.applyIdempotence(tree, (BinaryOperator) node);
-						break;
-			case 21:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 22:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 23:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 24:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 25:	ra.applyToLeftChild(tree, (BinaryOperator) node);
-						break;
-			case 26:	ra.applyToRightChild(tree, (BinaryOperator) node);
-						break;
-			case 27:	ra.applyLeftAssociativity(tree, (BinaryOperator) node);
-						break;
-			case 28:	ra.applyRightAssociativity(tree, (BinaryOperator) node);
-						break;
-			case 29:	ra.applyOrAndToIff(tree, (BinaryOperator) node);
-						break;
-			case 30:	ra.applyOrAndToNotIff(tree, (BinaryOperator) node);
-						break;
-			case 31:	ra.applyDeMorganAndBackwards(tree, (BinaryOperator) node);
-						break;
-			case 32:	ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) node);
-						break;
-			case 33:	ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) node);
-						break;
-			case 34:	ra.applyDistributivityAndLeftBackwards(tree, (BinaryOperator) node);
-						break;
-			case 35:	ra.applyDistributivityAndRightBackwards(tree, (BinaryOperator) node);
-						break;
-			case 36:	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
-						break;
-			case 37:	ra.applyRightAbsorption(tree, (BinaryOperator) node);
-						break;
-			case 38:	ra.applyOrToImplies(tree, (BinaryOperator) node);
-						break;
-			case 39:	ra.applyNotTop(tree, (UnaryOperator) node);
-						break;
-			case 40:	ra.applyNotBottom(tree, (UnaryOperator) node);
-						break;
-			case 41:	ra.applyNotNot(tree, (UnaryOperator) node);
-						break;
-			case 42:	ra.applyNotAtom(tree, (UnaryOperator) node);
-						break;
-			case 43:	ra.applyNotImplies(tree, (UnaryOperator) node);
-						break;
-			case 44:	ra.applyNotAndToImplies(tree, (UnaryOperator) node);
-						break;
-			case 45:	ra.applyNotIffToNotB(tree, (UnaryOperator) node);
-						break;
-			case 46:	ra.applyNotIffToNotA(tree, (UnaryOperator) node);
-						break;
-			case 47:	ra.applyNotIffToOrAnd(tree, (UnaryOperator) node);
-						break;
-			case 48:	ra.applyDeMorganAndForwards(tree, (UnaryOperator) node);
-						break;
-			case 49:	ra.applyDeMorganOrForwards(tree, (UnaryOperator) node);
-						break;
-			case 50:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 51:	ra.applyToRightChild(tree, (BinaryOperator) node);
-						break;
-			case 52:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 53:	ra.applyToTop(tree, (BinaryOperator) node);
-						break;
-			case 54:	ra.applyImpliesToNot(tree, (BinaryOperator) node);
-						break;
-			case 55:	ra.applyImpliesToOr(tree, (BinaryOperator) node);
-						break;
-			case 56:	ra.applyImpliesToNotAnd(tree, (BinaryOperator) node);
-						break;
-			case 57:	ra.applyIffToAndImplies(tree, (BinaryOperator) node);
-						break;
-			case 58:	ra.applyIffToOrAnd(tree, (BinaryOperator) node);
-						break;
-			case 59:	ra.applyIffNotBToNotIff(tree, (BinaryOperator) node);
-						break;
-			case 60:	ra.applyIffNotAToNotIff(tree, (BinaryOperator) node);
-						break;
-			case 61:	ra.applyAndIdempotenceBackwards(tree, (Atom) node);
-						break;
-			case 62:	ra.applyAndTop(tree, (Atom) node);
-						break;
-			case 63:	ra.applyOrIdempotenceBackwards(tree, (Atom) node);
-						break;
-			case 64:	ra.applyOrBottom(tree, (Atom) node);
-						break;
-			case 65:	ra.applyNotNotBackwards(tree, (Atom) node);
-						break;
-			case 66:	ra.applyTopImplies(tree, (Atom) node);
-						break;
-			case 67:	ra.applyNotTop(tree, (Atom) node);
-						break;
-			case 68:	ra.applyNotBottom(tree, (Atom) node);
-						break;
-			case 69:	ra.applyAtomAndBottom(tree, (Atom) node, input);
-						break;
-			case 70:	ra.applyBottomToAndAtom(tree, (Atom) node, input);
-						break;
-			case 71:	ra.applyAtomOrTop(tree, (Atom) node, input);
-						break;
-			case 72:	ra.applyTopToOrAtom(tree, (Atom) node, input);
-						break;
-			case 73:	ra.applyTopToImpliesAtom(tree, (Atom) node, input);
-						break;
-			case 74:	ra.applyTopToImpliesAtomTop(tree, (Atom) node, input);
-						break;
-			case 75:	ra.applyTopToImpliesBottomAtom(tree, (Atom) node, input);
-						break;
-			case 76:	ra.applyAbsorptionOrBackwards(tree, (Atom) node, input);
-						break;
-			case 77:	ra.applyAbsorptionAndBackwards(tree, (Atom) node, input);
-						break;
+		case 0:		ra.applyCommutativity((BinaryOperator) node);
+		break;
+		case 1:		ra.applyIdempotence(tree, (BinaryOperator) node);
+		break;
+		case 2:		ra.applyToLeftChild(tree, (BinaryOperator) node); 
+		break;
+		case 3:		ra.applyToRightChild(tree, (BinaryOperator) node);
+		break;
+		case 4:		ra.applyToBottom(tree, node);
+		break;
+		case 5:		ra.applyToBottom(tree, node);
+		break;
+		case 6:		ra.applyToBottom(tree, node);
+		break;
+		case 7:		ra.applyToBottom(tree, node);
+		break;
+		case 8:		ra.applyLeftAssociativity(tree, (BinaryOperator) node);
+		break;
+		case 9:		ra.applyRightAssociativity(tree, (BinaryOperator) node);
+		break;
+		case 10:	ra.applyAndNotToNotImplies(tree, (BinaryOperator) node);
+		break;
+		case 11:	ra.applyAndImpliesToIff(tree, (BinaryOperator) node);
+		break;
+		case 12:	ra.applyDeMorganOrBackwards(tree, (BinaryOperator) node);
+		break;
+		case 13:	ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) node);
+		break;
+		case 14:	ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) node);
+		break;
+		case 15:	ra.applyDistributivityOrLeftBackwards(tree, (BinaryOperator) node);
+		break;
+		case 16:	ra.applyDistributivityOrRightBackwards(tree, (BinaryOperator) node);
+		break;
+		case 17:	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
+		break;
+		case 18:	ra.applyRightAbsorption(tree, (BinaryOperator) node);
+		break;
+		case 19:	ra.applyCommutativity((BinaryOperator) node);
+		break;
+		case 20:	ra.applyIdempotence(tree, (BinaryOperator) node);
+		break;
+		case 21:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 22:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 23:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 24:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 25:	ra.applyToLeftChild(tree, (BinaryOperator) node);
+		break;
+		case 26:	ra.applyToRightChild(tree, (BinaryOperator) node);
+		break;
+		case 27:	ra.applyLeftAssociativity(tree, (BinaryOperator) node);
+		break;
+		case 28:	ra.applyRightAssociativity(tree, (BinaryOperator) node);
+		break;
+		case 29:	ra.applyOrAndToIff(tree, (BinaryOperator) node);
+		break;
+		case 30:	ra.applyOrAndToNotIff(tree, (BinaryOperator) node);
+		break;
+		case 31:	ra.applyDeMorganAndBackwards(tree, (BinaryOperator) node);
+		break;
+		case 32:	ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) node);
+		break;
+		case 33:	ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) node);
+		break;
+		case 34:	ra.applyDistributivityAndLeftBackwards(tree, (BinaryOperator) node);
+		break;
+		case 35:	ra.applyDistributivityAndRightBackwards(tree, (BinaryOperator) node);
+		break;
+		case 36:	ra.applyLeftAbsorption(tree, (BinaryOperator) node);
+		break;
+		case 37:	ra.applyRightAbsorption(tree, (BinaryOperator) node);
+		break;
+		case 38:	ra.applyOrToImplies(tree, (BinaryOperator) node);
+		break;
+		case 39:	ra.applyNotTop(tree, (UnaryOperator) node);
+		break;
+		case 40:	ra.applyNotBottom(tree, (UnaryOperator) node);
+		break;
+		case 41:	ra.applyNotNot(tree, (UnaryOperator) node);
+		break;
+		case 42:	ra.applyNotAtom(tree, (UnaryOperator) node);
+		break;
+		case 43:	ra.applyNotImplies(tree, (UnaryOperator) node);
+		break;
+		case 44:	ra.applyNotAndToImplies(tree, (UnaryOperator) node);
+		break;
+		case 45:	ra.applyNotIffToNotB(tree, (UnaryOperator) node);
+		break;
+		case 46:	ra.applyNotIffToNotA(tree, (UnaryOperator) node);
+		break;
+		case 47:	ra.applyNotIffToOrAnd(tree, (UnaryOperator) node);
+		break;
+		case 48:	ra.applyDeMorganAndForwards(tree, (UnaryOperator) node);
+		break;
+		case 49:	ra.applyDeMorganOrForwards(tree, (UnaryOperator) node);
+		break;
+		case 50:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 51:	ra.applyToRightChild(tree, (BinaryOperator) node);
+		break;
+		case 52:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 53:	ra.applyToTop(tree, (BinaryOperator) node);
+		break;
+		case 54:	ra.applyImpliesToNot(tree, (BinaryOperator) node);
+		break;
+		case 55:	ra.applyImpliesToOr(tree, (BinaryOperator) node);
+		break;
+		case 56:	ra.applyImpliesToNotAnd(tree, (BinaryOperator) node);
+		break;
+		case 57:	ra.applyIffToAndImplies(tree, (BinaryOperator) node);
+		break;
+		case 58:	ra.applyIffToOrAnd(tree, (BinaryOperator) node);
+		break;
+		case 59:	ra.applyIffNotBToNotIff(tree, (BinaryOperator) node);
+		break;
+		case 60:	ra.applyIffNotAToNotIff(tree, (BinaryOperator) node);
+		break;
+		case 61:	ra.applyAndIdempotenceBackwards(tree, (Atom) node);
+		break;
+		case 62:	ra.applyAndTop(tree, (Atom) node);
+		break;
+		case 63:	ra.applyOrIdempotenceBackwards(tree, (Atom) node);
+		break;
+		case 64:	ra.applyOrBottom(tree, (Atom) node);
+		break;
+		case 65:	ra.applyNotNotBackwards(tree, (Atom) node);
+		break;
+		case 66:	ra.applyTopImplies(tree, (Atom) node);
+		break;
+		case 67:	ra.applyNotTop(tree, (Atom) node);
+		break;
+		case 68:	ra.applyNotBottom(tree, (Atom) node);
+		break;
+		case 69:	ra.applyAtomAndBottom(tree, (Atom) node, input);
+		break;
+		case 70:	ra.applyBottomToAndAtom(tree, (Atom) node, input);
+		break;
+		case 71:	ra.applyAtomOrTop(tree, (Atom) node, input);
+		break;
+		case 72:	ra.applyTopToOrAtom(tree, (Atom) node, input);
+		break;
+		case 73:	ra.applyTopToImpliesAtom(tree, (Atom) node, input);
+		break;
+		case 74:	ra.applyTopToImpliesAtomTop(tree, (Atom) node, input);
+		break;
+		case 75:	ra.applyTopToImpliesBottomAtom(tree, (Atom) node, input);
+		break;
+		case 76:	ra.applyAbsorptionOrBackwards(tree, (Atom) node, input);
+		break;
+		case 77:	ra.applyAbsorptionAndBackwards(tree, (Atom) node, input);
+		break;
 		}
 	}
-	
+
 	public void applyRandomRules(FormationTree tree, int n) {
 		for (int i = 0; i < n; ++i)
 			applyRuleToRandomNode(tree);
 	}
-	
+
 	public void applyRuleToRandomNode(FormationTree tree) {
 		Node node = tree.randomNode();
 		BitSet bs = getApplicableRules(tree, node);
 		applyRandomRule(bs, tree, node);
 	}
-	
+
 	public void applyRandomRule(BitSet bs, FormationTree tree, Node node) {
 		int numSetBits = bs.cardinality();
 		int nextSetBit = bs.nextSetBit(0);
-		
+
 		Random rand = new Random();
-	    int randomNum = rand.nextInt(numSetBits);
-	    
+		int randomNum = rand.nextInt(numSetBits);
+
 		while (randomNum-- > 0)
 			nextSetBit = bs.nextSetBit(nextSetBit + 1);
-		
-		if (nextSetBit > 68)
-			applyRandomRule(bs, tree, node);
-		else {
-			// TODO: Choose appropriate variable to pass through
-		    applyRuleFromBitSet(nextSetBit, tree, node, null);
+
+		// user input is chosen randomly
+		String var = null;
+		if (nextSetBit >= min_user_input_required) {
+			SortedSet<String> vars = tree.getVariables();
+			rand = new Random();
+			int randomVar = rand.nextInt(vars.size());
+
+			Iterator<String> it = vars.iterator();
+			for (int i = 0; i <= randomVar && it.hasNext(); ++i)
+				var = it.next();
 		}
+		applyRuleFromBitSet(nextSetBit, tree, node, var);
 	}
 }
