@@ -51,23 +51,23 @@ public class TruthTable {
 		return false;
 	}
 
-	public boolean testRuleEquivalence(TruthTable tt2) {
-		SortedSet<String> v2 = tt2.getVariables();
-		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
-		
-		if (equalsSet(t2))
-			return true;
-		else {
-			variables = replace(variables);
-			v2 = replace(v2);
-			if (variables.size() > v2.size()) {
-				return testSubsetEquivalence(table, variables, t2, v2);
-			} else if (variables.size() < v2.size()) {
-				return tt2.testSubsetEquivalence(t2, v2, table, variables);
-			}
-		}
-		return false;
-	}
+//	public boolean testRuleEquivalence(TruthTable tt2) {
+//		SortedSet<String> v2 = tt2.getVariables();
+//		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
+//		
+//		if (equalsSet(t2))
+//			return true;
+//		else {
+//			variables = replace(variables);
+//			v2 = replace(v2);
+//			if (variables.size() > v2.size()) {
+//				return testSubsetEquivalence(table, variables, t2, v2);
+//			} else if (variables.size() < v2.size()) {
+//				return tt2.testSubsetEquivalence(t2, v2, table, variables);
+//			}
+//		}
+//		return false;
+//	}
 	
 	private SortedSet<String> replace(SortedSet<String> v1) {
 		SortedSet<String> result = new java.util.TreeSet<String>();

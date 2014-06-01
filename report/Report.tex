@@ -144,6 +144,7 @@ Each part of this statement can be considered a proposition. Propositional logic
 \section{First Order Logic}
 
 \section{Truth tables}
+\label{sec:truth_tables}
 
 It is necessary to understand the meanings of the symbols used in a language. Truth tables are mathematical tables used in logic to compute the functional values of logical expressions. They can be used to determine whether or not a propositional logic statement is logically valid.
 
@@ -460,7 +461,7 @@ Due to the nature of logical formulae we need to be able to differentiate betwee
 
 Every node in the tree must contain a key, a depth, a value and a parent (unless it's the root in which case the parent is null).
 
-We define {\tt BinaryOperator}, {\tt UnaryOperator} and {\tt Atom} separately so we can set customised methods for each of them. Binary operators possess a left and right child, unary operators possess one child and atoms have none. The custom methods that require separate cases include a {\tt clone()} function to duplicate the node (used in applying certain rules - Section \ref{sec:the_rule_engine}), custom {\tt toString()} functions and methods for determining truth values (Section \ref{sec:truth_tables}).
+We define {\tt BinaryOperator}, {\tt UnaryOperator} and {\tt Atom} separately so we can set customised methods for each of them. Binary operators possess a left and right child, unary operators possess one child and atoms have none. The custom methods that require separate cases include a {\tt clone()} function to duplicate the node (used in applying certain rules - Section \ref{sec:the_rule_engine}), custom {\tt toString()} functions and methods for determining truth values (Section \ref{sec:generating_truth_tables}).
 
 \chapter{Tree Manipulation}
 
@@ -485,20 +486,54 @@ Within categories we define the tests for each rule individually. Some rules do 
 The {\tt RuleSelector} defines methods of testing for the properties required by the rules such as testing for idempotence which proceeds by checking that both subtrees of the node are equivalent. Each rule that can be applied to the current node has its index set in the returned {\tt BitSet}.
 
 \subsection{Rule Application}
+\label{sub:rule_application}
 
 When the user selects an applicable rule the {\tt RuleApplicator} is used to apply that rule to the selected node. A method {\tt applyRuleFromBitSet()} is defined in the {\tt RuleEngine} to choose the correct manipulation to apply to the tree. It implements a large switch statement over the index of the rule to be applied with each case calling the necessary functions from the {\tt RuleApplicator}.
+
+Some rules can require user input, for example in `$\bot \equiv$ a$\land\bot$' we require some input to decide which variable to use in the place of `a'. The selected variable can be passed in when applying the rule from {\tt BitSet}.
 
 \section{Generating Equivalent Formulae}
 
 \subsection{Random Formula Generation}
 
-When generating a logical formula we should be able to specify certain parameters such as how many variables and connectives are used. These parameters will be used to generate different complexities of formulae for different difficulties.
+When generating a logical formula we should be able to specify certain parameters such as how many variables and connectives are used. These parameters are used to generate different complexities of formulae for different difficulties.
 
-Our {\tt Compiler} is used to generate our random formula, {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth the generated tree can be. 
+Our {\tt Compiler} is used to generate our random formula, {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Section \ref{sub:variables}) and passed through to a method {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled.
+
+The end criteria are either the maximum depth or a random criterion has been reached. The random criterion adds an extra random factor so that we don't always get a balanced tree. This provides us with more interesting equivalences to work with. Currently the random criterion has a $\frac{1}{5}$ chance of succeeding because this produces nice looking results - trees which are generally not completely imbalanced but have a good level of variation to them. 
+
+During each recursion if the end criteria has been met then we can randomly choose an operator and variables to assign to it and set this as a final subformula. Else, instead of assigning variables we call the function again and assign the returned results to the operator.
+
+Random operators and variables are selected using instances of {\tt Random} from their respective lists. All the operators and a reduced selection of variables are available for use in the formula.
+
+\subsection{Variables}
+\label{sub:variables}
+
+Initially all the variables would appear in a generated formula with the same probability. However, this proved to be a poor approach because you often ended up with many truth values ($\top$ and $\bot$) in the formula. This made the equivalences very easy to solve as you could usually just reduce both to their equivalent truth value. Proving the formulae were equivalent this way doesn't promote the users learning experience as they will repeatedly only use a very small subset of basic equivalences such as `a$\lor\top \equiv \top$'.
+
+The solution to this problem was to assign probabilities to the variables. We define an enum {\tt Variable} (see Listing \ref{variableenum}) where all the entries have a value and a weight. The weight is defined on a scale of 0 to 10 with the higher weights being more likely to be chosen.
+
+We define all atoms apart from the truth values with a weight of 10 and the truth values with a weight of 3.
+
+The enum provides the method {\tt randomVariable()} to return a random variable based on their weights. A simple analogy for this method is to imagine a ruler where the maximum value is the sum of the weights and each weight is dashed on the ruler. If you randomly placed your finger somewhere along the ruler then the segment you land on becomes the variable you return. So variables with smaller weights are less likely to be selected.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+public enum Variable {
+    A("a", 10), B("b", 10), C("c", 10), D("d", 10), 
+        E("e", 10), F("f", 10), G("g", 10), H("h", 10), 
+        I("i", 10), TRUTH("┬", 3), FALSE("⊥", 3);
+
+    ...
+}
+\end{minted}
+\caption{Variable enum defining values and weights for variables}
+\label{variableenum}
+\end{listing}
 
 \subsection{Random Rule Application}
 
-Applying random rules to a formula is used in equivalent formula generation. When only one logical formula has been specified the user can request an automatically generated equivalence.
+Applying random rules to a formula is used in generating an equivalent formula. When only one logical formula has been specified the user can request an automatically generated equivalence.
 
 The second formula can be generated easily by repeated application of random rules. This guarantees that the generated formula will be equivalent to the first and also allows us to set the difficulty of the proof based on how many steps there are between the two formulae.
 
@@ -506,12 +541,24 @@ There are two sections to the rule applications: choosing a random node and choo
 
 In our tree we define a method {\tt randomNode()} to randomly select a node. This method calculates the maximum depth of the tree by walking through the tree and returning the maximum depth found. A random level of the tree is chosen using an instance of {\tt Random} and the maximum depth before walking down the tree to that level - at each level the method arbitrarily picks a child to follow. When the selected random level is reached the current node is returned.
 
-Once a node has been selected to perform a rule on we call {\tt getApplicableRules()} (defined in Section \ref{sub:rule_selection}) to obtain the {\tt BitSet} of applicable rules. From this the number of applicable rules is used with another instance of {\tt Random} to select a rule to apply. Some of the rules require user input, so we define a special case for these rules to randomly select a variable to be passed through when applying the rule. If no user input is required then we pass through null.
+Once a node has been selected to perform a rule on we call {\tt getApplicableRules()} (see Section \ref{sub:rule_selection}) to obtain the {\tt BitSet} of applicable rules. From this the number of applicable rules is used with another instance of {\tt Random} to select a rule to apply. Some of the rules require user input, so we define a special case for these rules to randomly select a variable to be passed through to {\tt applyRuleFromBitSet()} (see Section \ref{sub:rule_application}) when applying the rule. If no user input is required then we pass through null.
 
 \section{Truth Tables}
-\label{sec:truth_tables}
+\label{sec:generating_truth_tables}
 
+For a user to be able to complete a proof of their own custom equivalences we need to ensure that they're actually equivalent and the proof is completable before they begin. To do this we can use truth tables (defined in Section \ref{sec:truth_tables}).
 
+\subsection{Generating Truth Tables}
+
+\subsubsection{Creating Input Truth Values For Atoms}
+
+\subsubsection{Determining Truth Value For Formula}
+
+\subsection{Testing Equivalence of Tables}
+
+\subsubsection{Replacing Variables}
+
+\subsubsection{Differently Sized Tables}
 
 \chapter{Android VS Web Applications}
 
@@ -547,7 +594,7 @@ In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 
 
 \chapter{The App}
 \section{Truth Tables}
-\label{sec:truth_tables}
+\label{sec:app_truth_tables}
 
 \subsection{Ensure equivalences are equal before beginning}
 
