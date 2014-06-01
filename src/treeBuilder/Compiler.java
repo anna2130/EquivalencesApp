@@ -14,6 +14,7 @@ import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
 import treeManipulation.RuleEngine;
+import treeManipulation.TruthTable;
 
 public class Compiler {
 	
@@ -28,10 +29,21 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 
-		String s = compiler.generateRandomEquivalence(8, 2);
-		FormationTree tree = compiler.compile(s);
+//		String s = compiler.generateRandomEquivalence(8, 2);
+		String s1 = "┬";
+		String s2 = "a→┬";
+		FormationTree tree = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
 		RuleEngine re = new RuleEngine();
 		System.out.println(tree);
+
+		TruthTable tt = new TruthTable(tree);
+		TruthTable tt2 = new TruthTable(tree2);
+
+		System.out.println(tt);
+		System.out.println(tt2);
+		
+		System.out.println(tt.testEquivalence(new TruthTable(tree2)));
 		
 		re.applyRandomRules(tree, 15);
 		System.out.println(tree);

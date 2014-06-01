@@ -1,7 +1,6 @@
 package treeManipulation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,7 +18,7 @@ public class TruthTable {
 	
 	public TruthTable(FormationTree tree) {
 		variables = tree.getVariables();
-		table = getTruthValues(tree);
+		table = createTruthTable(tree);
 		result = tree.toString();
 	}
 	
@@ -37,10 +36,11 @@ public class TruthTable {
 		SortedSet<String> v2 = tt2.getVariables();
 		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
 
-		SortedSet<String> testV1 = replace(variables);
-		SortedSet<String> testV2 = replace(v2);
-		
-		if (testV1.equals(testV2) && equalsSet(t2))
+		SortedSet<String> testV1 = removeTruthValues(variables);
+		SortedSet<String> testV2 = removeTruthValues(v2);
+
+		if ((testV1.containsAll(testV2) || testV2.containsAll(testV1)) 
+				&& tablesEqual(t2))
 			return true;
 		else {
 			if (variables.size() > v2.size()) 
@@ -51,71 +51,55 @@ public class TruthTable {
 		return false;
 	}
 
-//	public boolean testRuleEquivalence(TruthTable tt2) {
-//		SortedSet<String> v2 = tt2.getVariables();
-//		HashSet<ArrayList<Integer>> t2 = tt2.getTable();
-//		
-//		if (equalsSet(t2))
-//			return true;
-//		else {
-//			variables = replace(variables);
-//			v2 = replace(v2);
-//			if (variables.size() > v2.size()) {
-//				return testSubsetEquivalence(table, variables, t2, v2);
-//			} else if (variables.size() < v2.size()) {
-//				return tt2.testSubsetEquivalence(t2, v2, table, variables);
-//			}
-//		}
-//		return false;
-//	}
-	
-	private SortedSet<String> replace(SortedSet<String> v1) {
+	private SortedSet<String> removeTruthValues(SortedSet<String> v1) {
 		SortedSet<String> result = new java.util.TreeSet<String>();
-		char c = 'a';
-		for (int i = 0; i < v1.size(); ++i) {
-			result.add("" + c);
-			c++;
-		}
+
+		result.addAll(v1);
+		result.remove("┬");
+		result.remove("⊥");
+		
 		return result;
 	}
 	
-	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t1, SortedSet<String> v1, 
-			HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
+	private HashSet<ArrayList<Integer>> createReducedTable(HashSet<ArrayList<Integer>> table1, SortedSet<String> v1, 
+			HashSet<ArrayList<Integer>> table2, SortedSet<String> v2) {
 		HashSet<ArrayList<Integer>> reducedTable = new HashSet<ArrayList<Integer>>();
 
-		Iterator<String> it1 = v1.iterator();
-		Iterator<String> it2 = v2.iterator();
 		int i = 0;
 		SortedSet<Integer> keptValues = new TreeSet<Integer>();
-		
-		while (it1.hasNext() && it2.hasNext()) {
-			String s1 = it1.next();
-			String s2 = it2.next();
-			
-			while (!s1.equals(s2) && it1.hasNext()) {
-				s1 = it1.next();
-				++i;
-			}
-			keptValues.add(i);
+
+		for (String var : v1) {
+			if (v2.contains(var))
+				keptValues.add(i);
 			++i;
 		}
 		keptValues.add(v1.size());
 		
-		for (ArrayList<Integer> next : t1) {
-			ArrayList<Integer> arr = new ArrayList<Integer>();
+		for (ArrayList<Integer> oldRow : table1) {
+			ArrayList<Integer> newRow = new ArrayList<Integer>();
 			
-			for (Integer val : keptValues)
-				arr.add(next.get(val));
-			reducedTable.add(arr);
+			for (Integer index : keptValues)
+				newRow.add(oldRow.get(index));
+			reducedTable.add(newRow);
 		}
-		return reducedTable.equals(t2);
+		
+		return reducedTable;
 	}
 	
-	public LinkedHashSet<ArrayList<Integer>> getTruthValues(FormationTree tree) {
-		int numVars = variables.size();
-		LinkedHashSet<ArrayList<Integer>> newTable = createTruthTable(numVars);
+	private boolean testSubsetEquivalence(HashSet<ArrayList<Integer>> t1, SortedSet<String> v1, 
+			HashSet<ArrayList<Integer>> t2, SortedSet<String> v2) {
+
+		HashSet<ArrayList<Integer>> reducedTable1 = createReducedTable(t1, v1, t2, v2);
+		HashSet<ArrayList<Integer>> reducedTable2 = createReducedTable(t2, v2, t1, v1);
 		
-		for (ArrayList<Integer> row : newTable) {
+		return reducedTable1.equals(reducedTable2);
+	}
+	
+	public LinkedHashSet<ArrayList<Integer>> createTruthTable(FormationTree tree) {
+		int numVars = variables.size();
+		LinkedHashSet<ArrayList<Integer>> table = createAtomicTruthValues(numVars);
+		
+		for (ArrayList<Integer> row : table) {
 			HashMap<String, Integer> values = new HashMap<String, Integer>();
 			Iterator<String> varIt = variables.iterator();
 			
@@ -129,10 +113,10 @@ public class TruthTable {
 			else
 				row.add(0);
 		}
-		return newTable;
+		return table;
 	}
 	
-	private LinkedHashSet<ArrayList<Integer>> createTruthTable(int numVars) {
+	private LinkedHashSet<ArrayList<Integer>> createAtomicTruthValues(int numVars) {
         int rows = (int) Math.pow(2, numVars);
         LinkedHashSet<ArrayList<Integer>> table = new LinkedHashSet<ArrayList<Integer>>();
 
@@ -154,7 +138,7 @@ public class TruthTable {
 		return table;
 	}
 	
-	private boolean equalsSet(HashSet<ArrayList<Integer>> t2) {
+	private boolean tablesEqual(HashSet<ArrayList<Integer>> t2) {
 		boolean result = true;
 		
 		Iterator<ArrayList<Integer>> it1 = table.iterator();
@@ -163,32 +147,30 @@ public class TruthTable {
 		if (table.size() != t2.size())
 			return false;
 		
-		while (it1.hasNext() && it2.hasNext()) {
-			result &= equalLists(it1.next(), it2.next());
-		}
+		while (it1.hasNext() && it2.hasNext())
+			result &= it1.next().equals(it2.next());
 		
 		return result;
 	}
 	
-	private  boolean equalLists(ArrayList<Integer> l1, ArrayList<Integer> l2){
-	    if (l1 == null && l2 == null){
-	        return true;
-	    }
-
-	    if((l1 == null && l2 != null) 
-	      || l1 != null && l2 == null
-	      || l1.size() != l2.size()){
-	        return false;
-	    }
-
-	    // to avoid messing the order of the lists we will use a copy
-	    l1 = new ArrayList<Integer>(l1); 
-	    l2 = new ArrayList<Integer>(l2);   
-
-	    Collections.sort(l1);
-	    Collections.sort(l2);      
-	    return l1.equals(l2);
-	}
+//	private  boolean listsEqual(ArrayList<Integer> l1, ArrayList<Integer> l2){
+//	    if (l1 == null && l2 == null){
+//	        return true;
+//	    }
+//
+//	    if((l1 == null && l2 != null) 
+//	      || l1 != null && l2 == null
+//	      || l1.size() != l2.size()){
+//	        return false;
+//	    }
+//	    // to avoid messing the order of the lists we will use a copy
+//	    l1 = new ArrayList<Integer>(l1); 
+//	    l2 = new ArrayList<Integer>(l2);   
+//
+//	    Collections.sort(l1);
+//	    Collections.sort(l2);      
+//	    return l1.equals(l2);
+//	}
 	
 	@Override
 	public String toString() {

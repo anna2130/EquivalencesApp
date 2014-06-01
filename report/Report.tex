@@ -461,7 +461,7 @@ Due to the nature of logical formulae we need to be able to differentiate betwee
 
 Every node in the tree must contain a key, a depth, a value and a parent (unless it's the root in which case the parent is null).
 
-We define {\tt BinaryOperator}, {\tt UnaryOperator} and {\tt Atom} separately so we can set customised methods for each of them. Binary operators possess a left and right child, unary operators possess one child and atoms have none. The custom methods that require separate cases include a {\tt clone()} function to duplicate the node (used in applying certain rules - Section \ref{sec:the_rule_engine}), custom {\tt toString()} functions and methods for determining truth values (Section \ref{sec:generating_truth_tables}).
+We define {\tt BinaryOperator}, {\tt UnaryOperator} and {\tt Atom} separately so we can set customised methods for each of them. Binary operators possess a left and right child, unary operators possess one child and atoms have none. The custom methods that require separate cases include a {\tt clone()} method to duplicate the node (used in applying certain rules - Section \ref{sec:the_rule_engine}), custom {\tt toString()} methods and methods for determining truth values (Section \ref{sec:generating_truth_tables}).
 
 \chapter{Tree Manipulation}
 
@@ -488,7 +488,7 @@ The {\tt RuleSelector} defines methods of testing for the properties required by
 \subsection{Rule Application}
 \label{sub:rule_application}
 
-When the user selects an applicable rule the {\tt RuleApplicator} is used to apply that rule to the selected node. A method {\tt applyRuleFromBitSet()} is defined in the {\tt RuleEngine} to choose the correct manipulation to apply to the tree. It implements a large switch statement over the index of the rule to be applied with each case calling the necessary functions from the {\tt RuleApplicator}.
+When the user selects an applicable rule the {\tt RuleApplicator} is used to apply that rule to the selected node. A function {\tt applyRuleFromBitSet()} is defined in the {\tt RuleEngine} to choose the correct manipulation to apply to the tree. It implements a large switch statement over the index of the rule to be applied with each case calling the necessary methods from the {\tt RuleApplicator}.
 
 Some rules can require user input, for example in `$\bot \equiv$ a$\land\bot$' we require some input to decide which variable to use in the place of `a'. The selected variable can be passed in when applying the rule from {\tt BitSet}.
 
@@ -498,7 +498,7 @@ Some rules can require user input, for example in `$\bot \equiv$ a$\land\bot$' w
 
 When generating a logical formula we should be able to specify certain parameters such as how many variables and connectives are used. These parameters are used to generate different complexities of formulae for different difficulties.
 
-Our {\tt Compiler} is used to generate our random formula, {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Section \ref{sub:variables}) and passed through to a method {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled.
+Our {\tt Compiler} is used to generate our random formula, {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Section \ref{sub:variables}) and passed through to a function {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled.
 
 The end criteria are either the maximum depth or a random criterion has been reached. The random criterion adds an extra random factor so that we don't always get a balanced tree. This provides us with more interesting equivalences to work with. Currently the random criterion has a $\frac{1}{5}$ chance of succeeding because this produces nice looking results - trees which are generally not completely imbalanced but have a good level of variation to them. 
 
@@ -550,15 +550,160 @@ For a user to be able to complete a proof of their own custom equivalences we ne
 
 \subsection{Generating Truth Tables}
 
+{\tt TruthTable} contains a {\tt SortedSet} of variables, a {\tt LinkedHashSet<ArrayList<Integer>>} table (each {\tt ArrayList} represents a row in the table) and a {\tt String} formula. They can be represented as shown in Table \ref{table:generated_truth_table}. To generate the truth table we need to generate the values for the atoms (from first row of the atomic values would be 0 and 0) then apply them to the formula to find the truth value for the tree.
+
+TODO: Why linkedhashset/arraylist etc?
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{ || c | c || c || }
+      \hline
+      A & B & A$\land$B \\ \hline
+      0 & 0 & 0 \\
+      0 & 1 & 0 \\
+      1 & 0 & 0 \\
+      1 & 1 & 1 \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{An example of a generated truth table}
+  \label{table:generated_truth_table}
+\end{table}
+
 \subsubsection{Creating Input Truth Values For Atoms}
 
-\subsubsection{Determining Truth Value For Formula}
+Creating the first two columns of the table shown in Table \ref{table:generated_truth_table} we define a function {\tt createAtomicTruthValues()}. This takes the number of variables present in the formula (in this case 2) and calculates the number of rows that will be present in the table:
+
+\begin{listing}[ht]
+\begin{minted}{java} 
+int rows = (int) Math.pow(2, numVars);
+\end{minted}
+\end{listing}
+
+A new {\tt LinkedHashSet} table is created and for each row in the table and each variable we add a new entry as shown in Listing \ref{listing:create_truth_table}.
+
+\begin{listing}[ht]
+\begin{minted}{java} 
+for (int i = 0; i < rows; ++i) {
+    ArrayList<Integer> row = new ArrayList<Integer>();
+    for (int j = numVars - 1; j >= 0; --j)
+        row.add((i / (int) Math.pow(2, j)) % 2);
+    table.add(row);
+}
+\end{minted}
+\caption{Filling in table for atomic truth values}
+\label{listing:create_truth_table}
+\end{listing}
+
+This produces the table shown in Table \ref{table:generated_atomic_truth_values}. A similar result is produced for any number of variables.
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{ || c | c || }
+      \hline
+      0 & 0 \\
+      0 & 1 \\
+      1 & 0 \\
+      1 & 1 \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{The result of {\tt createAtomicTruthValues()}}
+  \label{table:generated_atomic_truth_values}
+\end{table}
+
+\subsubsection{Determining Truth Value For The Tree}
+
+Each row of the table is used to evaluate the truth values of the tree for the final column in the table. We define the function {\tt createTruthTable()} to create the final table from the tree of a logical formula. This calculates the number of variables by walking through the tree and passes this value to {\tt createAtomicTruthValues()} to generate the atomic truth values required. 
+
+Looping through each row of the table allows us to compute the resulting truth values for the tree. To compute the tree's truth value for that row a {\tt HashMap<String, Integer>} is created to map each variable to a truth value. The {\tt FormationTree} defines a method {\tt getTruthValue()} to calculate its truth value using this map.
+
+The tree determines its truth value by recursively calling {\tt getTruthValue()} on its nodes beginning at the root. Using the example shown in Table \ref{table:generated_truth_table} for `a$\land$b': the root node is `$\land$' so the result would be a logical and of the left and right children. When {\tt getTruthValue()} is called on an atomic value it either returns 0 or 1 if its a `$\bot$' or `$\top$' respectively, else it returns the value defined for that atom in the map. The returned truth value is added to the end of its respective row in the table. Now the table looks as shown in Table \ref{table:final_generated_table} where the first two columns represents the truth values for the variables in our variables array and the final column represents the truth values for the whole formula.
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{ || c | c || c || }
+      \hline
+      0 & 0 & 0 \\
+      0 & 1 & 0 \\
+      1 & 0 & 0 \\
+      1 & 1 & 1 \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{The result of {\tt createTruthTable()}}
+  \label{table:final_generated_table}
+\end{table}
+
+The other operators use return their truth value using similar methods. The truth tables for all the used logical operators are defined in Table \ref{table:logical_operators}.
+
+\begin{table}[h]
+  \begin{center}
+    \begin{tabular}{ || c | c || c | c | c | c | c || }
+      \hline
+      a & b & a$\land$b & a$\lor$b & a$\to$b & a$\leftrightarrow$b & $\lnot$a \\ \hline
+      1 & 1 & 1 & 1 & 1 & 1 & 0 \\
+      1 & 0 & 0 & 1 & 0 & 0 & 0 \\
+      0 & 1 & 0 & 1 & 1 & 0 & 1 \\
+      0 & 0 & 0 & 0 & 1 & 1 & 1 \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \caption{Truth table for all binary and unary operators}
+  \label{table:logical_operators}
+\end{table}
 
 \subsection{Testing Equivalence of Tables}
 
-\subsubsection{Replacing Variables}
+{\tt TruthTable} defines a method {\tt testEquivalence()} which compares its own truth table to another. There are four cases that could be possible when comparing truth tables:
+
+\textbf{Case 1: } Both equivalences have identical sets of variables.
+
+\textbf{Case 2: } Both equivalences have the same size tables but have different variables.
+
+\textbf{Case 3: } They have different size tables and one set of variables is a subset of the other.
+
+\textbf{Case 4: } The tables are not equivalent.
+
+\subsubsection{Checking Tables Are Equal}
+
+In the \textbf{Case 1} we could have two formulae such as `a$\land$b' and `b$\land$a'. These have contain identical sets of variables. They are equivalent if they contain the same set of variables and their truth tables are equal.
+
+Tables are checked for equivalence using {\tt tablesEqual()}. If the two tables to be compared aren't the same size the method immediately returns false to reduce computation time. If they're equal it loops through each row in both tables concurrently and checks they're equal. If all the rows are equal to their corresponding rows the method returns true.
+
+\subsubsection{Different Variables}
+
+The variable sets need to be compared in the previous case because the tables can be equivalent even if they use different variables. In this case the proof would not be solvable. For example, `a$\land$b' has an equivalent table to `p$\land$q' but we do not define any rules for replacing one atom in the tree with another so you could not complete the proof.
+
+However, a basic check comparing the two variable sets does not always work as there are cases where the variable sets will be different. \textbf{Case 2} defines a case where both equivalences have the same number of variables but they are not identical sets. An example of this would be `a$\land\top$' and `$\bot\lor$a' which both contain an atom not present in the other formula. 
+
+The only time this case occurs is with `$\top$' and `$\bot$' values. So we define a function {\tt removeTruthValues()} to return the set of variables without these truth values and compare these new sets of variables. So long as one set is a subset of the other the test will pass. If this new variable comparison passes and the tables are equal then the truth tables are equivalent.
 
 \subsubsection{Differently Sized Tables}
+
+Due to the rules such as the absorption rule it is possible for formulae with differently sized variable sets to be equivalent. In \textbf{Case 3} we can have two formulae being equivalent so long as one set of variables is a subset of the other. This is different to \textbf{Case 2} because that subset comparison was only necessary due to the removal of truth values. An example of two formulae fitting \textbf{Case 3} are `a$\land$(a$\lor$b)' and `a'.
+
+The first formula would have a larger table than the second so it would fail our tests for the first two cases. The solution to comparing two differently sized table it to compare only the columns that the two formula have in common. So in this case we would only want to compare the `a' and formula columns from both tables. However, actually accomplishing this is slightly more complex.
+
+The function {\tt testSubsetEquivalence()} allows us to compare two differently sized truth tables. It takes their variables and tables and works out which sections to compare. By creating reduced tables from each we can add in only the columns we want to compare. We created each reduced table as a {\tt HashSet} so it wouldn't allow any duplicate values that would be problematic when comparing the tables.
+
+To create the reduced tables we call {\tt createReducedTable()} for each truth table. This iterates through the first set of variables and for each variable checks if it is contained in the second set. If the variable is contained in both sets we add the index of this variable to a set of values to keep. Once the variable iteration is complete we also add the one more index to represent the formula in the final column of the table. Then the function iterates through each row of the table and for each index in the kept values it adds the value at that index (from the old row) to the new reduced table's new row (shown in Listing \ref{listing:create_reduced_table}). This results in a reduced table only containing the columns of variables that appear in both sets.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+for (ArrayList<Integer> oldRow : table1) {
+    ArrayList<Integer> newRow = new ArrayList<Integer>();
+    
+    for (Integer index : keptValues)
+        newRow.add(oldRow.get(index));
+    reducedTable.add(newRow);
+}
+\end{minted}
+\caption{Part of {\tt createReducedTable()} showing the insertion of new rows to the reduced table using the indexes of variables appearing in both variable sets.}
+\label{listing:create_reduced_table}
+\end{listing}
+
+Once a reduced table has been created for each table we can compare the two reduced tables the same way we did in \textbf{Case 1} to find out if they're equivalent.
 
 \chapter{Android VS Web Applications}
 

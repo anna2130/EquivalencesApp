@@ -97,11 +97,11 @@ public class BinaryOperator extends Node {
 	public boolean getTruthValue(HashMap<String, Integer> values) {
 		if (isAnd())
 			return leftChild.getTruthValue(values) & rightChild.getTruthValue(values);
-		if (isOr())
+		else if (isOr())
 			return leftChild.getTruthValue(values) | rightChild.getTruthValue(values);
-		if (isImplies())
+		else if (isImplies())
 			return !(leftChild.getTruthValue(values) & !rightChild.getTruthValue(values));
-		if (isIff())
+		else if (isIff())
 			return leftChild.getTruthValue(values) == rightChild.getTruthValue(values);
 		return false;
 	}

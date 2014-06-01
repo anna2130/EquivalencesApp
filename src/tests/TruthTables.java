@@ -28,7 +28,7 @@ public class TruthTables {
 		String s = "p";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0], [1, 1]]", list.toString());
 	}
 
@@ -37,7 +37,7 @@ public class TruthTables {
 		String s = "¬p";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 1], [1, 0]]", list.toString());
 	}
 
@@ -46,7 +46,7 @@ public class TruthTables {
 		String s = "p^q";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]]", list.toString());
 	}
 
@@ -55,7 +55,7 @@ public class TruthTables {
 		String s = "pvq";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 
@@ -64,7 +64,7 @@ public class TruthTables {
 		String s = "p→q";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 0], [1, 1, 1]]", list.toString());
 	}
 
@@ -73,7 +73,7 @@ public class TruthTables {
 		String s = "p↔q";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 1]]", list.toString());
 	}
 
@@ -82,7 +82,7 @@ public class TruthTables {
 		String s = "p^(pvq)";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 
@@ -91,7 +91,7 @@ public class TruthTables {
 		String s = "p^┬";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
@@ -100,7 +100,7 @@ public class TruthTables {
 		String s = "p^⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 0]]", list.toString());
 	}
 
@@ -109,7 +109,7 @@ public class TruthTables {
 		String s = "pv┬";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
@@ -118,7 +118,7 @@ public class TruthTables {
 		String s = "pv⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
@@ -129,7 +129,7 @@ public class TruthTables {
 		String s = "┬v¬⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 
@@ -138,7 +138,7 @@ public class TruthTables {
 		String s = "¬┬v⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 0]]", list.toString());
 	}
 
@@ -147,7 +147,7 @@ public class TruthTables {
 		String s = "¬(¬┬v⊥)";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
-		HashSet<ArrayList<Integer>> list = tt.getTruthValues(tree);
+		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
 		assertEquals("", "[[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 1]]", list.toString());
 	}
 	
