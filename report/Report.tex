@@ -167,6 +167,7 @@ A \textit{situation} determines whether each propositional atom is true or false
 Truth tables can be used to define any operators, including any new ones which might be desired.
 
 \chapter{Related Work}
+\label{chap:related_work}
 
 \section{Logic Daemon}
 
@@ -190,6 +191,7 @@ The Logic Daemon tool also provides support for first order logic which we are n
 \end{figure}
 
 \section{Pandora}
+\label{sec:pandora}
 
 Pandora\cite{pandora} is a tool created by Imperial College London; it stands for `Proof Assistant for Natural Deduction using Organised Rectangular Areas'. It can be used to prove that a goal formula follows from the given formulae. Pandora allows the user to repeatedly apply natural deduction rules (Figure: \ref{pandora}).
 
@@ -552,13 +554,13 @@ For a user to be able to complete a proof of their own custom equivalences we ne
 
 {\tt TruthTable} contains a {\tt SortedSet} of variables, a {\tt LinkedHashSet<ArrayList<Integer>>} table (each {\tt ArrayList} represents a row in the table) and a {\tt String} formula. They can be represented as shown in Table \ref{table:generated_truth_table}. To generate the truth table we need to generate the values for the atoms (from first row of the atomic values would be 0 and 0) then apply them to the formula to find the truth value for the tree.
 
-TODO: Why linkedhashset/arraylist etc?
+We use a {\tt SortedSet} to store the variables in so that when comparing two truth tables the columns will be in the same order to make comparisons easier. A {\tt LinkedHashSet} is required for the tables because it has a predictable iteration order which is also required for comparisons of tables. The same argument is used for using an {\tt ArrayList} for each row, this provides us with an ordered collection where we have precise control over where each element is inserted. This enables us to have easy access to the values in the rows, necessary for reducing tables in certain cases.
 
 \begin{table}[h]
   \begin{center}
     \begin{tabular}{ || c | c || c || }
       \hline
-      A & B & A$\land$B \\ \hline
+      a & b & a$\land$b \\ \hline
       0 & 0 & 0 \\
       0 & 1 & 0 \\
       1 & 0 & 0 \\
@@ -703,18 +705,59 @@ for (ArrayList<Integer> oldRow : table1) {
 \label{listing:create_reduced_table}
 \end{listing}
 
-Once a reduced table has been created for each table we can compare the two reduced tables the same way we did in \textbf{Case 1} to find out if they're equivalent.
+Once a reduced table has been created for each table we can compare the two reduced tables the same way we did in \textbf{Case 1} to find out if they're equivalent. If all these checks fail then the formulae fall into \textbf{Case 4} and are not equivalent.
 
 \chapter{Android VS Web Applications}
 
-\section{Android vs Web app}
-\subsection{Intuitive to use}
-\subsection{Learning experience}
-\subsection{None currently available for Android}
+\section{Which Platform?}
 
-\section{Tablet vs Phone app}
-\subsection{Screensize}
-\subsection{Formation Tree would not feasible on phone app}
+In an ideal world it would have been very interesting and useful to have been able to build our application for multiple platforms - including for smartphones as well as tablets and the web. However, as we had a finite amount of time for this project it was initially obvious that focusing on one platform would provide us with a much more complete and robust final project.
+
+The options were narrowed down by the fact we wanted to display the formation tree of the current formula as this would require a fairly large amount of screen space. Therefore, we opted not to build the application for a smartphone. If this were to be an extension we could simply remove the formation tree functionality to make the application usable on the smaller screen. This left us with the option of building for a tablet or a website.
+
+Personal preference made the decision to choose an Android tablet as our tablet of choice because I had not had any experience programming with Android before and thought it would be a good skill to learn whereas I have programmed for iOS in the past. 
+
+% We decided early on in the project that the tool should be an Android tablet application as opposed to a web or mobile one; this allows for an intuitive, interactive design while still having a large screen space.
+
+\subsection{Tablet Apps VS Web Apps}
+
+\subsubsection{User Interaction}
+
+The most obvious difference between an application on a tablet and on a computer is the difference in input methods. On a tablet a user uses gestures to interact with objects on the screen whereas on a computer a user can use the mouse to perform a variety of actions.
+
+Obviously this is a key difference and would seriously affect the way the user would interact with the application. A tablet application would allow a more interactive application that would rely a lot more on user interaction such as using swiping gestures to move around the screen and selecting specific formula to undo back to that formula. This is because unlike on a computer a tablet does not have the ability to perform different types of clicks (left or right on the mouse) so the interaction would need to be well executed to be intuitive and easy-to-use. Therefore, choreographing the gestures and interaction on a tablet would be more difficult than on a webapp. 
+
+\subsubsection{Portability}
+
+A benefit of creating a tablet application is portability. As we are creating this application with the intention of it being a learning tool, the ability to use it easily and to be unintrusive and undisruptive in a lecture is a major bonus. A webapp could still be run on a laptop in this environment but they are generally considering to be more disruptive.
+
+While a web application could be used on a tablet the user experience is much richer with native applications. The graphics and user interface used for web apps are not as smooth as we would get from the native app\cite{androidwebappdifferences}.
+
+\subsubsection{Availability}
+
+There are currently no Android applications that provide the functionality we have detailed so far. This is shown in Section \ref{chap:related_work} describing related work. Whereas there are more complex options available on a computer such as Pandora \ref{sec:pandora} even though they completely functionally the same as our application they are quite useful logic applications. 
+
+\subsubsection{Learning Experience}
+
+As I have not programmed any Android applications in the past I had a personal preference to creating an Android application. This would provide me with more to learn from the project unlike a web application which I have had a large amount of experience with.
+
+\subsubsection{Decision}
+
+In conclusion we decided to develop the application on an Android tablet device. Despite this being the more complex solution we believe that the application is more suitable to being used on a tablet and would be more likely to be used by students.
+
+\section{Difficulties Developing For Android}
+
+\subsection{Screen size and Scrolling}
+
+Tablets have a limited screen size compared to a computer screen. Although we have established that the screen size would be suitable for displaying the formation trees of the equivalences it does present the difficulty of moving around the application. Android provides a scrollable view that allows the view to scroll either horizontally or vertically, but not both. You also cannot use nested scrollable views as the application would not be able to understand which view you were trying to scroll through.
+
+This is problematic as it is possible for a large formation tree to be larger than the width of the screen. We could not set the scrollable view to scroll horizontally because we require vertical scrolling for long equivalence proofs.    
+
+% if the tree extends over thes
+
+\subsection{Less Experience}
+\subsection{External Libraries}
+\subsection{Custom Features}
 
 \chapter{Android}
 
@@ -864,8 +907,8 @@ Calling {\tt setRules()} adds the generated rules iteratively to the PopupMenu. 
 
 \begin{listing}[ht]
 \begin{minted}{java}
-public void setRules(SparseArray<String> rules, Node selected, 
-        FormationTree selectedTree) {
+public void setRules(SparseArray<String> rules, Node 
+        selected, FormationTree selectedTree) {
     ...
 
     int key;
@@ -873,17 +916,17 @@ public void setRules(SparseArray<String> rules, Node selected,
         key = rules.keyAt(i);
 
         if (key < min_user_input_required) {
-            rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, 
-                    rules.get(key));
+            rulesList.getMenu().add(Menu.NONE, key, 
+                    Menu.NONE, rules.get(key));
         } else {
-            SubMenu sub = rulesList.getMenu().addSubMenu(Menu.NONE, 
-                    key, Menu.NONE, rules.get(key));
+            SubMenu sub = rulesList.getMenu().addSubMenu(
+                    Menu.NONE, key, Menu.NONE, rules.get(key));
             SortedSet<String> vars = topTree.getVariables();
             vars.addAll(bottomTree.getVariables());
 
             for (String v : vars) {
-                sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) 
-                        + " using " + v);
+                sub.add(Menu.NONE, key, Menu.NONE, 
+                        rules.get(key) + " using " + v);
             }
         }
     }
@@ -1037,6 +1080,11 @@ We need to ask people who understand logic (e.g. lecturers) so we can confirm th
   Enrico Franconi,
   \emph{Propositional Logic Calculator}.
   http://www.inf.unibz.it/\\\textasciitilde franconi/teaching/propcalc
+
+\bibitem{androidwebappdifferences}
+  Armour Technology Solutions,
+  \emph{5 Main Differences Between Web Apps and Native Apps}.
+  http://www.armourts.com/5-main-differences-between-web-apps-and-native-apps/
 
 \bibitem{tidierdrawingsws}
   C. Wetherell and A. Shannon,
