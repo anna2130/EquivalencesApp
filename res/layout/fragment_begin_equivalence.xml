@@ -36,7 +36,16 @@
         </LinearLayout>
         
         <View
-            android:id="@+id/redo_line"
+            android:id="@+id/top_redo_line"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/ltgray"
+            android:layout_marginBottom="25dp"
+            android:visibility="invisible" >
+        </View>
+        
+        <View
+            android:id="@+id/bottom_redo_line"
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:background="@color/ltgray"

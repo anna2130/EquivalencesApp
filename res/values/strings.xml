@@ -9,8 +9,17 @@
     <string name="end_equivalence">End Equivalence</string>
     <string name="error_message">Not equivalent</string>
     <string name="randomise">Randomise</string>
-    <string name="title_activity_begin_equivance">BeginEquivanceActivity</string>
-    <string name="title_activity_begin_equivalence">BeginEquivalenceActivity</string>
+
     <color name="ltgray">#cccccc</color>
 
+    <string name="propositional">Propositional Logic</string>
+    <string name="first_order">First Order Logic</string>
+    <string name="difficulty">Select difficulty:</string>
+
+    <string-array name="difficulty_array">
+        <item>Beginner</item>
+        <item>Intermediate</item>
+        <item>Hard</item>
+    </string-array>
+    
 </resources>

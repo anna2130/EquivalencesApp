@@ -118,33 +118,34 @@ public class DrawView extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int eventaction = event.getAction();
-
-		switch (eventaction) {
-		case MotionEvent.ACTION_DOWN:
-			x1 = event.getX();
-			return true;
-		case MotionEvent.ACTION_UP:
-			x2 = event.getX();
-
-			//if left to right sweep event on screen
-			if (x2 - x1 > 20) {
-				xOffset += 250;
-				this.invalidate();
-				return true;
-			// if right to left sweep event on screen
-			} else if (x1 - x2 > 20) {
-				xOffset -= 250;
-				this.invalidate();
-				return true;
-			}
-		}
+//		int eventaction = event.getAction();
+//
+//		switch (eventaction) {
+//		case MotionEvent.ACTION_DOWN:
+//			x1 = event.getX();
+//			return true;
+//		case MotionEvent.ACTION_UP:
+//			x2 = event.getX();
+//
+//			//if left to right sweep event on screen
+//			if (x2 - x1 > 20) {
+//				xOffset += 250;
+//				this.invalidate();
+//				return true;
+//			// if right to left sweep event on screen
+//			} else if (x1 - x2 > 20) {
+//				xOffset -= 250;
+//				this.invalidate();
+//				return true;
+//			}
+//		}
 
 		float x = event.getX();
 		float y = event.getY();
 		for (RectF bound : boundsMap.keySet()) {
 			if (x > bound.left && x < bound.right && y > bound.bottom && y < bound.top) {
 				selected = boundsMap.get(bound);
+				System.out.println("Tree selected: " + tree);
 				BitSet bs = re.getApplicableRules(tree, selected);
 				BeginEquivalenceActivity activity = (BeginEquivalenceActivity) this.getContext();
 

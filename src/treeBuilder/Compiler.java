@@ -75,6 +75,7 @@ public class Compiler {
 			
 			vars.add(var);
 		}
+		
 		String equiv = generateSubEquivalence(vars, depth);
 		return equiv.substring(1, equiv.length() - 1);
 	}
@@ -107,7 +108,7 @@ public class Compiler {
 			sb.append(getRandomUnaryOperator());
 			sb.append(sub1);
 		}
-
+		
 		sb.append(")");
 		return sb.toString();
 	}

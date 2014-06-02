@@ -1,153 +1,61 @@
 package app;
 
-import treeBuilder.Compiler;
-import treeBuilder.FormationTree;
-import treeManipulation.RuleEngine;
-import treeManipulation.TruthTable;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
-import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.widget.Spinner;
 
 import com.example.equivalencesapp.R;
 
 public class MainActivity extends Activity {
 
-	public final static String START_EQUIVALENCE 
-	= "app.START_EQUIVALENCE";
-	public final static String END_EQUIVALENCE 
-	= "app.END_EQUIVALENCE";
-
-	static CustomKeyboard mCustomKeyboard;
-
-	static Activity activity;
-	static KeyboardView mKeyboardView;
-
-	private Compiler c;
-	private RuleEngine re;
-
+	public final static String DIFFICULTY 
+	= "app.DIFFICULTY";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		setContentView(R.layout.fragment_main);
+		setContentView(R.layout.activity_enter_equivalences);
 
-		mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
-		mCustomKeyboard.registerEditText(R.id.start_equivalence);
-		mCustomKeyboard.registerEditText(R.id.end_equivalence);
-
-		c = new Compiler();
-		re = new RuleEngine();
+		if (savedInstanceState == null) {
+			getFragmentManager().beginTransaction()
+					.add(R.id.container, new PlaceholderFragment()).commit();
+		}
 	}
 
-	@Override 
-	public void onBackPressed() {
-		if(mCustomKeyboard.isCustomKeyboardVisible())
-			mCustomKeyboard.hideCustomKeyboard(); 
-		else 
-			this.finish();
+	/**
+	 * A placeholder fragment containing a simple view.
+	 */
+	public static class PlaceholderFragment extends Fragment {
+
+		public PlaceholderFragment() {
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(
+					R.layout.fragment_main, container, false);
+			
+			return rootView;
+		}
 	}
 
 	/** Called when the user clicks the Start button */
-	public void startEquivalence(View view) {		
+	public void startPropositional(View view) {		
 		// Use intents to carry extra information to the activity
 		// such as the equivalences used
-		Intent intent = new Intent(this, BeginEquivalenceActivity.class);
+		Intent intent = new Intent(this, EnterEquivalencesActivity.class);
 
-		EditText startText = (EditText) findViewById(R.id.start_equivalence);
-		EditText endText = (EditText) findViewById(R.id.end_equivalence);
-		String startEquivalence = startText.getText().toString();
-		String endEquivalence = endText.getText().toString();
-
-		if (startEquivalence.equals("") || endEquivalence.equals("")) {
-			System.out.println("Enter two equivalences");
-			setErrorMessage("Please enter two equivalent formulae");
-		} else {
-			FormationTree t1 = c.compile(startEquivalence);
-			FormationTree t2 = c.compile(endEquivalence);
-
-			startEquivalence = t1.toString();
-			endEquivalence = t2.toString();
-
-			if (t1.hasError() || t2.hasError()) {
-				setErrorMessage("Incorrect syntax");
-			} else {
-				if (t1 != null && t2 != null) {
-					TruthTable tt1 = new TruthTable(t1);
-					TruthTable tt2 = new TruthTable(t2);
-
-					if (tt1.testEquivalence(tt2)) {
-						intent.putExtra(START_EQUIVALENCE, startEquivalence);
-						intent.putExtra(END_EQUIVALENCE, endEquivalence);
-						startActivity(intent);
-					} else {
-						setErrorMessage("Not equivalent");
-					}
-				}
-			}
-		}
+		Spinner spinner = (Spinner) findViewById(R.id.spinner);
+		int difficulty = spinner.getSelectedItemPosition();
+		
+		intent.putExtra(DIFFICULTY, difficulty);
+		startActivity(intent);
 	}
 
-	public void randomiseStart(View view) {
-		EditText startText = (EditText) findViewById(R.id.start_equivalence);
-		EditText endText = (EditText) findViewById(R.id.end_equivalence);
-		randomise(startText, endText);
-	}
-
-	public void randomiseEnd(View view) {
-		EditText startText = (EditText) findViewById(R.id.start_equivalence);
-		EditText endText = (EditText) findViewById(R.id.end_equivalence);
-		randomise(endText, startText);
-	}
-
-	public void randomise(EditText startText, EditText endText) {
-		Compiler c = new Compiler();
-		String start = startText.getText().toString();
-		String end;
-
-		FormationTree tree;
-		// If other equivalence is empty, generate new equivalence from scratch
-		if (start.equals("")) {
-			end = c.generateRandomEquivalence(6, 2);
-			tree = c.compile(end);
-			
-			// limit length of geneated equivalence
-			while (tree.toString().length() > 25) {
-				end = c.generateRandomEquivalence(6, 2);
-				tree = c.compile(end);
-			}
-		} else {
-			// else compile other equivalence
-			tree = c.compile(start);
-		}
-
-		// TODO: Doesn't pick up on incorrect syntax beginning with atom?
-		if (tree.hasError()) {
-			setErrorMessage("Incorrect syntax");
-		} else {
-			// apply random rules to other equivalence
-			re.applyRandomRules(tree, 3);
-			
-			end = tree.toString();
-			if (end.equals(start)) {
-				randomise(startText, endText);
-			} else {
-				endText.setText(end);
-			}
-		}
-	}
-
-	public void setErrorMessage(String err) {
-		TextView error = (TextView) findViewById(R.id.error_message);
-		error.setText(err);
-		error.setVisibility(View.VISIBLE);
-	}
-
-	public void hideErrorMessage() {
-		TextView error = (TextView) findViewById(R.id.error_message);
-		error.setVisibility(View.INVISIBLE);
-	}
 }

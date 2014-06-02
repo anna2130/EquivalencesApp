@@ -78,12 +78,15 @@ class CustomKeyboard {
             else if (primaryCode == CodeClear) {
                 if( editable != null )
                 	editable.clear();
-                ((MainActivity) mHostActivity).hideErrorMessage();
+                ((EnterEquivalencesActivity) mHostActivity).hideErrorMessage();
+                ((EnterEquivalencesActivity) mHostActivity).resetInitialFormula();
             } else if (primaryCode == CodeUndo) {
                 if(editable != null && start > 0) 
                 	editable.delete(start - 1, start);
-                if (start == 0)
-                    ((MainActivity) mHostActivity).hideErrorMessage();
+                if (start == 0) {
+                    ((EnterEquivalencesActivity) mHostActivity).resetInitialFormula();
+                    ((EnterEquivalencesActivity) mHostActivity).hideErrorMessage();
+                }
             } else
             	editable.insert(start, Character.toString((char) primaryCode));
         }

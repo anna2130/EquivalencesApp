@@ -7,6 +7,7 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -23,7 +24,11 @@
         </activity>
         <activity
             android:name="app.BeginEquivalenceActivity"
-            android:label="@string/title_activity_begin_equivalence" >
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="app.EnterEquivalencesActivity"
+            android:label="@string/app_name" >
         </activity>
     </application>
 
