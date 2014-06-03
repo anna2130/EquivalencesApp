@@ -24,6 +24,7 @@ public class EnterEquivalencesActivity extends Activity {
 	private int numVars;
 	private int depth;
 	private int numRules;
+	private int percent;
 	
 	private String initialFormula;
 
@@ -42,6 +43,9 @@ public class EnterEquivalencesActivity extends Activity {
 
 		Intent intent = getIntent();
 		int difficulty = intent.getIntExtra(MainActivity.DIFFICULTY, 0);
+		percent = intent.getIntExtra(MainActivity.PERCENT, 50);
+		
+		System.out.println(percent);
 		
 		switch (difficulty) {
 		case 0: numVars = 3;
@@ -136,12 +140,12 @@ public class EnterEquivalencesActivity extends Activity {
 		FormationTree tree;
 		// If other equivalence is empty, generate new equivalence from scratch
 		if (other.equals("")) {
-			initialFormula = c.generateRandomEquivalence(numVars, depth);
+			initialFormula = c.generateRandomEquivalence(numVars, depth, percent);
 			tree = c.compile(initialFormula);
 			
 			// limit length of geneated equivalence
 			while (tree.toString().length() > 25) {
-				initialFormula = c.generateRandomEquivalence(numVars, depth);
+				initialFormula = c.generateRandomEquivalence(numVars, depth, percent);
 				tree = c.compile(initialFormula);
 			}
 		} else {

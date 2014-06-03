@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/relative01" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relative01"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
     <TextView
         android:id="@+id/equivalences_title"
@@ -14,15 +14,6 @@
         android:text="@string/app_name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/equivalences_title"
-        android:layout_alignTop="@+id/select_difficulty"
-        android:layout_marginLeft="21dp"
-        android:entries="@array/difficulty_array" />
-
     <Button
         android:id="@+id/propositional_button"
         android:layout_width="wrap_content"
@@ -32,24 +23,61 @@
         android:layout_marginTop="18dp"
         android:text="@string/first_order" />
 
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/first_order_button"
+        android:layout_alignRight="@+id/first_order_button"
+        android:layout_below="@+id/truth_probability"
+        android:max="100"
+        android:layout_marginTop="20dp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/select_difficulty"
+        android:layout_marginLeft="17dp"
+        android:layout_toRightOf="@+id/select_difficulty"
+        android:entries="@array/difficulty_array" />
+
+    <TextView
+        android:id="@+id/truth_probability"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="36dp"
+        android:text="@string/truth_probability"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/settings"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
     <Button
         android:id="@+id/first_order_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/equivalences_title"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="118dp"
-        android:text="@string/propositional" 
-        android:onClick="startPropositional" />
+        android:layout_marginTop="66dp"
+        android:onClick="startPropositional"
+        android:text="@string/propositional" />
 
     <TextView
         android:id="@+id/select_difficulty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/equivalences_title"
-        android:layout_below="@+id/propositional_button"
-        android:layout_marginRight="116dp"
-        android:layout_marginTop="82dp"
+        android:layout_alignLeft="@+id/seek_bar"
+        android:layout_below="@+id/settings"
+        android:layout_marginTop="66dp"
         android:text="@string/difficulty"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 

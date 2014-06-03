@@ -6,43 +6,49 @@ import java.util.List;
 import java.util.Random;
 
 public enum Variable {
-	A("a", 10), B("b", 10), C("c", 10), D("d", 10), E("e", 10), F("f", 10), 
-		G("g", 10), H("h", 10), I("i", 10), TRUTH("┬", 3), FALSE("⊥", 3);
+	A("a", 100), B("b", 100), C("c", 100), D("d", 100), E("e", 100), F("f", 100), 
+	G("g", 100), H("h", 10), I("i", 100), TRUTH("┬", 50), FALSE("⊥", 50);
 
 	private String value;
 	private int weight;
+	private static int truthProbability;
 
 	private Variable(String value, int weight) {
 		this.value = value;
 		this.weight = weight;
 	}
-	
+
 	public String getValue() {
 		return value;
 	}
 
 	private int getWeight() {
-		return weight;
+		if (value.equals("┬") || value.equals("⊥"))
+			return truthProbability;
+		else
+			return weight;
 	}
-	
-	private static final List<Variable> VALUES =
+
+	private final static List<Variable> VALUES =
 			Collections.unmodifiableList(Arrays.asList(values()));
 
 	private static int sumWeights() {
 		int sum = 0;
-		for(Variable value : VALUES) 
-		sum += value.getWeight();
+		for(Variable value : VALUES)
+			sum += value.getWeight();
 		return sum;
 	}
 
-	public static Variable randomVariable()  {
+	public static Variable randomVariable(int probability)  {
+		truthProbability = probability;
+		
 		int size = sumWeights();
 		Random rand = new Random();
-		
+
 		int randomNum = rand.nextInt(size);
 		int currentWeightSum = 0;
 		Variable val = null;
-		
+
 		for(Variable currentValue : VALUES) {
 			val = currentValue;
 			if (randomNum > currentWeightSum && 

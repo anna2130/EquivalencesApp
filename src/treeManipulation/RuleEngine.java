@@ -17,6 +17,7 @@ public class RuleEngine {
 	RuleApplicator ra;
 	RuleSelector rs;
 	int noRules;
+//	HashSet<Integer> rulesWithTruths;
 	
 	private static int min_user_input_required = 69;
 
@@ -24,6 +25,9 @@ public class RuleEngine {
 		ra = new RuleApplicator();
 		rs = new RuleSelector();
 		noRules = rs.getNoRules();
+		
+//		Integer[] rules = new Integer[] {4,5,6,7,21,22,23,24,39,40,42,50,52,53,62,64,66,67,68,69,71,74,75};
+//		rulesWithTruths = new HashSet<Integer>(Arrays.asList(rules));
 	}
 	
 	public int getMinUserInputRequired() {

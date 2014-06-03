@@ -66,7 +66,7 @@ public class EquivalenceGeneration {
 	public void testZeroIteration() {
 		boolean b = true;
 		for (int i = 0; i < n; ++i) {
-			String s = compiler.generateRandomEquivalence(1, 0);
+			String s = compiler.generateRandomEquivalence(1, 0, 50);
 			FormationTree tree = compiler.compile(s);
 			b = b && (tree.maxDepth() == 1);
 		}
@@ -77,7 +77,7 @@ public class EquivalenceGeneration {
 	public void testOneIteration() {
 		boolean b = true;
 		for (int i = 0; i < n; ++i) {
-			String s = compiler.generateRandomEquivalence(1, 1);
+			String s = compiler.generateRandomEquivalence(1, 1, 50);
 			FormationTree tree = compiler.compile(s);
 			b = b && (tree.maxDepth() <= 2);
 		}
@@ -88,7 +88,7 @@ public class EquivalenceGeneration {
 	public void testTwoIteration() {
 		boolean b = true;
 		for (int i = 0; i < n; ++i) {
-			String s = compiler.generateRandomEquivalence(1, 2);
+			String s = compiler.generateRandomEquivalence(1, 2, 50);
 			FormationTree tree = compiler.compile(s);
 			b = b && (tree.maxDepth() <= 3);
 		}
@@ -99,9 +99,20 @@ public class EquivalenceGeneration {
 	public void testTwoVariables() {
 		boolean b = true;
 		for (int i = 0; i < n; ++i) {
-			String s = compiler.generateRandomEquivalence(2, 0);
+			String s = compiler.generateRandomEquivalence(2, 0, 50);
 			FormationTree tree = compiler.compile(s);
 			b = b && (tree.maxDepth() == 1);
+		}
+		assertTrue(b);
+	}
+
+	@Test
+	public void testProbability() {
+		boolean b = true;
+		for (int i = 0; i < n; ++i) {
+			String s = compiler.generateRandomEquivalence(2, 0, 0);
+			System.out.println(s);
+			b = b && (!(s.contains("┬") || s.contains("⊥")));
 		}
 		assertTrue(b);
 	}

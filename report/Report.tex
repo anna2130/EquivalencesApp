@@ -321,7 +321,7 @@ ATOM:  ('a'..'r' | '⊤' | '⊥');
 
 \subsection{Order of Precedence}
 
-Precedence rules can be used as a way of reducing the number of necessary parentheses. We use these in our grammar to decide which connective is the main connective when parsing a non-atomic formula. The precedence of logical operators is defined in Table \ref{orderofprecendence}.
+Precedence rules can be used as a way of reducing the number of necessary parentheses. We use these in our grammar to decide which connective is the main connective when parsing a non-atomic formula. The precedence of logical operators is defined in Table \ref{orderofprecendence}. The order of the grammar matches up with the order of precedence shown below, this is because ANTLR4 will choose the first rule that matches and this is how we maintain precedence.
 
 \begin{table}[h]
 \begin{center}
@@ -393,6 +393,8 @@ To build our internal representation of the logical formula we define a class {\
 \label{sub:node_index}
 
 In the final application we will be manipulating individual nodes in the tree. If there are two nodes with the same values and subtrees we need to be sure we're applying a rule to the correct node. Therefore, it is essential that all nodes in the tree have a unique index.
+
+TODO: Add diagrams with/without indexes to show why we require them and what could happen without.
 
 \subsubsection{[Key, Depth] Pairs}
 
@@ -474,6 +476,8 @@ The application requires a few key features concerning tree manipulation: the ab
 
 To handle the application of logical equivalences we define a series of rules that can be applied to individual nodes so long as they meet the required criteria for that rule. The {\tt RuleEngine} manages the application and selection of these rules employing a {\tt RuleApplicator} and {\tt RuleSelector} respectively.
 
+TODO: Add screenshots of just the tree in app to show a walk through of how rules are applied.
+
 TODO: Add Appendix with rules list
 
 \subsection{Rule Selection}
@@ -496,11 +500,13 @@ Some rules can require user input, for example in `$\bot \equiv$ a$\land\bot$' w
 
 \section{Generating Equivalent Formulae}
 
+It is possible for a user to enter formulae manually, however, we also want to provide a quick option to automatically generate usable equivalent formulae.
+
 \subsection{Random Formula Generation}
 
 When generating a logical formula we should be able to specify certain parameters such as how many variables and connectives are used. These parameters are used to generate different complexities of formulae for different difficulties.
 
-Our {\tt Compiler} is used to generate our random formula, {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Section \ref{sub:variables}) and passed through to a function {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled.
+The {\tt Compiler} is used to generate a random formula. The function {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Section \ref{sub:variables}) and passed through to a function {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled.
 
 The end criteria are either the maximum depth or a random criterion has been reached. The random criterion adds an extra random factor so that we don't always get a balanced tree. This provides us with more interesting equivalences to work with. Currently the random criterion has a $\frac{1}{5}$ chance of succeeding because this produces nice looking results - trees which are generally not completely imbalanced but have a good level of variation to them. 
 
@@ -513,18 +519,18 @@ Random operators and variables are selected using instances of {\tt Random} from
 
 Initially all the variables would appear in a generated formula with the same probability. However, this proved to be a poor approach because you often ended up with many truth values ($\top$ and $\bot$) in the formula. This made the equivalences very easy to solve as you could usually just reduce both to their equivalent truth value. Proving the formulae were equivalent this way doesn't promote the users learning experience as they will repeatedly only use a very small subset of basic equivalences such as `a$\lor\top \equiv \top$'.
 
-The solution to this problem was to assign probabilities to the variables. We define an enum {\tt Variable} (see Listing \ref{variableenum}) where all the entries have a value and a weight. The weight is defined on a scale of 0 to 10 with the higher weights being more likely to be chosen.
+The solution to this problem was to assign probabilities to the variables. We define an enum {\tt Variable} (see Listing \ref{variableenum}) where all the entries have a value and a weight. The weight is defined on a scale of 0 to 100 with the higher weights being more likely to be chosen.
 
-We define all atoms apart from the truth values with a weight of 10 and the truth values with a weight of 3.
+Initially all the atoms apart from the truth values are defined with a weight of 100 and the truth values are defined with a weight of 50 (so they will appear half as regularly as other variables). The application also provides the ability for a user to choose the probability they want these truth value atoms (`$\top$' and `$\bot$') to appear - to either increase or decrease the difficulty. When the user changes this probability the application will update the weights for the truth value variables.
 
 The enum provides the method {\tt randomVariable()} to return a random variable based on their weights. A simple analogy for this method is to imagine a ruler where the maximum value is the sum of the weights and each weight is dashed on the ruler. If you randomly placed your finger somewhere along the ruler then the segment you land on becomes the variable you return. So variables with smaller weights are less likely to be selected.
 
 \begin{listing}[ht]
 \begin{minted}{java}
 public enum Variable {
-    A("a", 10), B("b", 10), C("c", 10), D("d", 10), 
-        E("e", 10), F("f", 10), G("g", 10), H("h", 10), 
-        I("i", 10), TRUTH("┬", 3), FALSE("⊥", 3);
+    A("a", 100), B("b", 100), C("c", 100), D("d", 100), 
+        E("e", 100), F("f", 100), G("g", 100), H("h", 100), 
+        I("i", 100), TRUTH("┬", 50), FALSE("⊥", 50);
 
     ...
 }
@@ -537,7 +543,7 @@ public enum Variable {
 
 Applying random rules to a formula is used in generating an equivalent formula. When only one logical formula has been specified the user can request an automatically generated equivalence.
 
-The second formula can be generated easily by repeated application of random rules. This guarantees that the generated formula will be equivalent to the first and also allows us to set the difficulty of the proof based on how many steps there are between the two formulae.
+The second formula can be generated easily by repeated application of random rules. This guarantees that the generated formula will be equivalent to the first (because only applicable rules resulting in equivalence will be applied) and also allows us to set the difficulty of the proof based on how many steps there are between the two formulae.
 
 There are two sections to the rule applications: choosing a random node and choosing a random rule. 
 
@@ -548,13 +554,13 @@ Once a node has been selected to perform a rule on we call {\tt getApplicableRul
 \section{Truth Tables}
 \label{sec:generating_truth_tables}
 
-For a user to be able to complete a proof of their own custom equivalences we need to ensure that they're actually equivalent and the proof is completable before they begin. To do this we can use truth tables (defined in Section \ref{sec:truth_tables}).
+For a user to be able to complete a proof of their own custom equivalences we need to ensure that they are actually equivalent and the proof is completable before they begin. To do this we can use truth tables (defined in Section \ref{sec:truth_tables}).
 
 \subsection{Generating Truth Tables}
 
-{\tt TruthTable} contains a {\tt SortedSet} of variables, a {\tt LinkedHashSet<ArrayList<Integer>>} table (each {\tt ArrayList} represents a row in the table) and a {\tt String} formula. They can be represented as shown in Table \ref{table:generated_truth_table}. To generate the truth table we need to generate the values for the atoms (from first row of the atomic values would be 0 and 0) then apply them to the formula to find the truth value for the tree.
+{\tt TruthTable} contains a {\tt SortedSet} of variables, a {\tt LinkedHashSet<ArrayList<Integer>>} table (each {\tt ArrayList} represents a row in the table) and a {\tt String} formula. They can be represented as shown in Table \ref{table:generated_truth_table}. 
 
-We use a {\tt SortedSet} to store the variables in so that when comparing two truth tables the columns will be in the same order to make comparisons easier. A {\tt LinkedHashSet} is required for the tables because it has a predictable iteration order which is also required for comparisons of tables. The same argument is used for using an {\tt ArrayList} for each row, this provides us with an ordered collection where we have precise control over where each element is inserted. This enables us to have easy access to the values in the rows, necessary for reducing tables in certain cases.
+To generate the truth table we need to generate the values for the atoms (the first two columns of the example shown in Table \ref{table:generated_truth_table}) then apply them to the formula to find the final column's truth values.
 
 \begin{table}[h]
   \begin{center}
@@ -572,9 +578,11 @@ We use a {\tt SortedSet} to store the variables in so that when comparing two tr
   \label{table:generated_truth_table}
 \end{table}
 
+We use a {\tt SortedSet} to store the variables in so that when comparing two truth tables the columns will be in the same order to make comparisons easier. A {\tt LinkedHashSet} is required for the table because it has a predictable iteration order which is required for comparisons of tables. The same argument is used for using an {\tt ArrayList} for each row. This provides us with an ordered collection where we have precise control over where each element is inserted, enabling us to have easy access to the values in the rows - necessary for extending a table in certain cases.
+
 \subsubsection{Creating Input Truth Values For Atoms}
 
-Creating the first two columns of the table shown in Table \ref{table:generated_truth_table} we define a function {\tt createAtomicTruthValues()}. This takes the number of variables present in the formula (in this case 2) and calculates the number of rows that will be present in the table:
+For creating the first two columns of the table shown in Table \ref{table:generated_truth_table} we define a function {\tt createAtomicTruthValues()}. This takes the number of variables present in the formula (in this case 2 - `a' and `b') and calculates the number of rows that will be present in the table:
 
 \begin{listing}[ht]
 \begin{minted}{java} 
@@ -616,11 +624,17 @@ This produces the table shown in Table \ref{table:generated_atomic_truth_values}
 
 \subsubsection{Determining Truth Value For The Tree}
 
-Each row of the table is used to evaluate the truth values of the tree for the final column in the table. We define the function {\tt createTruthTable()} to create the final table from the tree of a logical formula. This calculates the number of variables by walking through the tree and passes this value to {\tt createAtomicTruthValues()} to generate the atomic truth values required. 
+TODO: Add diagram of tree example with truth values evaluated at each subequivalence
 
-Looping through each row of the table allows us to compute the resulting truth values for the tree. To compute the tree's truth value for that row a {\tt HashMap<String, Integer>} is created to map each variable to a truth value. The {\tt FormationTree} defines a method {\tt getTruthValue()} to calculate its truth value using this map.
+Each row of the table is used to evaluate the truth values of the formula for the final column in the table. We define the function {\tt createTruthTable()} to create the final truth table for the tree of a logical formula. This calculates the number of variables by walking through the tree and passes this value to {\tt createAtomicTruthValues()} to generate the atomic truth values required as described above. 
 
-The tree determines its truth value by recursively calling {\tt getTruthValue()} on its nodes beginning at the root. Using the example shown in Table \ref{table:generated_truth_table} for `a$\land$b': the root node is `$\land$' so the result would be a logical and of the left and right children. When {\tt getTruthValue()} is called on an atomic value it either returns 0 or 1 if its a `$\bot$' or `$\top$' respectively, else it returns the value defined for that atom in the map. The returned truth value is added to the end of its respective row in the table. Now the table looks as shown in Table \ref{table:final_generated_table} where the first two columns represents the truth values for the variables in our variables array and the final column represents the truth values for the whole formula.
+Looping through each row of the table allows us to compute the corresponding truth value for the formula. To compute the formula's truth value for that row a {\tt HashMap<String, Integer>} is created to map each variable to a truth value. The {\tt FormationTree} defines a method {\tt getTruthValue()} to calculate its truth value using this map.
+
+The tree determines its truth value by recursively calling {\tt getTruthValue()} on its nodes beginning at the root. Using the example shown in Table \ref{table:generated_truth_table} for `a$\land$b': the root node is `$\land$' so the result would be a logical and of the left and right children. When {\tt getTruthValue()} is called on an atomic value it either returns 0 or 1 if its a `$\bot$' or `$\top$' respectively, else it returns the value defined for that atom in the map.
+
+When evaluating the truth value for a formula the application uses shortcuts to reduce the amount of computation required. For example, when computing the truth value for the first row of our table [0, 0], where `a' and `b' both evaluate to 0 (or `$\bot$'), once the application knows the left child `a' is 0 there is no need to evaluate the right hand child because it's impossible for the overall truth value to be 1 (or `$\top$'). Therefore, the right hand evaluation is skipped.
+
+The returned truth value is added to the end of its corresponding row in the table. Now the table looks as shown in Table \ref{table:final_generated_table} where the first two columns represents the truth values for the variables in our variables array and the final column represents the truth values for the whole formula.
 
 \begin{table}[h]
   \begin{center}
@@ -659,53 +673,120 @@ The other operators use return their truth value using similar methods. The trut
 
 {\tt TruthTable} defines a method {\tt testEquivalence()} which compares its own truth table to another. There are four cases that could be possible when comparing truth tables:
 
-\textbf{Case 1: } Both equivalences have identical sets of variables.
+\textbf{Case 1: } Both formulae have the same variables and are equivalent.
 
-\textbf{Case 2: } Both equivalences have the same size tables but have different variables.
+\textbf{Case 2: } Both formulae have different sets of variables and are equivalent.
 
-\textbf{Case 3: } They have different size tables and one set of variables is a subset of the other.
-
-\textbf{Case 4: } The tables are not equivalent.
+\textbf{Case 4: } The formulae are not equivalent.
 
 \subsubsection{Checking Tables Are Equal}
 
-In the \textbf{Case 1} we could have two formulae such as `a$\land$b' and `b$\land$a'. These have contain identical sets of variables. They are equivalent if they contain the same set of variables and their truth tables are equal.
+In the \textbf{Case 1} we could have two formulae such as `a$\land$b' and `b$\land$a'. These have contain identical sets of variables. They are equivalent if they contain the same set of variables and their truth tables are equal (Their truth tables are identical apart from the result formula).
 
-Tables are checked for equivalence using {\tt tablesEqual()}. If the two tables to be compared aren't the same size the method immediately returns false to reduce computation time. If they're equal it loops through each row in both tables concurrently and checks they're equal. If all the rows are equal to their corresponding rows the method returns true.
+Tables are checked for equivalence using {\tt tablesEqual()}. If the two tables to be compared aren't the same size the method immediately returns false to reduce computation time. If they're equal it loops through each row in both tables and checks that they're equal. If all the rows are contained in each table the method returns true.
 
-\subsubsection{Different Variables}
+\subsubsection{Different Variables and Differently Sized Tables}
 
-The variable sets need to be compared in the previous case because the tables can be equivalent even if they use different variables. In this case the proof would not be solvable. For example, `a$\land$b' has an equivalent table to `p$\land$q' but we do not define any rules for replacing one atom in the tree with another so you could not complete the proof.
+The variable sets need to be compared in the previous case because the tables can be equivalent even if they use different variables. In this case the proof may or may not be solvable. For example, `a$\land$b' has an equivalent table to `p$\land$q' but we do not define any rules for replacing one atom in the tree with another so you would not be able to complete the proof. Whereas, `a$\land\lnot$a' and `b$\land\lnot$b' have equivalent tables and can be proven equivalent because they both reduce to `$\top$'.
 
-However, a basic check comparing the two variable sets does not always work as there are cases where the variable sets will be different. \textbf{Case 2} defines a case where both equivalences have the same number of variables but they are not identical sets. An example of this would be `a$\land\top$' and `$\bot\lor$a' which both contain an atom not present in the other formula. 
+However, a basic check to ensure the two variable sets are equal does not always work as there are cases where the variable sets will be different as described above. 
 
-The only time this case occurs is with `$\top$' and `$\bot$' values. So we define a function {\tt removeTruthValues()} to return the set of variables without these truth values and compare these new sets of variables. So long as one set is a subset of the other the test will pass. If this new variable comparison passes and the tables are equal then the truth tables are equivalent.
+\textbf{Case 2} defines a case where both formulae are equivalent but have different variable sets. Another example of this would be `a$\land\top$' and `$\bot\lor$a' which both contain an atom not present in the other formula.
 
-\subsubsection{Differently Sized Tables}
+In this case we extend each table to include the missing variables (so both variable sets become equal) and then execute another comparison using {\tt testEquivalence()} where the tables will either fall into \textbf{Case 1} and be equivalent or \textbf{Case 3} and not be equivalent. 
 
-Due to the rules such as the absorption rule it is possible for formulae with differently sized variable sets to be equivalent. In \textbf{Case 3} we can have two formulae being equivalent so long as one set of variables is a subset of the other. This is different to \textbf{Case 2} because that subset comparison was only necessary due to the removal of truth values. An example of two formulae fitting \textbf{Case 3} are `a$\land$(a$\lor$b)' and `a'.
+Due to the rules such as the absorption rule it is possible for formulae with differently sized variable sets to be equivalent too. These equivalences can also be shown to have equivalent truth tables by table extension.
 
-The first formula would have a larger table than the second so it would fail our tests for the first two cases. The solution to comparing two differently sized table it to compare only the columns that the two formula have in common. So in this case we would only want to compare the `a' and formula columns from both tables. However, actually accomplishing this is slightly more complex.
+\subsubsection{Table Extension}
 
-The function {\tt testSubsetEquivalence()} allows us to compare two differently sized truth tables. It takes their variables and tables and works out which sections to compare. By creating reduced tables from each we can add in only the columns we want to compare. We created each reduced table as a {\tt HashSet} so it wouldn't allow any duplicate values that would be problematic when comparing the tables.
+In this section we will be using `a$\land\lnot$a' and `b$\land\lnot$b' as our example formulae. The initial truth tables for each of these formula are shown in Table \ref{table:a_and_not_a}.
 
-To create the reduced tables we call {\tt createReducedTable()} for each truth table. This iterates through the first set of variables and for each variable checks if it is contained in the second set. If the variable is contained in both sets we add the index of this variable to a set of values to keep. Once the variable iteration is complete we also add the one more index to represent the formula in the final column of the table. Then the function iterates through each row of the table and for each index in the kept values it adds the value at that index (from the old row) to the new reduced table's new row (shown in Listing \ref{listing:create_reduced_table}). This results in a reduced table only containing the columns of variables that appear in both sets.
+\begin{table}[h]
+  \begin{center}
+\begin{tabular}{ || c || c || }
+      \hline
+      a & a$\land\lnot$a \\ \hline
+      0 & 1 \\
+      1 & 1 \\
+      \hline
+\end{tabular}
+\hspace{15mm}
+\begin{tabular}{ || c || c || }
+      \hline
+      b & b$\land\lnot$b \\ \hline
+      0 & 1 \\
+      1 & 1 \\
+      \hline
+\end{tabular}
+  \end{center}
+  \caption{Truth tables for `a$\land\lnot$a' and `b$\land\lnot$b'}
+  \label{table:a_and_not_a}
+\end{table}
+
+To be able to compare the truth tables of these formulae we need to extend them to include all the variables that appear in both formulae, the resulting tables should look as shown below in Table \ref{table:extended_a_and_not_a}.
+
+%As you can see the variables and the tables are now equal and can be compared as in \textbf{Case 1}. This table extension is performed in {\tt testEquivalence} if the formulae fail the test for \textbf{Case 1}. 
+
+First, a new variable set is created and the variables from both formulae are added to it as shown in Listing \ref{listing:create_new_variable_set}. In our example this set would become [a, b].
 
 \begin{listing}[ht]
-\begin{minted}{java}
-for (ArrayList<Integer> oldRow : table1) {
-    ArrayList<Integer> newRow = new ArrayList<Integer>();
-    
-    for (Integer index : keptValues)
-        newRow.add(oldRow.get(index));
-    reducedTable.add(newRow);
-}
+\begin{minted}{java} 
+SortedSet<String> all = new TreeSet<String>();
+all.addAll(variables);
+all.addAll(v2);
 \end{minted}
-\caption{Part of {\tt createReducedTable()} showing the insertion of new rows to the reduced table using the indexes of variables appearing in both variable sets.}
-\label{listing:create_reduced_table}
+\caption{Creating the new variable set}
+\label{listing:create_new_variable_set}
 \end{listing}
 
-Once a reduced table has been created for each table we can compare the two reduced tables the same way we did in \textbf{Case 1} to find out if they're equivalent. If all these checks fail then the formulae fall into \textbf{Case 4} and are not equivalent.
+Two new extended tables are created, the first initialised to the first original table and the second to the second original table. The function iterates through the new variable set and if a variable does not appear in one of the original sets it is added to its respective extended table using {\tt addVariable()} as shown in Listing \ref{listing:extending_tables}. 
+
+Our example would need to extend both tables once until they had identical variable sets.
+
+\begin{listing}[ht]
+\begin{minted}{java} 
+for (String var : all) {
+    if (!variables.contains(var))
+        extendedTable1 = extendedTable1.addVariable(var);
+    if (!v2.contains(var))
+        extendedTable2 = extendedTable2.addVariable(var);
+}
+\end{minted}
+\caption{Extending the tables by adding new variables}
+\label{listing:extending_tables}
+\end{listing}
+
+Adding a new variable to a table is done by duplicating each row and on each setting the value of the new variable to 0 and 1 respectively. The row [0, 1] in the formula `a$\land\lnot$a' would need a `b' variable added so would become two rows of [0, 0, 1] and [0, 1, 1] where the new variable has been inserted into the second column. The same would occur for the second row [1, 1].
+
+Once both tables have been extended (Table \ref{table:extended_a_and_not_a}) the function calls {\tt tablesEqual()} on them to confirm that they have the same truth values and are equivalent.
+
+\begin{table}[h]
+  \begin{center}
+\begin{tabular}{ || c | c || c || }
+      \hline
+      a & b & a$\land\lnot$a \\ \hline
+      0 & 0 & 1 \\
+      0 & 1 & 1 \\
+      1 & 0 & 1 \\
+      1 & 1 & 1 \\
+      \hline
+\end{tabular}
+\hspace{15mm}
+\begin{tabular}{ || c | c || c || }
+      \hline
+      a & b & b$\land\lnot$b \\ \hline
+      0 & 0 & 1 \\
+      0 & 1 & 1 \\
+      1 & 0 & 1 \\
+      1 & 1 & 1 \\
+      \hline
+\end{tabular}
+  \end{center}
+  \caption{Extended truth tables for `a$\land\lnot$a' and `b$\land\lnot$b'}
+  \label{table:extended_a_and_not_a}
+\end{table}
+
+If this check also fails then the formulae are \textbf{Case 3} where they are not equivalent and the method returns false.
 
 \chapter{Android VS Web Applications}
 
@@ -716,8 +797,6 @@ In an ideal world it would have been very interesting and useful to have been ab
 The options were narrowed down by the fact we wanted to display the formation tree of the current formula as this would require a fairly large amount of screen space. Therefore, we opted not to build the application for a smartphone. If this were to be an extension we could simply remove the formation tree functionality to make the application usable on the smaller screen. This left us with the option of building for a tablet or a website.
 
 Personal preference made the decision to choose an Android tablet as our tablet of choice because I had not had any experience programming with Android before and thought it would be a good skill to learn whereas I have programmed for iOS in the past. 
-
-% We decided early on in the project that the tool should be an Android tablet application as opposed to a web or mobile one; this allows for an intuitive, interactive design while still having a large screen space.
 
 \subsection{Tablet Apps VS Web Apps}
 
@@ -731,7 +810,9 @@ Obviously this is a key difference and would seriously affect the way the user w
 
 A benefit of creating a tablet application is portability. As we are creating this application with the intention of it being a learning tool, the ability to use it easily and to be unintrusive and undisruptive in a lecture is a major bonus. A webapp could still be run on a laptop in this environment but they are generally considering to be more disruptive.
 
-While a web application could be used on a tablet the user experience is much richer with native applications. The graphics and user interface used for web apps are not as smooth as we would get from the native app\cite{androidwebappdifferences}.
+While a web application could be used on a tablet the user experience is much richer with native applications. The graphics and user interface used for web apps are not as smooth as one would find on a native app. This is because the graphics for a native app are already installed and therefore download speed during use does not need to be considered while developing\cite{androidwebappdifferences}.
+
+Building a native app means that the application can utilize all the build in hardware on the phone and access internal data. This functionality is not available through a web app.
 
 \subsubsection{Availability}
 
@@ -745,25 +826,19 @@ As I have not programmed any Android applications in the past I had a personal p
 
 In conclusion we decided to develop the application on an Android tablet device. Despite this being the more complex solution we believe that the application is more suitable to being used on a tablet and would be more likely to be used by students.
 
-\section{Difficulties Developing For Android}
-
-\subsection{Screen size and Scrolling}
-
-Tablets have a limited screen size compared to a computer screen. Although we have established that the screen size would be suitable for displaying the formation trees of the equivalences it does present the difficulty of moving around the application. Android provides a scrollable view that allows the view to scroll either horizontally or vertically, but not both. You also cannot use nested scrollable views as the application would not be able to understand which view you were trying to scroll through.
-
-This is problematic as it is possible for a large formation tree to be larger than the width of the screen. We could not set the scrollable view to scroll horizontally because we require vertical scrolling for long equivalence proofs.    
-
-% if the tree extends over thes
-
-\subsection{Less Experience}
-\subsection{External Libraries}
-\subsection{Custom Features}
-
 \chapter{Android}
 
 \section{Technical Background}
 
 \section{Features}
+
+\subsection{Graphics and Widget library}
+
+% WIKI: Android does not use the Abstract Window Toolkit nor the Swing library. User Interface is built using View objects. Android uses a framework similar to Swing based around Views rather than JComponents. However, Android widgets are not JavaBeans: the Android application Context must be provided to the widget at creation.
+
+\subsection{Views}
+
+\subsection{Activities}
 
 \subsection{Multi-Touch Gestures}
 
@@ -774,11 +849,54 @@ The user interface is based around direct manipulation. This means using touch i
 
 Android takes advantage of internal hardware such as accelerometers, gyroscopes and proximity sensors in some applications to respond to other user actions, such as re-orientating the screen from portrait to landscape.
 
+\subsection{Custom Keyboards and KeyboardView}
+
+%Since API level 3, Android has a KeyboardView. As the name suggests, this is a View, so it is part of the layout of an activity. This is good news an bad news. It is bad news, because it means we have to obscure all layout files of our applications with a view for a keyboard. It is good news, because it means we are in full control in our app.
+%But wait, what will the KeyboardView show? The answer to this is that we have to associate a Keyboard with the KeyboardView. A keyboard consists of Rows, and rows consist of Keys, and keys are associated with a label (what is shown on the key button) and a code (what is sent to the app when the key is pressed).
+%So, that's four classes to study:
+%KeyboardView
+%Keyboard
+%Keyboard.Row
+%Keyboard.Key
+%But it is not that bad: a Keyboard can be setup with a single (ok, rather large) xml file. It lists all rows, their keys, and per key the label and the code. So, what we see in practice is a KeyboardView in our activity (activities), one or more xml files with a keyboard layout (in our case one file describing a hexadecimal keyboard layout), and a single line of code to assign the Keyboard to the KeyboardView. And then there are some issues in when to show the keyboard.
+
 \section{Market Share}
 
 Android's main competitor in the mobile platform market is Apple's iOS. In research conducted in the fourth quarter of 2012, Kantar Worldpanel Comtech showed sales of all Android smartphones worldwide outpacing the iPhone by a huge margin: 70 percent to 21 percent of the smartphone market\cite{androidstats}.
 
 In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 percent to 42.7, which is lower than Android's smartphone market but steadily increasing.
+
+\section{Difficulties Developing For Android}
+
+During development of the application we encountered some difficulties specific to Android which we would not have experienced if we had developed a web application. There are detailed below and will be referencing aspects of the project detailed later in the report.
+
+\subsection{Screen size and Scrolling}
+
+Tablets have a limited screen size compared to a computer screen. Although we have established that the screen size would be suitable for displaying the formation trees of the equivalences it does present the difficulty of moving around the application. Android provides a scrollable view that allows the view to scroll either horizontally or vertically, but not both. Nested scrollable views are not allowed as the application would not be able to understand which view you were trying to scroll through.
+
+This is problematic as it is possible for a large formation tree to be larger than the width of the screen. We could not set the scrollable view to scroll horizontally because we require vertical scrolling for long equivalence proofs. On a computer this would be an easy solution as nested scroll boxes are easy to implement.
+
+TODO: Add the solution
+
+\subsection{External Libraries}
+
+Using external libraries with Android proved to be much more of a challenge than expected. This was especially evident when looking for an external library used for drawing attractive trees. Most of the libraries available hooked straight into Java's Swing components and so huge amounts of the library would need to be rewritten for it to function on Android.
+
+This meant that any external libraries used needed to separate the core functionality from the actual rendering to be usable. Even then needed some tweaking was required to get them to function correctly. An example of this challenge is described in our formation tree representation in Section \ref{sub:abego_treelayout}.
+
+\subsection{Custom Features}
+
+Android provides the ability to generate your own custom features when the ones you want are not available. Such as the custom keyboard described in Section \ref{sec:custom_keyboard}. These features would not need to be implemented on a web app as the computer would already provide all of them. Implementing the custom keyboard was a difficult process as the {\tt KeyboardView} we needed to extend is not well known. Although there is documentation on the {\tt KeyboardView} there are not many examples and there are some issues in when to show the keyboard.
+
+Designing our own {\tt KeyboardView} has the downside that it is a {\tt View} and as such is a part of the layout in an Activity. This means the {\tt View} will obstruct all the layouts implementing it but we are in complete control of our application, keyboard included.
+
+For unknown reasons {\tt KeyboardView} is not part of any automatically found package (returning a {\tt java.lang.NoClassDefFoundError}) meaning the full path to the class is required. Therefore, the graphical layout editor (which shows a graphical representation of the XML file) cannot show a representation of the keyboard making the design process slightly more difficult.
+
+One of the most complex issues was making the keyboard appear at the right time, and even more difficult was making the standard keyboard invisible at the same time. Android is very persistant in having the standard keyboard appear. The workaround was to set the input type of the text box as {\tt TYPE\_NULL} (telling Android we wouldn't be editting that text box), however this hides the cursor meaning we needed to add our own cursor keys to our keyboard. This is currently considered a bug.
+
+\subsection{Less Experience}
+
+Developing for Android proved to be a steep learning curve as I had never developed for it before. This definitely proved to be a hurdle in the progress of the application and development proceeded a lot more slowly compared to if we had developed a web application.
 
 \chapter{The App}
 \section{Truth Tables}
@@ -791,6 +909,8 @@ In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 
 \subsection{Generate equivalence formula - repeated application of random rules}
 
 \section{Custom Keyboard}
+\label{sec:custom_keyboard}
+
 \subsection{Logic symbols and variables}
 
 \section{Undo/Redo Functionality}
@@ -798,6 +918,7 @@ In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 
 \subsection{OnClick listeners}
 
 \section{Formation Tree Representation}
+\label{sec:formation_tree_representation}
 
 \subsection{The Formation Tree}
 
@@ -844,13 +965,16 @@ This is applied during a postorder traversal of the tree by taking the two subtr
 Extending Reingold and Tilford's algorithm to to rooted ordered trees of unbounded degree as described in their paper produces layouts where some subtrees of the tree could have been dispersed better to create a more attractive layout. In 1990 Walker's algorithm solved this problem by spacing out subtrees whenever possible, however in the initial algorithm presented the runtime was quadratic. Walker's algorithm was improved upon by Christoph Buchheim, Michael J\"unger and Sebastian Leipert so it would run in linear time\cite{improvingwalkers}. This is the algorithm we use in our application. 
 
 \subsection{Abego TreeLayout}
+\label{sub:abego_treelayout}
+
+TODO: Add challenge of using it on Android
 
 Abego TreeLayout is an external library which efficiently creates compact and highly cusomisable tree layouts. It is based on Walker's algorithm with the enhancements previously mentioned suggested by Buchheim, J\"unger, and Leipert\cite{treelayoutlineartime}. The software builds tree layouts in linear time so that even trees with many nodes are built quickly. TreeLayout separates the layout of the tree from the actual rendering, therefore it is suitable for drawing trees in an Android application because it is not limited to a specific output or format.
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=\textwidth]{abegolineartime.png}
-    \caption{Illustrates the linear time behaviour of the Abego TreeLayout algorithm\cite{abegolineartime} and shows the applicability for large numbers of nodes.}
+    \caption{Illustrates the linear time behaviour of the Abego TreeLayout algorithm\cite{abegolineartime} and shows the applicability for large numbers of nodes. (Graph taken from the Abego TreeLayout documentation).}
     \label{abegolineartime}
 \end{figure}
 
@@ -1135,6 +1259,7 @@ We need to ask people who understand logic (e.g. lecturers) so we can confirm th
 
 \end{thebibliography}
 
+% Put in appendix
 \chapter{User Guide}
 \section{How to use the app}
 

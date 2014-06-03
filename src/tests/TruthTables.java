@@ -1051,5 +1051,29 @@ public class TruthTables {
 		TruthTable tt2 = new TruthTable(tree2);
 		assertFalse(tt1.testEquivalence(tt2));
 	}
+	
+	@Test
+	public void testDifferentVariablesFailure() {
+		String s1 = "pvq";
+		String s2 = "avb";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		assertFalse(tt1.testEquivalence(tt2));
+	}
+	
+	// Test new truth tables
+	
+	@Test
+	public void testDifferentVariables() {
+		String s1 = "av¬a";
+		String s2 = "bv¬b";
+		FormationTree tree1 = compiler.compile(s1);
+		FormationTree tree2 = compiler.compile(s2);
+		TruthTable tt1 = new TruthTable(tree1);
+		TruthTable tt2 = new TruthTable(tree2);
+		assertTrue(tt1.testEquivalence(tt2));
+	}
 
 }

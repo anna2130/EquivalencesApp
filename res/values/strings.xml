@@ -14,7 +14,9 @@
 
     <string name="propositional">Propositional Logic</string>
     <string name="first_order">First Order Logic</string>
-    <string name="difficulty">Select difficulty:</string>
+    <string name="difficulty">Difficulty:</string>
+    <string name="truth_probability">Probability of ┬ or ⊥ atoms:</string>
+    <string name="settings">Settings</string>
 
     <string-array name="difficulty_array">
         <item>Beginner</item>

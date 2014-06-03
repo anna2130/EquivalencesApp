@@ -14,7 +14,6 @@ import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
 import treeManipulation.RuleEngine;
-import treeManipulation.TruthTable;
 
 public class Compiler {
 	
@@ -29,24 +28,27 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 
-//		String s = compiler.generateRandomEquivalence(8, 2);
-		String s1 = "┬";
-		String s2 = "a→┬";
-		FormationTree tree = compiler.compile(s1);
-		FormationTree tree2 = compiler.compile(s2);
+		String s = compiler.generateRandomEquivalence(8, 2, 100);
+		FormationTree tree = compiler.compile(s);
+		
 		RuleEngine re = new RuleEngine();
-		System.out.println(tree);
-
-		TruthTable tt = new TruthTable(tree);
-		TruthTable tt2 = new TruthTable(tree2);
-
-		System.out.println(tt);
-		System.out.println(tt2);
 		
-		System.out.println(tt.testEquivalence(new TruthTable(tree2)));
-		
-		re.applyRandomRules(tree, 15);
-		System.out.println(tree);
+		re.applyRandomRules(tree, 3);
+		System.out.println("Done: " + s);
+//		String s1 = "pvq";
+//		String s2 = "avb";
+//		FormationTree tree1 = compiler.compile(s1);
+//		FormationTree tree2 = compiler.compile(s2);
+//		System.out.println(tree1);
+//
+//		TruthTable tt1 = new TruthTable(tree1);
+//		TruthTable tt2 = new TruthTable(tree2);
+//
+//		System.out.println();
+//		System.out.println(tt1);
+//		System.out.println(tt2);
+//		
+//		System.out.println(tt1.testEquivalence(tt2));
 	}
 	
 	public FormationTree compile(String expr) {
@@ -64,14 +66,14 @@ public class Compiler {
         return tree;
 	}
 
-	public String generateRandomEquivalence(int numVars, int depth) {
+	public String generateRandomEquivalence(int numVars, int depth, int probability) {
 		ArrayList<String> vars = new ArrayList<String>();
 		
 		for (int i = 0; i < numVars; ++i) {
-			String var = Variable.randomVariable().getValue();
+			String var = Variable.randomVariable(probability).getValue();
 			
 			while (vars.contains(var))
-				var = Variable.randomVariable().getValue();
+				var = Variable.randomVariable(probability).getValue();
 			
 			vars.add(var);
 		}
