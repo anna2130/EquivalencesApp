@@ -499,10 +499,12 @@ When the user selects an applicable rule the {\tt RuleApplicator} is used to app
 Some rules can require user input, for example in `$\bot \equiv$ a$\land\bot$' we require some input to decide which variable to use in the place of `a'. The selected variable can be passed in when applying the rule from {\tt BitSet}.
 
 \section{Generating Equivalent Formulae}
+\label{sec:generating_equivalent_formulae}
 
 It is possible for a user to enter formulae manually, however, we also want to provide a quick option to automatically generate usable equivalent formulae.
 
 \subsection{Random Formula Generation}
+\label{sub:random_formula_generation}
 
 When generating a logical formula we should be able to specify certain parameters such as how many variables and connectives are used. These parameters are used to generate different complexities of formulae for different difficulties.
 
@@ -828,43 +830,85 @@ In conclusion we decided to develop the application on an Android tablet device.
 
 \chapter{Android}
 
+Based on the Linux kernel Android is an operating system primarily designed for touchscreen mobile and tablet devices\cite{androidwiki}. The project responsible is the Android Open Source Project (AOSP) and is primarily lead by Google. The system provides a large user interface library and supports its graphics using the OpenGL-ES standard.
+
 \section{Technical Background}
 
-\section{Features}
+\subsection{Android Platform Components}
 
-\subsection{Graphics and Widget library}
+The Android system can be divided into four main levels, applications, the application framework, libraries and runtime, and the Linux Kernel (listed from top to bottom).
 
-% WIKI: Android does not use the Abstract Window Toolkit nor the Swing library. User Interface is built using View objects. Android uses a framework similar to Swing based around Views rather than JComponents. However, Android widgets are not JavaBeans: the Android application Context must be provided to the widget at creation.
+There are many default top level applications such as the Browser, Camera and Music. The application framework is an API allowing high-level interactions from applications to the Android system. Android libraries are used for many standard functions like web browsing and rendering graphics in the application framework and in the Dalvik runtime (Dalvik is the process virtual machine in Android). The Linux kernel acts as a communication layer for the underlying hardware.
 
-\subsection{Views}
+When developing for Android a developer will only tend to work on the top two layers.
 
-\subsection{Activities}
+\subsection{Applications}
 
-\subsection{Multi-Touch Gestures}
+Applications extend the functionality of Android devices and are primarily developed in Java using the Android SDK. The SDK provides an extensive set of development tools and there is plenty of documentation available.
 
+Users of an Android device can download third party applications through an app store such as Google Play. There is a growing number of third party applications and the app stores allow a user to browse, download and update any applications published suitable for their device.
 
-Android is an operating system based on the Linux kernel which was designed primarily for touchscreen mobile devices such as smartphones and tablet computers\cite{androidwiki}.
+There were more than one million applications available for download from the Google Play Store as of July 2013\cite{appstoredownloads}. 
 
-The user interface is based around direct manipulation. This means using touch inputs that loosely correspond to real-world actions, for example swiping, tapping and pinching to control items on screen. The response to user actions is designed to be immediate and provides a fluid touch interface. It often provides haptic feedback (forces, vibrations or motions) to the user using the vibration capabilities.
+\subsection{Memory Management}
 
-Android takes advantage of internal hardware such as accelerometers, gyroscopes and proximity sensors in some applications to respond to other user actions, such as re-orientating the screen from portrait to landscape.
+As with most mobile and tablet devices most Android devices are battery powered. Unlike desktop operating systems such as Windows, Android is designed to keep power consumption low. This is because desktop operating systems can make the assumption that they will be connected to unlimited mains electricity. 
 
-\subsection{Custom Keyboards and KeyboardView}
+To keep power consumption at a minimum Android will set apps to idle when they are no longer in use, suspending them so they don't consume battery or processing power. Keeping apps idle means that they do not need to be closed and reopened when a user wants to access them again which also helps reduce power consumption.
 
-%Since API level 3, Android has a KeyboardView. As the name suggests, this is a View, so it is part of the layout of an activity. This is good news an bad news. It is bad news, because it means we have to obscure all layout files of our applications with a view for a keyboard. It is good news, because it means we are in full control in our app.
-%But wait, what will the KeyboardView show? The answer to this is that we have to associate a Keyboard with the KeyboardView. A keyboard consists of Rows, and rows consist of Keys, and keys are associated with a label (what is shown on the key button) and a code (what is sent to the app when the key is pressed).
-%So, that's four classes to study:
-%KeyboardView
-%Keyboard
-%Keyboard.Row
-%Keyboard.Key
-%But it is not that bad: a Keyboard can be setup with a single (ok, rather large) xml file. It lists all rows, their keys, and per key the label and the code. So, what we see in practice is a KeyboardView in our activity (activities), one or more xml files with a keyboard layout (in our case one file describing a hexadecimal keyboard layout), and a single line of code to assign the Keyboard to the KeyboardView. And then there are some issues in when to show the keyboard.
-
-\section{Market Share}
+\subsection{Market Share}
 
 Android's main competitor in the mobile platform market is Apple's iOS. In research conducted in the fourth quarter of 2012, Kantar Worldpanel Comtech showed sales of all Android smartphones worldwide outpacing the iPhone by a huge margin: 70 percent to 21 percent of the smartphone market\cite{androidstats}.
 
 In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 percent to 42.7, which is lower than Android's smartphone market but steadily increasing.
+
+\section{Features}
+
+\subsection{Graphics and Widget Library}
+\label{sub:graphics_and_widgets}
+
+Android does not use the Swing library or the Abstract Window Toolkit (AWT) used in most Java applications. Instead the graphical user interface for an Android app is built using a hierarchy of {\tt View} and {\tt ViewGroup} objects. The framework employed is similar to Swing but based around {\tt View} objects rather than {\tt JComponent} objects.
+
+{\tt ViewGroup} objects are hidden containers used to define how the child views are positioned. Buttons and text fields are some examples of {\tt View} objects, they are UI widgets that manage what a user can see and do on the screen. {\tt View} and {\tt ViewGroup} components can either be defined in XML or programmatically.
+
+Widgets require the Android application's {\tt Context} to be provided at creation. The {\tt Context} of an application provides global information about its environment. As the name suggests, its provides the context of the current state of the application allowing newly created objects to understand what has occurred. It can be used to obtain information about another part of the program such as another {\tt Activity}.
+
+\subsection{Activities}
+\label{sub:activities}
+
+An {\tt Activity} is the base for the user interface in Android, it represents the presentation layer which a user will see. Android applications tend to have multiple activities which are switched between during runtime.
+
+Often activities will be presented as a full-screen window but they can also be used as floating windows or embedded inside other activities (implementing {\tt ActivityGroup}). All {\tt Activity} classes must be declared in the Android manifest file. This is an XML file that holds all the essential information the application requires before it can run any code.
+
+When a new activity begins it is pushed onto the `back stack' and the previous activity is stopped. As the stack has the standard `last in, first out' structure when a user presses the back button the current activity will be popped off and the previous activity is resumed. 
+
+\subsection{Fragments}
+\label{sub:fragments}
+
+A {\tt Fragment} is a piece of an application's UI that can be placed inside an activity. Each fragment defines its own lifecycle (with its own methods: {\tt onCreate()}, {\tt onPause()}, etc.). Although the lifecycle is reliant on its activity (if the activity is stopped then no fragments inside the activity may be started) a fragment is able to respond independently to events.
+
+Fragments allow for modularisation of the layout code so that the user interface is more easily adjustable.
+
+\subsection{Intents}
+\label{sub:intents}
+
+Intents are used as a link between two activities for transferring data between them. Each {\tt Intent} is an asynchronous message suppling an action and data to the new activity. They are most often used for starting another activity and providing that activity with whatever information it requires from the previous. Intents are extremely useful as they allow the creation of a loose binding between two separate components.
+
+\subsection{Layouts}
+\label{sub:layouts}
+
+The layout is a view group which defines the visual structure in an activity or widget. A layout can be declared in an XML activity or fragment file or the layout elements can be instantiated at runtime. We can view a visual representation of the layout of an XML file in the graphical layout editor in Eclipse thanks to the ADT plugin. Declaring the layout in the XML file allows for better seperation of the presentation and behaviour of the app. Different XML layouts can be defined for different screen sizes or screen orientations. 
+
+There are a few different types of layout that can be used including {\tt LinearLayout} and {\tt RelativeLayout}. {\tt LinearLayout} aligns all of its children either vertically or horizontally and {\tt RelativeLayout} displays its child views in their relative positions. There are other types of layout that will be described as they are used in the application.
+
+Every layout requires layout parameters, these control how the layout will appear on the screen. As layouts are view groups they can be nested inside each other. Defining layout parameters allow us to control how much of the screen each of these layouts take up.
+
+\subsection{Multi-Touch Gestures}
+\label{sub:gestures}
+
+The user interface is based around direct manipulation. This means using touch inputs that are intended to correspond to real-world actions, for example swiping, pinching and tapping to control on-screen events. The response to user actions is designed to be immediate and provides a fluid touch interface. It often provides haptic feedback (forces, vibrations or motions) to the user using the vibration capabilities.
+
+Android takes advantage of internal hardware such as accelerometers, gyroscopes and proximity sensors in some applications to respond to other user actions, such as re-orientating the screen from portrait to landscape.
 
 \section{Difficulties Developing For Android}
 
@@ -899,23 +943,143 @@ One of the most complex issues was making the keyboard appear at the right time,
 Developing for Android proved to be a steep learning curve as I had never developed for it before. This definitely proved to be a hurdle in the progress of the application and development proceeded a lot more slowly compared to if we had developed a web application.
 
 \chapter{The App}
-\section{Truth Tables}
-\label{sec:app_truth_tables}
 
-\subsection{Ensure equivalences are equal before beginning}
+\section{Activities}
+
+As defined in Section \ref{sub:activities}, activities can be used to represent each screen in the application. In this application there are three activities: {\tt MainActivity}, {\tt EnterEquivalenceActivity} and {\tt BeginEquivalenceActivity}.
+
+\subsection{Main Activity}
+
+{\tt MainActivity} controls the first screen the user sees when they start up the app. This allows the user to change the settings and choose either propositional or first order logic, shown in Figure ...
+
+TODO: take screen shots of app
+
+The fragment (see Section \ref{sub:fragments}) XML file {\tt fragment\_main} contains the widgets you can see in Figure ... These are defined as {\tt TextView}, {\tt Button}, {\tt SeekBar} and {\tt Spinner} widgets. {\tt TextView} and {\tt Button} widgets are self-evident, the {\tt Spinner} is used to create the dropdown menu to select the difficulty and the {\tt SeekBar} is used for the slider that controls the probability of truth atoms appearing in the generated formula.
+
+When the `Propositional Logic' button is clicked {\tt startPropositional()} is called. This creates an {\tt Intent} (see Section \ref{sub:intents}) to start a new {\tt EnterEquivalenceActivity}. The difficulty (Section \ref{sec:difficulty}) and selected probability (Section \ref{sub:variables}) of truth values are added to the intent and it starts the new activity.
+
+TODO: when `First Order Logic' is clicked
+
+\subsection{Enter Equivalences Activity}
+
+{\tt EnterEquivalencesActivity} allows the user to either manually enter or randomly generate the formulae to prove equivalent. As shown in Figure ... the XML fragment {\tt fragment\_enter\_equivalences} defines two {\tt EditText} widgets to manually enter the formulae. These widgets use a custom keyboard for entering logical symbols and variables (Section \ref{sec:custom_keyboard}). Two `Randomise' buttons are defined to automatically generate equivalences (Section \ref{sec:app_generation_of_equivalences}).
+
+Upon the `Start' button being pressed the activity will check the two formulae are equivalent (Section \ref{sub:equal_equivalences}). If there is a problem with the formulae entered (either they are not equivalent or they have a syntax error) then the appropriate error message will be shown (Section \ref{sub:error_messages}). If the formulae are equivalent a new {\tt Intent} will be created to begin a new {\tt BeginEquivalenceActivity}. The intent will carry the two formulae to the new activity so that the user can begin the proof.
+
+TODO: more screenshots!
+
+\subsection{Begin Equivalence Activity}
+
+The XML file {\tt fragment\_being\_equivalence} employs a {\tt ScrollView} as its outer layout, this is a specific type of view group extending {\tt FrameLayout}. A {\tt FrameLayout} surrounds one child (usually another layout) containing its entire contents, {\tt ScrollView} then allows us to scroll through the content so the layout can be bigger than the physical display. 
+
+A {\tt LinearLayout} (Section \ref{sub:layouts}) is used as the child of the {\tt ScrollView} which then contains all the widgets required for completing the proof. This layout consists of two main sections, one for each formula. The start formula is placed at the top of the layout working down and the end formula is placed at the bottom working up. Each end displays its current formation tree (Section \ref{sec:formation_tree_representation}) and allows the user to undo or redo rules (Section \ref{sec:undo_redo}). This display is shown in Figure ...
+
+TODO: An example of completing a proof shown somewhere.
+
+TODO: last screenshot
+ 
+\section{Difficulty}
+\label{sec:difficulty}
+
+The selected difficulty only affects the proof when formulae are randomly generated because when a user manually enters their own formulae they are in complete control over what they want to prove.
+
+\subsection{Difficulties}
+
+The user can choose a difficulty from either beginner, intermediate or hard in the settings of the application. Each of the difficulties have set values for their parameters which are used in generating formulae. 
+
+\subsection{Parameters}
+
+The parameters used in generating equivalent formulae are the number of variables that can appear in the inital formula ({\tt numVars}), the maximum depth of the formula's tree ({\tt depth}) and the number of rules we will apply to the initial formula to generate two formulae equivalent to the original ({\tt numRules}).
+
+\vspace{5mm}
+\begin{center}
+  \begin{tabular}{ | c | c | c | c | }
+    \hline
+    Difficulty & numVars & depth & numRules \\ \hline
+    Beginner & 3 & 0 & 3 \\
+    Intermediate & 5 & 1 & 4 \\
+    Hard & 10 & 2 & 5 \\
+    \hline
+  \end{tabular}
+\end{center}
+\vspace{5mm}
+
+TODO: In this table a depth of 0 actually means a ??? - Explain!
+
+TODO: See \ref{sec:app_generation_of_equivalences} for screenshots of generated equivalences from difference difficulties
+
+\subsection{Probability of Truth Values}
+
+Initially the probability of the truth values was tied to the difficulty the user selected, however it was suggested that it could be beneficial to the user to have direct control over this parameter. 
+
+As described in Section \ref{sub:variables} the user has the ability to set the likelihood of the truth values being chosen (up to the same amount as other variables). The user can set this value using the {\tt SeekBar} in {\tt MainActivity}. The {\tt SeekBar} has a maximum value of 100 (so at maximum it will be equally likely to be chosen as other variables) and a default value of 50 (half as likely). This value is passed through with the other parameters when generating new formulae.
 
 \section{Random Generation of Equivalences}
-\subsection{Generating single equivalence}
-\subsection{Generate equivalence formula - repeated application of random rules}
+\label{sec:app_generation_of_equivalences}
+
+{\tt EnterEquivalencesActivity} has a compiler (Section \ref{sec:compiler}) and a rule engine (Section \ref{sec:the_rule_engine}) which is used to generate formulae and apply rules.
+
+TODO: Add screenshot of EnterEquivalencesActivity or reference previous screenshot
+
+The top and bottom `Randomise' buttons call {\tt randomiseStart()} and {\tt randomiseEnd()} respectively. These functions simply call the {\tt randomise()} function and pass through which text box it is trying to generate a random formula for.
+
+There are three possible cases when one of these buttons have been clicked:
+
+\textbf{Case 1:} Neither text box contain formulae and one needs to be generated from scratch.
+
+\textbf{Case 2:} The other text box contains a valid formula and an equivalent one needs to be generated.
+
+\textbf{Case 3:} The other text box contains an invalid formula and an error will be thrown.
+
+The {\tt randomise()} function takes both text boxes as parameters, the first being the text box we want to display the generated formula in and the second the other text box. It then determines if the other text box is empty and acts accordingly.
+
+\subsection{The Initial Formula}
+
+The {\tt Compiler} is used to generate a random formula when a `Randomise' button is clicked (Section \ref{sub:random_formula_generation}) using the user specified parameters.
+
+Previously, this generated formula would be set as the new formula in the text box corresponding to the button clicked. This gave an unfortunate side effect when a second equivalence was generated (\textbf{Case 2}), where it would usually be longer than the first - due to the fact that there are more rules which increase the size of a formula. 
+
+This is not a problem if the user begins the proof immediately, but if the user clicks the first randomise button again the app would generate a formula equivalent to the previously generated longer formula creating a longer again formula. Repeating this by alternating clicks on each button resulted in the formulas continuously increasing in length disregarding the difficulty set.
+
+The solution to this was to set the generated formula as an \textit{initial formula} to which rules would be applied to generate any required formulae.
+
+\subsection{Generating Equivalent Formulae}
+
+In \textbf{Case 1} the other text box has nothing in it so a new formula needs to be generated by the compiler. If there is already something in the current text box it will be overwritten. The initial formula is remembered by the activity, compiled into a tree and a number of random rules are applied to the tree (depending on the difficulty). This new tree's formula is set as the first formula in the text box.
+
+In \textbf{Case 2} there are two sub cases. Either the other formula was generated by the activity and an initial formula has been set, or it was manually inputted and there is no initial formula. If no initial formula is set then it is set to the manually inputted formula in the other text box.
+
+The initial formula is then compiled into a tree and has random rules applied to it (as above in \textbf{Case 1}). This newly generated tree has its formula set to the textbox.
+
+TODO: Screenshots of generated formulae
+
+\textbf{Case 3} occurs when the initial formula has been set from a manually inputted formula with incorrect syntax. In this case the parsing of the formula will fail and an error flag will be set. When this flag is set an error message will be shown informing the user of their error and no equivalent formula will be generated.
+
+TODO: Screenshot of error message
 
 \section{Custom Keyboard}
 \label{sec:custom_keyboard}
 
 \subsection{Logic symbols and variables}
 
+\section{Truth Tables}
+\label{sec:app_truth_tables}
+
+\subsection{Ensure equivalences are equal before beginning}
+\label{sub:equal_equivalences}
+
+\subsection{Error Messages}
+\label{sub:error_messages}
+
 \section{Undo/Redo Functionality}
+\label{sec:undo_redo}
+
 \subsection{Stack of trees maintained}
 \subsection{OnClick listeners}
+
+\section{Help}
+\subsection{Detecting cycles}
+\label{sub:detecting_cycles}
 
 \section{Formation Tree Representation}
 \label{sec:formation_tree_representation}
@@ -1068,16 +1232,7 @@ Overriding {\tt onMenuItemClick()} in {\tt BeginEquivalenceActivity} allows us t
 
 Applying a rule to the selected node adds a new TextView to the respective list of equivalences (either top or bottom). Once the rule has been applied the application will check for completion and cycles (described in Section \ref{sub:detecting_cycles}). If either are found a Toast (a simple popup for displaying feedback) will be displayed alerting the user.
 
-We also override {\tt onDimiss()} so that when a user dismisses the PopupMenu without selecting a rule we can also redraw the formation tree to deselect the selected node. 
-
-\section{Difficulty}
-\subsection{Length of generated equivalences}
-\subsection{Number of variables/operators}
-\subsection{Number of rules different}
-
-\section{Help}
-\subsection{Detecting cycles}
-\label{sub:detecting_cycles}
+We also override {\tt onDimiss()} so that when a user dismisses the PopupMenu without selecting a rule we can also redraw the formation tree to deselect the selected node.
 
 \begin{comment}
 \chapter{Project Plan}
@@ -1204,6 +1359,12 @@ We need to ask people who understand logic (e.g. lecturers) so we can confirm th
   Enrico Franconi,
   \emph{Propositional Logic Calculator}.
   http://www.inf.unibz.it/\\\textasciitilde franconi/teaching/propcalc
+
+\bibitem{appstoredownloads}
+  BBC News,
+  \emph{BBC Google activations and downloads update May 2013}. 
+  http://www.bbc.co.uk/news/technology-22542725,
+  May 15, 2013.
 
 \bibitem{androidwebappdifferences}
   Armour Technology Solutions,

@@ -15,10 +15,10 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/propositional_button"
+        android:id="@+id/first_order_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/first_order_button"
+        android:layout_below="@+id/propositional_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="18dp"
         android:text="@string/first_order" />
@@ -27,8 +27,8 @@
         android:id="@+id/seek_bar"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/first_order_button"
-        android:layout_alignRight="@+id/first_order_button"
+        android:layout_alignLeft="@+id/propositional_button"
+        android:layout_alignRight="@+id/propositional_button"
         android:layout_below="@+id/truth_probability"
         android:max="100"
         android:layout_marginTop="20dp" />
@@ -62,7 +62,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/first_order_button"
+        android:id="@+id/propositional_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/equivalences_title"

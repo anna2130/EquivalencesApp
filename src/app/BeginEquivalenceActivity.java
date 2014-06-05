@@ -420,16 +420,6 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	}
 	
 	private boolean isTopTree(FormationTree tree) {
-//		System.out.println("Is this top tree? " + tree + " : " + topTree);
-//		System.out.println("Results: " + (tree == topTree) + " " + (tree == bottomTree) + " " + (tree.toString().equals(topTree.toString())));
-//		if (tree == topTree)
-//			return true;
-//		else if (tree == bottomTree)
-//			return false;
-//		else if (tree.toString().equals(topTree.toString()))
-//			return true;
-//		else 
-//			return false;
 		return tree == topTree;
 	}
 }

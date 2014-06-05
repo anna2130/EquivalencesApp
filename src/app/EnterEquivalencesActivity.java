@@ -132,13 +132,16 @@ public class EnterEquivalencesActivity extends Activity {
 		randomise(endText, startText);
 	}
 
-	public void randomise(EditText otherText, EditText formulaText) {
-		Compiler c = new Compiler();
+	public void randomise(EditText formulaText, EditText otherText) {
 		String other = otherText.getText().toString();
 		String formula;
 
+		// Case 1: Neither text box contain formulae and one needs to be generated from scratch.
+		// Case 2: The other text box contains a valid formula and an equivalent one needs to be generated.
+		// Case 3: The other text box contains an invalid formula and an error will be thrown.
+		
 		FormationTree tree;
-		// If other equivalence is empty, generate new equivalence from scratch
+		// Case 1: If other equivalence is empty, generate new equivalence from scratch
 		if (other.equals("")) {
 			initialFormula = c.generateRandomEquivalence(numVars, depth, percent);
 			tree = c.compile(initialFormula);
@@ -149,14 +152,16 @@ public class EnterEquivalencesActivity extends Activity {
 				tree = c.compile(initialFormula);
 			}
 		} else {
-			// else compile other equivalence
+			// Case 2: else compile other equivalence
+			if (initialFormula.equals(""))
+				initialFormula = other;
 			tree = c.compile(initialFormula);
-//			re.applyRandomRules(tree, numRules);
 		}
 		
 		System.out.println("Initial Formula: " + initialFormula);
 
 		// TODO: Doesn't pick up on incorrect syntax beginning with atom?
+		// Case 3: Error
 		if (tree.hasError()) {
 			setErrorMessage("Incorrect syntax");
 		} else {
