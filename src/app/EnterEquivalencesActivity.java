@@ -98,9 +98,6 @@ public class EnterEquivalencesActivity extends Activity {
 			FormationTree t1 = c.compile(startEquivalence);
 			FormationTree t2 = c.compile(endEquivalence);
 
-			startEquivalence = t1.toString();
-			endEquivalence = t2.toString();
-
 			if (t1.hasError() || t2.hasError()) {
 				setErrorMessage("Incorrect syntax");
 			} else {
@@ -109,6 +106,9 @@ public class EnterEquivalencesActivity extends Activity {
 					TruthTable tt2 = new TruthTable(t2);
 
 					if (tt1.testEquivalence(tt2)) {
+						startEquivalence = t1.toString();
+						endEquivalence = t2.toString();
+						
 						intent.putExtra(START_EQUIVALENCE, startEquivalence);
 						intent.putExtra(END_EQUIVALENCE, endEquivalence);
 						startActivity(intent);

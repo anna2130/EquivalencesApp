@@ -298,7 +298,7 @@ The grammar we use with ANTLR can be seen in Listing \ref{expr.g4}. We only use 
 
 \begin{listing}[ht]
 \begin{minted}[mathescape, frame=lines]{antlr}
-grammar Expr;	
+grammar Expr;   
 
 prog: expr;
 
@@ -349,6 +349,7 @@ The custom walker extends the ANTLR generated listener to define methods for whe
 An empty {\tt FormationTree} is passed through to the walker alongside the parse tree so the walker can build the tree up as the parse tree is walked through. Each time a grammar rule is entered the appropriate method in the walker is called to create that node in our tree. The structure of the tree is defined in more detail in Section \ref{sec:formation_tree}.
 
 \subsection{Error Handling}
+\label{sub:error_handling}
 
 ANTLR provides an {\tt ANTLRErrorStrategy} interface for implementing a custom error handler to deal with syntax errors encountered during a parse by ANTLR-generated parsers. However, this has limited documentation and is a complex feature. Therefore, we have opted to relax the grammar by defining an error case so we can treat incorrect syntax as a semantic error instead.
 
@@ -929,6 +930,7 @@ Using external libraries with Android proved to be much more of a challenge than
 This meant that any external libraries used needed to separate the core functionality from the actual rendering to be usable. Even then needed some tweaking was required to get them to function correctly. An example of this challenge is described in our formation tree representation in Section \ref{sub:abego_treelayout}.
 
 \subsection{Custom Features}
+\label{sub:custom_features}
 
 Android provides the ability to generate your own custom features when the ones you want are not available. Such as the custom keyboard described in Section \ref{sec:custom_keyboard}. These features would not need to be implemented on a web app as the computer would already provide all of them. Implementing the custom keyboard was a difficult process as the {\tt KeyboardView} we needed to extend is not well known. Although there is documentation on the {\tt KeyboardView} there are not many examples and there are some issues in when to show the keyboard.
 
@@ -1060,16 +1062,69 @@ TODO: Screenshot of error message
 \section{Custom Keyboard}
 \label{sec:custom_keyboard}
 
-\subsection{Logic symbols and variables}
+In the application we enter formulae in alpha numeric fields. Android provides context sensitive soft keyboards for entering text so different keyboard appear in different situations. However, it does not provide a keyboard for logic symbols meaning a different keyboard is required.
+
+Other than the standard keyboards provided by Android there are manufacturer keyboards and user installed keyboards. The manufacturer keyboards are a more simple reduced version of the Android keyboards also without logic symbols. User installed keyboards allow a developer to have complete control over the keyboard but end users of the application would have to also install the keyboard service. Installing a keyboard service would be an inconvenience for the user and also presents a security risk because everything that passes through the keyboard can be tracked by the application including passwords. 
+
+\subsection{Keyboard View}
+
+Android has a {\tt KeyboardView} (difficulties with using this described in Section \ref{sub:custom_features}), this is a view that allows us to define the keys the keyboard displays. The keyboard is made up of rows of keys. Each key is associated with a label and a code. The label defines what is shown on the key button and the code is passed to the app when the key is pressed. 
+
+The keys are defined in {\tt logickbd.xml} and when a key is pressed the key's code is passed to the {\tt CustomKeyboard} class. A key listener is used in {\tt CustomKeyboard} to detect when a key is pressed, finds the view in focus and ensures it's an {\tt EditText} (else it aborts) then executes an action based on the key's code.
+
+TODO: Keyboard screenshot  
+
+\subsection{Keys}
+
+If a variable or symbol key is pressed then the corresponding symbol is inserted into the text box. Undo deletes the last value and clear deletes everything in the text box. Hide is used to hide the keyboard and the arrow keys are used to move the cursor left and right.
+
+TODO: Why we need cursor keys 
+
+\subsection{Hiding The Keyboard}
+\label{sub:hiding_the_keyboard}
+
+TODO: Reference difficulties/don't repeat yourself
+
+\subsection{Registering Text Boxes}
+
+Each text box that requires the logic keyboard needs to be set up to use it. The function {\tt registerEditText()} enables the application to register multiple text boxes to use the keyboard.
+
+First this function sets the text box's listeners to show the custom keyboard when the text box is selected and has focus. It also hides the standard keyboard, sets up the new cursor and turns spell check off.
 
 \section{Truth Tables}
 \label{sec:app_truth_tables}
 
-\subsection{Ensure equivalences are equal before beginning}
+After two formulae are entered (either manually or generated) the user can click the `Start' button. This button is linked to {\tt startEquivalence()} which uses truth tables to check the formulae are equivalent and creates an intent to start a new activity.
+
+\subsection{Equal Formulae}
 \label{sub:equal_equivalences}
+
+The function {\tt startEquivalence()} finds the {\tt EditText} boxes holding the formulae by their ids defined in the XML file and retrieves the text within them. These two formulae are both compiled into their {\tt FormationTree} and a truth table (Section \ref{sec:truth_tables}) is generated for each tree. 
+
+If these truth tables are equivalent then a new intent is created to carry the equivalences to the new {\tt BeginEquivalenceActivity}. Before the formulae are added to the intent we set the equivalences to the {\tt String} representation of their respective trees. This is to deal with the case where no brackets have been used and have been implied by the parser. Setting the formulae to the {\tt String} representation of the tree adds in the brackets where they have been implied to avoid confusion later on. The two equivalences can then be added to the intent and the new activity is started.
+
+TODO: Add screenshot example of no brackets in formulae
 
 \subsection{Error Messages}
 \label{sub:error_messages}
+
+An error message is displayed to the user in certain cases. A function {\tt setErrorMessage()} is defined to set the error message to the passed in text and make the message visible.
+
+\subsubsection{No formulae have been entered}
+
+If the start button is clicked and both formulae have nothing in them then an error message saying \textit{`Please enter two equivalent formulae'} is set.
+
+TODO: Add screenshot of error message
+
+\subsubsection{Incorrect Syntax}
+
+Section \ref{sub:error_handling} describes how the parser handles syntax errors. When incorrect syntax is found it allows the incorrect formula to be parsed and sets a flag in the resulting tree. Before creating truth tables for each tree if either has its error flag set then the error message \textit{`Incorrect syntax'} is set.
+
+TODO: Considered highlighting which symbol is incorrect?
+
+\subsubsection{Formulae are not equivalent}
+
+If the test for equivalent truth tables fails then the intent is not created and the error message \textit{`Not equivalent'} is set.
 
 \section{Undo/Redo Functionality}
 \label{sec:undo_redo}
