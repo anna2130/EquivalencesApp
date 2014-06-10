@@ -171,14 +171,11 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 	public void setUpTree(FormationTree tree, Stack<FormationTree> treeStack, DrawView formationTree) {
 		tree = treeStack.peek();
-//		tree = compiler.compile(stack.peek().getText().toString());
 		formationTree.setTree(tree);
 	}
 	
 	public void setTree(FormationTree tree, Stack<FormationTree> treeStack) {
-		System.out.println("~~~~ Tree before: " + tree);
 		tree = treeStack.peek();
-		System.out.println("~~~~ Tree after: " + tree);
 	}
 
 	public void addTextViewToTop(TextView textView, String text) {
@@ -223,10 +220,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 						topStack.pop();
 						topTreeStack.pop();
 						topRedoStack.push(undone);
-
-						System.out.println("~~~~ Tree before: " + topTree);
 						topTree = topTreeStack.peek();
-						System.out.println("~~~~ Tree after: " + topTree);
 					}
 					setUpTree(topTree, topTreeStack, topFormationTree);
 				}
@@ -282,10 +276,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 						bottomStack.pop();
 						bottomTreeStack.pop();
 						bottomRedoStack.push(undone);
-
-						System.out.println("~~~~ Tree before: " + bottomTree);
 						bottomTree = bottomTreeStack.peek();
-						System.out.println("~~~~ Tree after: " + bottomTree);
 					}
 					setUpTree(bottomTree, bottomTreeStack, bottomFormationTree);
 				}

@@ -1,17 +1,15 @@
 package tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
-import treeManipulation.TruthTable;
 
 public class EquivalenceGeneration {
 

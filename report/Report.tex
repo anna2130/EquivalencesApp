@@ -673,6 +673,7 @@ The other operators use return their truth value using similar methods. The trut
 \end{table}
 
 \subsection{Testing Equivalence of Tables}
+\label{sub:testing_equivalence_of_tables}
 
 {\tt TruthTable} defines a method {\tt testEquivalence()} which compares its own truth table to another. There are four cases that could be possible when comparing truth tables:
 
@@ -680,7 +681,7 @@ The other operators use return their truth value using similar methods. The trut
 
 \textbf{Case 2: } Both formulae have different sets of variables and are equivalent.
 
-\textbf{Case 4: } The formulae are not equivalent.
+\textbf{Case 3: } The formulae are not equivalent.
 
 \subsubsection{Checking Tables Are Equal}
 
@@ -1110,6 +1111,7 @@ TODO: Add screenshot example of no brackets in formulae
 
 An error message is displayed to the user in certain cases. A function {\tt setErrorMessage()} is defined to set the error message to the passed in text and make the message visible.
 
+
 \subsubsection{No formulae have been entered}
 
 If the start button is clicked and both formulae have nothing in them then an error message saying \textit{`Please enter two equivalent formulae'} is set.
@@ -1125,16 +1127,6 @@ TODO: Considered highlighting which symbol is incorrect?
 \subsubsection{Formulae are not equivalent}
 
 If the test for equivalent truth tables fails then the intent is not created and the error message \textit{`Not equivalent'} is set.
-
-\section{Undo/Redo Functionality}
-\label{sec:undo_redo}
-
-\subsection{Stack of trees maintained}
-\subsection{OnClick listeners}
-
-\section{Help}
-\subsection{Detecting cycles}
-\label{sub:detecting_cycles}
 
 \section{Formation Tree Representation}
 \label{sec:formation_tree_representation}
@@ -1283,11 +1275,59 @@ public void setRules(SparseArray<String> rules, Node
 \subsection{Responding to PopupMenu Touch Events}
 \label{sub:responding_to_popupmenu_touch_events}
 
-Overriding {\tt onMenuItemClick()} in {\tt BeginEquivalenceActivity} allows us to determine which item was selected from the PopupMenu and and apply that rule to the selected node. We can determine which rule should be applied by taking the key of selected item and applying that rule from our BitSet of rules using the {\tt RuleEngine} as described in Section \ref{sec:the_rule_engine}.
+Overriding {\tt onMenuItemClick()} in {\tt BeginEquivalenceActivity} allows us to determine which item was selected from the PopupMenu and and apply that rule to the selected node. We can determine which rule should be applied by taking the key of selected item and applying that rule from our {\tt BitSet} of rules using the {\tt RuleEngine} (Section \ref{sec:the_rule_engine}).
 
-Applying a rule to the selected node adds a new TextView to the respective list of equivalences (either top or bottom). Once the rule has been applied the application will check for completion and cycles (described in Section \ref{sub:detecting_cycles}). If either are found a Toast (a simple popup for displaying feedback) will be displayed alerting the user.
+Applying a rule to the selected node adds a new {\tt TextView} to the respective list of equivalences (either top or bottom). Once the rule has been applied the application will check for completion and cycles (Section \ref{sub:detecting_cycles}). If either are found a {\tt Toast} (a simple popup for displaying feedback) will be displayed alerting the user.
 
 We also override {\tt onDimiss()} so that when a user dismisses the PopupMenu without selecting a rule we can also redraw the formation tree to deselect the selected node.
+
+\section{Undo/Redo}
+\label{sec:undo_redo}
+
+A main feature of the application is intuitive undo and redo functionality. Selecting a previous equivalence in the list (from either end) should display the formation tree for that equivalence and grey out the undone equivalences below as shown in Figure ...
+
+TODO: Screen shots
+
+\subsection{Adding A New Formula}
+
+When a new formula is added it is either added to the top or bottom layout depending on where the call has come from. Throughout this section we will refer to the top layout, however the bottom layout functions in a similar way with layout inverted.
+
+To add the new formula the top layout {\tt addTextViewToTop()} is called. This sets up the text view by setting its layout parameters and customises how the view will look on screen. Its id is set to the number of equivalences in the layout so far - which is used for ordering the equivalences when they are undone and redone.
+
+Each text view has an {\tt OnClickListener} set, the function of this will depend on where the text view is in the layout. If the text view displays the current formula then clicking it will simply hide/show the current formation tree. If the text view is a previous equivalence before the current formula then on click the application will undo up till this equivalence. If the text view is below the current formula then it's been previously undone and clicking it again will redo up to and including this equivalence.
+
+After the {\tt OnClickListener} is set up the text view will be added to the top layout, a line will be drawn below it and it will be pushed onto the top stack.
+
+\subsection{OnClick Listeners}
+
+\subsubsection{Undo}
+
+When a previous equivalence is clicked the application finds its id (representing its position in the layout) and removes each equivalence from the current equivalence (found by the current size of the stack) until the clicked equivalences position. 
+
+Each of these removed equivalences are then set up below the formation tree with another {\tt OnClickListener} ready to be redone if required.
+
+\subsubsection{Redo}
+
+Clicking an undone equivalence will cause the application to loop through the undone equivalences from the least recent up to and including the selected one. This removes them from this view and adds them back to the top layout above the formation tree. 
+
+\subsubsection{Formation Tree}
+
+After either an undo or a redo the most recent equivalence in the layout should have its formation tree displayed. To make this easier we maintain a stack of trees. This contains only the trees of the equivalences in the current layout and not ones that have been undone. By maintaining this stack it allows the application to easily update the current formation tree by peeking into the stack after any undo or redo event and drawing the tree at the top of the stack.
+
+\section{Help}
+
+As this application is considered a teaching tool to help students learn about logic we want to provide them with some help when they make a mistake in their proof.
+
+We considered the option of not allowing the user to make a mistake (for example by not being able to apply rules resulting in a cycle), however we decided this would allow the user to simply press buttons with no understanding of what they're doing and eventually reach a solution. This is not the aim because we want to help the user to improve. We agreed that the best approach to this is to allow them to make mistakes but alert them to those mistakes.
+
+\subsection{Detecting Cycles}
+\label{sub:detecting_cycles}
+
+Detecting when the user has completed a cycle is simple with our implementation because we maintain stacks of all the previous equivalences. Therefore, whenever a new rule is applied the application can loop through the stack and compare the new equivalence to all the previous equivalences. If any are the same then a cycle has been found and a {\tt Toast} is displayed alerting the user to this fact.
+
+We considered highlighting the equivalences in question to the user but decided this would make the process too easy for the user. The current equivalence will always be one end of the cycle so it is not too difficult for a user to look through their previous equivalences and spot the duplicate. By not highlighting the error immediately we allow the user to search through their previous turns and hopefully spot where they've gone wrong by themselves.
+
+Once a cycle has been spotted by the user they can either choose to undo back to that point or simply undo the last turn and apply a different rule that will not result in a cycle if they believed they were on the right track.
 
 \begin{comment}
 \chapter{Project Plan}
@@ -1349,9 +1389,183 @@ Targets for 3rd term:
 \end{comment}
 
 \chapter{Evaluation}
+
+The application aims to help and encourage students to learn about logical equivalences so it is key that the application of the rules is completely correct. Therefore, we evaluated the accuracy of the each main component of the application using JUnit tests. This enabled us to ensure each component was functioning without error before moving onto the next section.
+
+We tested our application on a Samsung Galaxy Nexus 7 when we asked a variety of users to evaluate the application.
+
+TODO: Survey overview?
+
 \section{Testing}
-\subsection{JUnit tests}
-\subsection{Survey - People who do/don't understand logic}
+
+Each section of the application needed to pass a selection of JUnit tests before development for the next section could begin. This is because the correctness of the logic in the application is essential to the success of the application. It also made development easier if we knew we would not encounter any serious errors from an already completed component.
+
+\subsection{Compiler}
+
+The compiler utilises the parser and the walker to convert a string input into its tree representation. All nodes in the internal tree structure should have correct indexes (key and depth values) and be located in the correct position in the tree.
+
+We defined a string representation of the internal tree structure so we could compare these properties with an expected result. Each node in the tree is represented by its index followed by its value and any children as shown below:
+
+\begin{center}
+a$\land$b $\equiv$ 0-0: $\land$ (0-1: a, 0-2: b)
+\end{center}
+
+The index is displayed as a key-depth pair and any children are surrounded by brackets and separated with a comma.
+
+\subsubsection{Indexes}
+
+We defined a set of tests for each operator to ensure the indexes were being correctly labeled and placed correctly in the tree. Each operator has a test with the operator as the root, the left child and the right child. For example, the `and' operator ($\land$) has tests shown in Listing \ref{listing:and_tests}.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+@Test
+public void testAnd() {
+    FormationTree tree = compiler.compile("a^b");
+    assertEquals("a^b: ", tree.toTreeString(), 
+            "0-0: ^ (0-1: a, 1-1: b)");
+}
+
+@Test
+public void testAndLeft() {
+    FormationTree tree = compiler.compile("(a^b)^c");
+    assertEquals("a^b: ", tree.toTreeString(), 
+            "0-0: ^ (0-1: ^ (0-2: a, 1-2: b), 1-1: c)");
+}
+
+@Test
+public void testAndRight() {
+    FormationTree tree = compiler.compile("c^(a^b)");
+    assertEquals("a^b: ", tree.toTreeString(), 
+            "0-0: ^ (0-1: c, 1-1: ^ (2-2: a, 3-2: b))");
+}
+\end{minted}
+\caption{Tests showing testing of internal tree structure for the `and' operator}
+\label{listing:and_tests}
+\end{listing}
+
+\subsubsection{Order of Precedence}
+
+The order of precedence for operators is defined in the grammar file we pass in to ANTLR. We defined tests to check the parser parses the operators in the correct order. These tests are combinations of different operators written without brackets (unlike the tests defined above) to see what priority the parser gives to each operator. The test for the `and' and `implies' operators is shown in Listing \ref{listing:and_implies_test}.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+@Test
+public void testAndImplies() {
+    FormationTree tree = compiler.compile("a^b→a");
+    assertEquals("a^b→a: ", tree.toTreeString(), 
+            "0-0: → (0-1: ^ (0-2: a, 1-2: b), 1-1: a)");
+}
+\end{minted}
+\caption{Testing order of precedence for `and' and `implies' operators}
+\label{listing:and_implies_test}
+\end{listing}
+
+\subsection{Rule Selection}
+
+It is important to ensure that only the correct applicable rules are displayed to the user when a node is selected as well as making sure that no applicable rules are missed. If an inapplicable rule was returned by the rule selector and a user selected it, not only would this cause the user confusion, it would throw an error and most likely crash the app.
+
+Tests are defined to check the bitset returned by the rule selector are accurate. We defined a variety tests so that each of the rules will be applicable in at least one test. In each test we create a bitset and set the expected values, then use the rule selector to return its bitset and compare the two bitsets for equivalence.
+
+\subsection{Rule Application}
+
+The rule applicator defines a series of methods used in applying rules to nodes. For example, applying commutativity has its own method so it can be used to apply commutativity to either `and' or `or' operators.
+
+\subsubsection{Simple Rules}
+
+For most rules we define two tests (some rules can use the same test because they use the same methods). The first tests the application of the rule on a simple formula and the second shows a more complex case. The commutativity example is shown in Listing \ref{listing:and_commutativity_tests}.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+// 0.  a^b      |-  b^a             -- Commutativity
+@Test
+public void testAndCommutativity() {
+    FormationTree tree = compiler.compile("q^p");
+    ra.applyCommutativity((BinaryOperator) tree.findNode(0, 0));
+    assertEquals("q^p: ", tree.toTreeString(), 
+            "0-0: ^ (0-1: p, 1-1: q)");
+}
+
+@Test
+public void testAndCommutativityComplex() {
+    FormationTree tree = compiler.compile("(¬q→r)^(pva)");
+    ra.applyCommutativity((BinaryOperator) tree.findNode(0, 0));
+    assertEquals("(¬q→r)^(pva): ", tree.toTreeString(), 
+            "0-0: ^ (0-1: v (0-2: p, 1-2: a), 1-1: → 
+            (2-2: ¬ (4-3: q), 3-2: r))");
+}
+\end{minted}
+\caption{Testing apply commutativity rule on simple and complex cases}
+\label{listing:and_commutativity_tests}
+\end{listing}
+
+\subsubsection{Complex Rules}
+
+For rules where the selected node is being replaced by one of its children (such as absorption) we need to take extra care that the parent and children are set correctly. We define extra tests for these rules to test the methods are correct when they are applied to the children of a unary node and either side of a binary node. We use these to check the indexes are replaced correctly and the correct child replaces the parent node.
+
+\subsection{Truth Tables}
+
+Truth tables are used to confirm formulae are equivalent so that a user can begin a proof. If there are any errors in these tables or in how they are checked for equivalence a user could end up trying to prove that two nonequivalent formulae are equivalent. This would prove very frustrating and a hindrance to a user trying to learn about logic.
+
+\subsubsection{Correct truth tables}
+
+For each of the operators used we tested that their resulting truth tables were as expected by asserting that they were equivalent to a manually entered array of values. This also ensured that the order of the rows in the tables were as predicted. Predictable row order is a key feature because it allows us to check tables for equivalence more easily.
+
+Similar tests were also run using truth values (`$\top$', `$\bot$') instead of regular atoms to ensure they returned the correct truth values for themselves.
+
+\subsubsection{Testing equality}
+
+Tests were created for each defined rule to ensure that both side of the rule were equivalent. This not only tested that our testing for equivalence was correct but also that the rules we defined were accurate.
+
+These tests checked all the cases described in Section \ref{sub:testing_equivalence_of_tables} as they included tests for rules where each side has a differently sized table (such as the absorption rule).
+
+We also defined some tests to ensure that checks for equivalence would fail in a variety of situations. If all the variables used in the formulae are different they should fail the equivalence check. However, there are some edge cases which are exempt from this rule. If the formulae can be proved equivalent by our rules they should succeed. 
+
+An example of this case is `a$\land\lnot$a' and `b$\land\lnot$b'. These formulae use totally different variables but both reduce to `$\bot$' so are solvable. The test for this case is defined in Listing \ref{listing:a_and_not_a_test}.
+
+\begin{listing}[ht]
+\begin{minted}{java}
+@Test
+public void testDifferentVariables() {
+    String s1 = "av¬a";
+    String s2 = "bv¬b";
+    FormationTree tree1 = compiler.compile(s1);
+    FormationTree tree2 = compiler.compile(s2);
+    TruthTable tt1 = new TruthTable(tree1);
+    TruthTable tt2 = new TruthTable(tree2);
+    assertTrue(tt1.testEquivalence(tt2));
+}
+\end{minted}
+\caption{Testing `a$\land\lnot$a $\equiv$ b$\land\lnot$b' edge case}
+\label{listing:a_and_not_a_test}
+\end{listing}
+
+\subsection{Equivalence Generation}
+
+Testing equivalence generation is difficult due to its random factors. Instead, we have created tests to ensure that the contraints we set to define difficulty are always held. These constraints include how many variables will be found in a generated formula and the maximum depth of the resulting tree.
+
+As the generation of formulae is random we set each test to run 100 times to ensure that the criteria is met every single time. We define three types of tests: the first tests generating variables and random binary and unary operators, the second tests the depth of the resulting tree, and the final type tests the proportion of truth values appearing in the resulting formula when a certain probability is set.
+
+\subsection{Test Results}
+
+All of these tests were run after each section was complete to ensure the correctness of the application remained intact as we extended the functionality. Currently all the tests pass proving the application is logically correct and the rules are sound and complete.
+
+\section{Undergraduate Project Fair}
+
+An undergraduate project fair was held so that 3rd and 4th year student could showcase their individual projects. I attending this to obtain feedback on the application and gain some insight into what people wanted most from the application and what could be improved. The fair was mainly attended by 3rd and 4th year students so it was a perfect opportunity to ask people who had already taken a logic course what they thought of the app.
+
+\subsubsection{Feedback}
+
+The feedback from the fair was mostly positive and addressed a few key points. My first aim way to get feedback on building the application on Android.
+
+Formation Trees
+
+UI Design
+
+First Order Logic
+
+%people agreed that building the application as a tablet app was the best idea.
+
+% People who do/don't understand logic
 
 \section{Performance}
 
@@ -1377,6 +1591,8 @@ We need to ask people who understand logic (e.g. lecturers) so we can confirm th
 \section{First Order Logic}
 \subsection{Extend grammar}
 \subsection{Add and handle new rules}
+
+\section{Further Testing}
 
 \begin{thebibliography}{9}
 

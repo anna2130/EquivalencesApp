@@ -38,9 +38,9 @@ public class RuleApplication {
 
 	@Test
 	public void testAndCommutativityComplex() {
-		FormationTree tree = compiler.compile("(¬q→r)^(pvs)");
+		FormationTree tree = compiler.compile("(¬q→r)^(pva)");
 		ra.applyCommutativity((BinaryOperator) tree.findNode(0, 0));
-		assertEquals("(¬q→r)^(pvs): ", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: p, 1-2: s), 1-1: → (2-2: ¬ (4-3: q), 3-2: r))");
+		assertEquals("(¬q→r)^(pva): ", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: p, 1-2: a), 1-1: → (2-2: ¬ (4-3: q), 3-2: r))");
 	}
 	
 	// 1.  a^a		|-  a 				-- Idempotence
@@ -105,9 +105,9 @@ public class RuleApplication {
 
 	@Test
 	public void testAndRightAssociativityComplex() {
-		FormationTree tree = compiler.compile("tv((¬p^q)^(r→s))");
+		FormationTree tree = compiler.compile("bv((¬p^q)^(r→a))");
 		ra.applyRightAssociativity(tree,(BinaryOperator) tree.findNode(1, 1));
-		assertEquals("tv((¬p^q)^(r→s)): ", tree.toTreeString(), "0-0: v (0-1: t, 1-1: ^ (2-2: ¬ (4-3: p), 3-2: ^ (6-3: q, 7-3: → (14-4: r, 15-4: s))))");
+		assertEquals("bv((¬p^q)^(r→a)): ", tree.toTreeString(), "0-0: v (0-1: b, 1-1: ^ (2-2: ¬ (4-3: p), 3-2: ^ (6-3: q, 7-3: → (14-4: r, 15-4: a))))");
 	}
 	
 	// 9.  (a^b)^c  	|- 	a^(b^c)			-- Associativity
@@ -120,9 +120,9 @@ public class RuleApplication {
 
 	@Test
 	public void testAndLeftAssociativityComplex() {
-		FormationTree tree = compiler.compile("((r→s)^(¬p^q))vt");
+		FormationTree tree = compiler.compile("((r→a)^(¬p^q))vb");
 		ra.applyLeftAssociativity(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("((r→s)^(¬p^q))vt: ", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: ^ (0-3: → (0-4: r, 1-4: s), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: t)");
+		assertEquals("((r→a)^(¬p^q))vb: ", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: ^ (0-3: → (0-4: r, 1-4: a), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: b)");
 	}
 	
 	// 10. a^¬b 		|-	¬(a→b)
@@ -267,9 +267,9 @@ public class RuleApplication {
 
 	@Test
 	public void testOrCommutativityComplex() {
-		FormationTree tree = compiler.compile("(¬q→r)v(pvs)");
+		FormationTree tree = compiler.compile("(¬q→r)v(pva)");
 		ra.applyCommutativity((BinaryOperator) tree.findNode(0, 0));
-		assertEquals("(¬q→r)v(pvs): ", tree.toTreeString(), "0-0: v (0-1: v (0-2: p, 1-2: s), 1-1: → (2-2: ¬ (4-3: q), 3-2: r))");
+		assertEquals("(¬q→r)v(pva): ", tree.toTreeString(), "0-0: v (0-1: v (0-2: p, 1-2: a), 1-1: → (2-2: ¬ (4-3: q), 3-2: r))");
 	}
 	
 	// 20. ava		|- 	a 				-- Idempotence
@@ -308,9 +308,9 @@ public class RuleApplication {
 
 	@Test
 	public void testOrLeftAssociativityComplex() {
-		FormationTree tree = compiler.compile("((r→s)v(¬pvq))^t");
+		FormationTree tree = compiler.compile("((r→a)v(¬pvq))^b");
 		ra.applyLeftAssociativity(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("((r→s)v(¬pvq))^t: ", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: v (0-3: → (0-4: r, 1-4: s), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: t)");
+		assertEquals("((r→a)v(¬pvq))^b: ", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: v (0-3: → (0-4: r, 1-4: a), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: b)");
 	}
 
 	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
@@ -323,9 +323,9 @@ public class RuleApplication {
 
 	@Test
 	public void testOrRightAssociativityComplex() {
-		FormationTree tree = compiler.compile("t^((¬pvq)v(r→s))");
+		FormationTree tree = compiler.compile("b^((¬pvq)v(r→a))");
 		ra.applyRightAssociativity(tree,(BinaryOperator) tree.findNode(1, 1));
-		assertEquals("t^((¬pvq)v(r→s)): ", tree.toTreeString(), "0-0: ^ (0-1: t, 1-1: v (2-2: ¬ (4-3: p), 3-2: v (6-3: q, 7-3: → (14-4: r, 15-4: s))))");
+		assertEquals("b^((¬pvq)v(r→a)): ", tree.toTreeString(), "0-0: ^ (0-1: b, 1-1: v (2-2: ¬ (4-3: p), 3-2: v (6-3: q, 7-3: → (14-4: r, 15-4: a))))");
 	}
 	
 	// 29. (a^b)v(¬a^¬b)	|-	a↔b

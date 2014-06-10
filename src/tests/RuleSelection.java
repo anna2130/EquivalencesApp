@@ -26,7 +26,6 @@ public class RuleSelection {
 		rs = re.getRuleSelector();
 		noRules = rs.getNoRules();
 	}
-
 	
 	// TODO: RuleSelector tests
 	
@@ -55,17 +54,17 @@ public class RuleSelection {
 	
 	@Test
 	public void testAndSelector() {
-		FormationTree tree = compiler.compile("a^(r^s)");
+		FormationTree tree = compiler.compile("a^(r^b)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(0);
 		expected.set(8);
-		assertEquals("a^(r^s)", bs, expected);
+		assertEquals("a^(r^b)", bs, expected);
 	}
 	
 	@Test
 	public void testAndSelector1() {
-		FormationTree tree = compiler.compile("(rvs)^(rvs)");
+		FormationTree tree = compiler.compile("(rvp)^(rvp)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(0);
@@ -112,17 +111,17 @@ public class RuleSelection {
 	
 	@Test
 	public void testOrSelector() {
-		FormationTree tree = compiler.compile("av(rvs)");
+		FormationTree tree = compiler.compile("av(rvp)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(19);
 		expected.set(27);
-		assertEquals("av(rvs)", bs, expected);
+		assertEquals("av(rvp)", bs, expected);
 	}
 	
 	@Test
 	public void testOrSelector1() {
-		FormationTree tree = compiler.compile("(r^s)v(r^s)");
+		FormationTree tree = compiler.compile("(r^p)v(r^p)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(19);
@@ -131,7 +130,7 @@ public class RuleSelection {
 		expected.set(33);
 		expected.set(34);
 		expected.set(35);
-		assertEquals("(r^s)v(r^s)", bs, expected);
+		assertEquals("(r^p)v(r^p)", bs, expected);
 	}
 	
 	@Test
