@@ -17,6 +17,8 @@
     <string name="difficulty">Difficulty:</string>
     <string name="truth_probability">Probability of ┬ or ⊥ atoms:</string>
     <string name="settings">Settings</string>
+    <string name="left">\u003C</string>
+    <string name="right">\u003E</string>
 
     <string-array name="difficulty_array">
         <item>Beginner</item>

@@ -46,7 +46,7 @@ public class DrawView extends View {
 
 	float x1,x2;
 	float y1, y2;
-
+	
 	public DrawView(Context context) {
 		super(context);
 		init(context);
@@ -89,13 +89,6 @@ public class DrawView extends View {
 		boundsMap = new HashMap<RectF, Node>();
 		re = new RuleEngine();
 	}
-
-//	@Override
-//	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//		int w = MeasureSpec.getSize(widthMeasureSpec);
-//		int h = MeasureSpec.getSize(heightMeasureSpec);
-//		setMeasuredDimension(w, h);
-//	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -198,6 +191,11 @@ public class DrawView extends View {
 		canvas.drawText(node.getValue(), xpos + centerShift, ypos + yOffset, fontPaint);
 
 		boundsMap.put(newBounds, node);
+	}
+	
+	public void addToXOffset(int offset) {
+		xOffset += offset;
+		this.invalidate();
 	}
 
 	public void deselectNode() {

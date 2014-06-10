@@ -166,6 +166,7 @@ public class EnterEquivalencesActivity extends Activity {
 			setErrorMessage("Incorrect syntax");
 		} else {
 			// apply random rules to other equivalence
+			re.setTruthValueProbability(percent);
 			re.applyRandomRules(tree, numRules);
 			
 			formula = tree.toString();

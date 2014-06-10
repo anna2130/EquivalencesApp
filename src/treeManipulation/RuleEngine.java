@@ -1,6 +1,8 @@
 package treeManipulation;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.SortedSet;
@@ -17,7 +19,8 @@ public class RuleEngine {
 	RuleApplicator ra;
 	RuleSelector rs;
 	int noRules;
-//	HashSet<Integer> rulesWithTruths;
+	int probability;
+	HashSet<Integer> rulesWithTruths;
 	
 	private static int min_user_input_required = 69;
 
@@ -25,9 +28,10 @@ public class RuleEngine {
 		ra = new RuleApplicator();
 		rs = new RuleSelector();
 		noRules = rs.getNoRules();
+		probability = 50;
 		
-//		Integer[] rules = new Integer[] {4,5,6,7,21,22,23,24,39,40,42,50,52,53,62,64,66,67,68,69,71,74,75};
-//		rulesWithTruths = new HashSet<Integer>(Arrays.asList(rules));
+		Integer[] rules = new Integer[] {4,5,6,7,21,22,23,24,39,40,42,50,52,53,62,64,66,67,68,69,71,74,75};
+		rulesWithTruths = new HashSet<Integer>(Arrays.asList(rules));
 	}
 	
 	public int getMinUserInputRequired() {
@@ -448,10 +452,10 @@ public class RuleEngine {
 	public void applyRuleToRandomNode(FormationTree tree) {
 		Node node = tree.randomNode();
 		BitSet bs = getApplicableRules(tree, node);
-		applyRandomRule(bs, tree, node);
+		applyRandomRule(bs, tree, node, 0);
 	}
 
-	public void applyRandomRule(BitSet bs, FormationTree tree, Node node) {
+	public void applyRandomRule(BitSet bs, FormationTree tree, Node node, int attempts) {
 		int numSetBits = bs.cardinality();
 		int nextSetBit = bs.nextSetBit(0);
 
@@ -472,6 +476,27 @@ public class RuleEngine {
 			for (int i = 0; i <= randomVar && it.hasNext(); ++i)
 				var = it.next();
 		}
+		
+		// rule to be applied creates truth values
+		if (rulesWithTruths.contains(nextSetBit)) {
+			rand = new Random();
+			int randProbability = rand.nextInt(100);
+			
+			if (randProbability >= probability) {
+				// Truth rule probably only option so don't apply any rule
+				if (attempts > 10)
+					return;
+				
+				applyRandomRule(bs, tree, node, ++attempts);
+				return;
+			}
+			
+		}
+		
 		applyRuleFromBitSet(nextSetBit, tree, node, var);
+	}
+
+	public void setTruthValueProbability(int probability) {
+		this.probability = probability;
 	}
 }

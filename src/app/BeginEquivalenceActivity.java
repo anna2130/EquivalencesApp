@@ -399,6 +399,22 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		toast.show();
 	}
 
+	public void moveTopLeft(View view) {
+		topFormationTree.addToXOffset(-50);
+	}
+	
+	public void moveTopRight(View view) {
+		topFormationTree.addToXOffset(50);
+	}
+
+	public void moveBottomLeft(View view) {
+		bottomFormationTree.addToXOffset(-50);
+	}
+	
+	public void moveBottomRight(View view) {
+		bottomFormationTree.addToXOffset(50);
+	}
+	
 	@Override
 	public void onDismiss(PopupMenu menu) {
 		if (menu == topRulesList) {
