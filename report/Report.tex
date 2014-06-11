@@ -60,6 +60,7 @@ The interface will have an intuitive design displaying the current formula's for
 
 
 \section{Objectives}
+\label{sec:objectives}
 
 The application should have some key features. These are outlined below:
 
@@ -1547,7 +1548,7 @@ As the generation of formulae is random we set each test to run 100 times to ens
 
 \subsection{Test Results}
 
-All of these tests were run after each section was complete to ensure the correctness of the application remained intact as we extended the functionality. Currently all the tests pass proving the application is logically correct and the rules are sound and complete.
+All of these tests were run after each section was completed to ensure the correctness of the application remained intact as we extended the functionality. By implementing this wide range of tests (including edge cases) we know that the application is logically correct and is accurate in its application of rules and comparison of equivalences.
 
 \section{Undergraduate Project Fair}
 
@@ -1567,13 +1568,19 @@ We have aimed to create a functional logic application and it's fair to say that
 
 Some users suggested adding a `pinch and zoom' gesture to allow easier movement around the tree. Others preferred the idea of a static layout believing that manipulating a tree too much would make it more difficult to compare with the other formation tree. We understand the need to be able to manipulate the tree in some capacity so that very wide trees can be displayed in their entirety. 
 
-TODO: Currently we simply allow the user to move the tree left and right using the buttons provided. Although implementing a `pinch and zoom' gesture to manipulate the tree would be more intuitive for some users we decided to stick with the simple approach.
+Currently we simply allow the user to move the tree left and right using the buttons provided. Although implementing a `pinch and zoom' gesture to manipulate the tree would be more intuitive for some users we decided to stick with the simple approach.
+
+Other comments included simple adjustments to the design such as centering the rule popup menu and providing some simple instructions on each screen to help the user know what to do at each stage. The idea to center the rule popup menu was discarded because it resulted in blocking much of the other formation tree which we believe is useful to see while applying rules. The other ideas were added into the design where possible and using them we believe the design is now more intuitive and easier to understand.
+
+%Push bottom tree down below popup menu also ignored
+
+TODO: Actually add these things!
 
 \subsubsection{Propositional vs First Order Logic}
 
 At the time of the undergraduate fair the application only supported propositional logic. We wanted to incorporate first order logic into the application so decided to find out which logic people would have found most useful when they were first learning logical equivalences.
 
-Understandably, users agreed that first order logic was more difficult to learn. Therefore, a tool helping them understand first order would have been more appreciated and useful than an application only supporting propositional logic.
+Understandably, users agreed that first order logic was more difficult to learn. Therefore, a tool helping them understand first order would have been more appreciated and useful than an application only supporting propositional logic. For this reason we are aiming to complete support for first order logic by the end of the project.
 
 TODO: What was the result of implementing first order logic?
 
@@ -1583,26 +1590,74 @@ TODO: Students new to logic?
 
 %We need to ask people who understand logic (e.g. lecturers) so we can confirm that it works as a teaching tool. People who are new to logic (e.g. first year students) are necessary so we can evaluate how effective it is as a learning tool. This can be carried out through asking the target groups to use the application and provide feedback.
 
-\chapter{Conclusions}
-\section{Completed objectives}
-\section{Comparisons to related work}
+\chapter{Conclusion}
+
+Throughout the report we have demonstrated an Android application which can be used to prove logical equivalences. We have assessed each component in the project using a variety of tests to be certain of their correctness. In this chapter we discuss the initial objectives and assess how effectively they have been implemented as well as looking at any changes and improvements we made.
+
+\section{Achievements}
+
+\subsubsection{ANTLR4}
+
+Using ANTLR4 allowed the grammar used to be much more natural and easy to implement. ANTLR4 is a very powerful tool which allowed us to generate the internal tree representation of a formula effectively. In the future it would be useful to learn more about error handling in ANTLR and to implement this feature correctly. However, our workaround is functional and took significantly less time than creating a custom error handler.
+
+\subsubsection{Formation Tree}
+
+We wanted to display an attractive formation tree of the formulae in use by the application. We have shown that Walker's algorithm is extremely suitable for building aesthetically pleasing tree layouts. The trees are interactive to apply equivalence rules to the formula and we have proven these rules are correct through extensive testing. 
+
+To allow trees larger than the screen size to be displayed, buttons were added to allow simple navigation around the trees. This was a difficulty we had not anticipated at the beginning of the project, but the solution is clear and effective.
+
+\subsubsection{Undo/Redo}
+
+The undo and redo functionality has been implemented as expected at the beginning of the project with very few minor changes to the design. We are able to undo and redo from each end independently as predicted.
+
+\subsubsection{Generated Equivalences}
+
+Extra features were added to the generation of equivalences due to problems we encountered during development. We focused on generating equivalences based on the user selected difficulty instead of a predicted difficulty (based off previous equivalences completed). The difficulty also now includes the ability to choose the probability of truth values (`$\top$' and `$\bot$') appearing in the generated equivalences as this proved to affect the difficulty of solving the equivalences substantially.
+
+The resulting generated equivalences are widely varied and are representative of their difficulty. The application provides a user with a method of easily generating equivalences suited to their ability.
+
+\subsubsection{Help and Completion}
+
+The user receives a toast (notification popup) when a cycle is detected or the equivalence proof is complete. These features are not as comprehensive as hoped for at the beginning of the project. Initially, we wanted to give the user a breakdown of how successful their proof was by determining the optimal proof (using the fewest moves) for the equivalences. This proved to be a complex task and unfortunately could not be completed. However, we believe it is sufficient to provide help (in the form of allowing them to select difficulties and detect cycles) to the user and allow them to minimise their proofs by learning and understanding the rules more intuitively through repeated use of the application.
+
+\subsubsection{First Order Logic}
+
+TODO: Complete
+
+%\section{Comparisons to related work}
 
 \chapter{Future Work}
-\section{Improvements to completed objectives}
 
-\section{Device support}
-\subsection{Reduced app without trees for phones}
+There is a large amount of scope for future improvements to our current implementation to make it more accessible and to improve the user learning experience.
 
-\section{More complex help}
-\subsection{Calculating the optimal route}
-\subsection{Suggested next move}
-\subsection{Future dead end detection}
+\section{Device Support}
+
+One complaint from user testers was that they did not own an Android tablet so would not have been able to use the app. A simple solution to this is obviously to increase the number of devices supported by the application. 
+
+As the underlying functionality is separated from the Android implementation it would be fairly straight forward to create a web application utilising these features. 
+
+We could also create a simple version of the app to use on Android smartphones that did not display the formation tree - this would consume far too much screen space and make the application unusable. Instead each individual element in the current formula would be clickable to bring up the list of applicable rules. 
+
+\section{More Complex Help}
+
+Increasing the help available to the user would be beneficial to new users struggling with the basic concepts of logical equivalences.
+
+\subsection{Calculating The Optimal Route}
+
+
+
+\subsection{Suggested Next Move}
+
+When the user is unsure of what to do we could suggest the next move based on the optimal solution calculated from the current equivalence.
+
+\subsection{Future Dead End Detection}
+
+\section{UI Design}
+\subsection{Pinch and Zoom Gestures}
 
 \section{First Order Logic}
 \subsection{Extend grammar}
 \subsection{Add and handle new rules}
-
-\section{Further Testing}
 
 \begin{thebibliography}{9}
 
