@@ -1,6 +1,8 @@
 package treeBuilder;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.SortedSet;
 
 public abstract class Node {
@@ -9,11 +11,13 @@ public abstract class Node {
 	private int depth;
 	private String value;
 	private Node parent;
+	private LinkedList<String> vars;
 	
-	public Node(int key, int depth, String value) {
+	public Node(int key, int depth, String value, LinkedList<String> variables) {
 		this.setKey(key);
 		this.setDepth(depth);
 		this.setValue(value);
+		this.setVars(variables);
 		parent = null;
 	}
 	
@@ -120,6 +124,14 @@ public abstract class Node {
 	public boolean isBottom() {
 		return false;
 	}
+
+	public boolean isAll() {
+		return false;
+	}
+
+	public boolean isExists() {
+		return false;
+	}
 	
 	public abstract Node clone();
 	
@@ -146,4 +158,17 @@ public abstract class Node {
 		return depth;
 	}
 
+	public LinkedList<String> getVars() {
+		return vars;
+	}
+
+	public void setVars(LinkedList<String> vars) {
+		this.vars = vars;
+	}
+	
+	public void replaceVariable(String oldVar, String newVar) {}
+
+	public abstract boolean hasFree(String variable);
+	
+	public abstract boolean isBound(String variable);
 }

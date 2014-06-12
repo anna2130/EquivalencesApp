@@ -69,8 +69,8 @@ public class Parser {
 	
 	@Test
 	public void testOr() {
-		FormationTree tree = compiler.compile("avb");
-		assertEquals("avb: ", tree.toTreeString(), "0-0: v (0-1: a, 1-1: b)");
+		FormationTree tree = compiler.compile("a∨b");
+		assertEquals("a∨b: ", tree.toTreeString(), "0-0: ∨ (0-1: a, 1-1: b)");
 	}
 	
 	@Test
@@ -121,26 +121,26 @@ public class Parser {
 	
 	@Test
 	public void testComplexLeft() {
-		FormationTree tree = compiler.compile("(¬av(b∧c))∧d");
-		assertEquals("(¬pv(s∧t))∧q: ", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ¬ (0-3: a), 1-2: ∧ (2-3: b, 3-3: c)), 1-1: d)");
+		FormationTree tree = compiler.compile("(¬a∨(b∧c))∧d");
+		assertEquals("(¬p∨(s∧t))∧q: ", tree.toTreeString(), "0-0: ∧ (0-1: ∨ (0-2: ¬ (0-3: a), 1-2: ∧ (2-3: b, 3-3: c)), 1-1: d)");
 	}
 
 	@Test
 	public void testComplexRight() {
-		FormationTree tree = compiler.compile("d∧(¬av(b∧c))");
-		assertEquals("q∧(¬pv(s∧t)): ", tree.toTreeString(), "0-0: ∧ (0-1: d, 1-1: v (2-2: ¬ (4-3: a), 3-2: ∧ (6-3: b, 7-3: c)))");
+		FormationTree tree = compiler.compile("d∧(¬a∨(b∧c))");
+		assertEquals("q∧(¬p∨(s∧t)): ", tree.toTreeString(), "0-0: ∧ (0-1: d, 1-1: ∨ (2-2: ¬ (4-3: a), 3-2: ∧ (6-3: b, 7-3: c)))");
 	}
 
 	@Test
 	public void testComplexImplies() {
-		FormationTree tree = compiler.compile("¬pvq→(p→q∧r)");
-		assertEquals("¬pvq→(p→q∧r): ", tree.toTreeString(), "0-0: → (0-1: v (0-2: ¬ (0-3: p), 1-2: q), 1-1: → (2-2: p, 3-2: ∧ (6-3: q, 7-3: r)))");
+		FormationTree tree = compiler.compile("¬p∨q→(p→q∧r)");
+		assertEquals("¬p∨q→(p→q∧r): ", tree.toTreeString(), "0-0: → (0-1: ∨ (0-2: ¬ (0-3: p), 1-2: q), 1-1: → (2-2: p, 3-2: ∧ (6-3: q, 7-3: r)))");
 	}
 
 	@Test
 	public void testComplexIff() {
-		FormationTree tree = compiler.compile("¬pvq↔(p→q∧r)");
-		assertEquals("¬pvq↔(p→q∧r): ", tree.toTreeString(), "0-0: ↔ (0-1: v (0-2: ¬ (0-3: p), 1-2: q), 1-1: → (2-2: p, 3-2: ∧ (6-3: q, 7-3: r)))");
+		FormationTree tree = compiler.compile("¬p∨q↔(p→q∧r)");
+		assertEquals("¬p∨q↔(p→q∧r): ", tree.toTreeString(), "0-0: ↔ (0-1: ∨ (0-2: ¬ (0-3: p), 1-2: q), 1-1: → (2-2: p, 3-2: ∧ (6-3: q, 7-3: r)))");
 	}
 
 	

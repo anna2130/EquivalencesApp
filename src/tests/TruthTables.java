@@ -52,7 +52,7 @@ public class TruthTables {
 
 	@Test
 	public void testOr() {
-		String s = "pvq";
+		String s = "p∨q";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -79,7 +79,7 @@ public class TruthTables {
 
 	@Test
 	public void testAndOr() {
-		String s = "p∧(pvq)";
+		String s = "p∧(p∨q)";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -106,7 +106,7 @@ public class TruthTables {
 
 	@Test
 	public void testOrTop() {
-		String s = "pv┬";
+		String s = "p∨┬";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -115,7 +115,7 @@ public class TruthTables {
 	
 	@Test
 	public void testOrBottom() {
-		String s = "pv⊥";
+		String s = "p∨⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -126,7 +126,7 @@ public class TruthTables {
 	
 	@Test
 	public void testTopOrNotBottom() {
-		String s = "┬v¬⊥";
+		String s = "┬∨¬⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -135,7 +135,7 @@ public class TruthTables {
 
 	@Test
 	public void testNotTopOrBottom() {
-		String s = "¬┬v⊥";
+		String s = "¬┬∨⊥";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -144,7 +144,7 @@ public class TruthTables {
 
 	@Test
 	public void testNotNotTopOrBottom() {
-		String s = "¬(¬┬v⊥)";
+		String s = "¬(¬┬∨⊥)";
 		FormationTree tree = compiler.compile(s);
 		TruthTable tt = new TruthTable(tree);
 		HashSet<ArrayList<Integer>> list = tt.createTruthTable(tree);
@@ -230,7 +230,7 @@ public class TruthTables {
 	@Test
 	public void applyDeMorganOrBackwards() {
 		String s1 = "¬a∧¬b";
-		String s2 = "¬(avb)";
+		String s2 = "¬(a∨b)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -241,8 +241,8 @@ public class TruthTables {
 	// 13. a∧(bvc) 		|- 	(a∧b)v(a∧c)		-- Distributitivity
 	@Test
 	public void applyDistributivityAndLeftForwards() {
-		String s1 = "a∧(bvc)";
-		String s2 = "(a∧b)v(a∧c)";
+		String s1 = "a∧(b∨c)";
+		String s2 = "(a∧b)∨(a∧c)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -253,8 +253,8 @@ public class TruthTables {
 	// 14. (avb)∧c		|-  (a∧c)v(b∧c)		-- Distributitivity
 	@Test
 	public void applyDistributivityAndRightForwards() {
-		String s1 = "(avb)∧c";
-		String s2 = "(a∧c)v(b∧c)";
+		String s1 = "(a∨b)∧c";
+		String s2 = "(a∧c)∨(b∧c)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -265,8 +265,8 @@ public class TruthTables {
 	// 15. (avb)∧(avc)	|- 	av(b∧c)		-- Distributitivity
 	@Test
 	public void applyDistributivityOrLeftBackwards() {
-		String s1 = "(avb)∧(avc)";
-		String s2 = "av(b∧c)";
+		String s1 = "(a∨b)∧(a∨c)";
+		String s2 = "a∨(b∧c)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -277,8 +277,8 @@ public class TruthTables {
 	// 16. (avc)∧(bvc)	|-	(a∧b)vc		-- Distributitivity
 	@Test
 	public void applyDistributivityOrRightBackwards() {
-		String s1 = "(avc)∧(bvc)";
-		String s2 = "(a∧b)vc";
+		String s1 = "(a∨c)∧(b∨c)";
+		String s2 = "(a∧b)∨c";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -291,8 +291,8 @@ public class TruthTables {
 	// 19. avb		|- 	bva				-- Commutativity
 	@Test
 	public void testOrCommutativityEquality() {
-		String s1 = "pvq";
-		String s2 = "qvp";
+		String s1 = "p∨q";
+		String s2 = "q∨p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -303,7 +303,7 @@ public class TruthTables {
 	// 20. ava		|- 	a 				-- Idempotence
 	@Test
 	public void testOrIdempotenceEquality() {
-		String s1 = "pvp";
+		String s1 = "p∨p";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -315,8 +315,8 @@ public class TruthTables {
 	// 27. av(bvc)	|-  (avb)vc			-- Associativity
 	@Test
 	public void testOrLeftAssociativityEquality() {
-		String s1 = "pv(qvr)";
-		String s2 = "(pvq)vr";
+		String s1 = "p∨(q∨r)";
+		String s2 = "(p∨q)∨r";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -327,8 +327,8 @@ public class TruthTables {
 	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
 	@Test
 	public void testOrRightAssociativityEquality() {
-		String s1 = "(pvq)vr";
-		String s2 = "pv(qvr)";
+		String s1 = "(p∨q)∨r";
+		String s2 = "p∨(q∨r)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -339,7 +339,7 @@ public class TruthTables {
 	// 29. (a∧b)v(¬a∧¬b)	|-	a↔b
 	@Test
 	public void applyOrAndToIff() {
-		String s1 = "(a∧b)v(¬a∧¬b)";
+		String s1 = "(a∧b)∨(¬a∧¬b)";
 		String s2 = "a↔b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -351,7 +351,7 @@ public class TruthTables {
 	// 30. (a∧¬b)v(¬a∧b) 	|-  ¬(a↔b)
 	@Test
 	public void applyOrAndToNotIff() {
-		String s1 = "(a∧¬b)v(¬a∧b)";
+		String s1 = "(a∧¬b)∨(¬a∧b)";
 		String s2 = "¬(a↔b)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -363,7 +363,7 @@ public class TruthTables {
 	// 31. ¬av¬b	|-  ¬(a∧b)			-- De Morgan laws
 	@Test
 	public void applyDeMorganAndBackwards() {
-		String s1 = "¬av¬b";
+		String s1 = "¬a∨¬b";
 		String s2 = "¬(a∧b)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -375,8 +375,8 @@ public class TruthTables {
 	// 32. av(b∧c)	|- 	(avb)∧(avc)		-- Distributitivity
 	@Test
 	public void applyDistributivityOrLeftForwards() {
-		String s1 = "av(b∧c)";
-		String s2 = "(avb)∧(avc)";
+		String s1 = "a∨(b∧c)";
+		String s2 = "(a∨b)∧(a∨c)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -387,8 +387,8 @@ public class TruthTables {
 	// 33. (a∧b)vc	|-	(avc)∧(bvc)		-- Distributitivity
 	@Test
 	public void applyDistributivityOrRightForwards() {
-		String s1 = "(a∧b)vc";
-		String s2 = "(avc)∧(bvc)";
+		String s1 = "(a∧b)∨c";
+		String s2 = "(a∨c)∧(b∨c)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -399,8 +399,8 @@ public class TruthTables {
 	// 34. (a∧b)v(a∧c) 	|- 	a∧(bvc)		-- Distributitivity
 	@Test
 	public void applyDistributivityAndLeftBackwards() {
-		String s1 = "(a∧b)v(a∧c)";
-		String s2 = "a∧(bvc)";
+		String s1 = "(a∧b)∨(a∧c)";
+		String s2 = "a∧(b∨c)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -411,8 +411,8 @@ public class TruthTables {
 	// 35. (a∧c)v(b∧c)	|-  (avb)∧c		-- Distributitivity
 	@Test
 	public void applyDistributivityAndRightBackwards() {
-		String s1 = "(a∧c)v(b∧c)";
-		String s2 = "(avb)∧c";
+		String s1 = "(a∧c)∨(b∧c)";
+		String s2 = "(a∨b)∧c";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -423,7 +423,7 @@ public class TruthTables {
 	// 38. ¬avb		|- 	a→b
 	@Test
 	public void applyOrToImplies() {
-		String s1 = "¬avb";
+		String s1 = "¬a∨b";
 		String s2 = "a→b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -534,7 +534,7 @@ public class TruthTables {
 	@Test
 	public void applyNotIffToOrAnd() {
 		String s1 = "¬(a↔b)";
-		String s2 = "(a∧¬b)v(¬a∧b)";
+		String s2 = "(a∧¬b)∨(¬a∧b)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -546,7 +546,7 @@ public class TruthTables {
 	@Test
 	public void applyDeMorganAndForwards() {
 		String s1 = "¬(a∧b)";
-		String s2 = "¬av¬b";
+		String s2 = "¬a∨¬b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -557,7 +557,7 @@ public class TruthTables {
 	// 49. ¬(avb)	|-	¬a∧¬b			-- De Morgan laws
 	@Test
 	public void applyDeMorganOrForwards() {
-		String s1 = "¬(avb)";
+		String s1 = "¬(a∨b)";
 		String s2 = "¬a∧¬b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -585,7 +585,7 @@ public class TruthTables {
 	@Test
 	public void testImpliesToOrEquality() {
 		String s1 = "p→q";
-		String s2 = "¬pvq";
+		String s2 = "¬p∨q";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -623,7 +623,7 @@ public class TruthTables {
 	@Test
 	public void testIffToOrEquality() {
 		String s1 = "p↔q";
-		String s2 = "(p∧q)v(¬p∧¬q)";
+		String s2 = "(p∧q)∨(¬p∧¬q)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -685,7 +685,7 @@ public class TruthTables {
 	@Test
 	public void atom3() {
 		String s1 = "a";
-		String s2 = "ava";
+		String s2 = "a∨a";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -697,7 +697,7 @@ public class TruthTables {
 	@Test
 	public void atom4() {
 		String s1 = "a";
-		String s2 = "av⊥";
+		String s2 = "a∨⊥";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -759,7 +759,7 @@ public class TruthTables {
 	@Test
 	public void atom9() {
 		String s1 = "┬";
-		String s2 = "av┬";
+		String s2 = "a∨┬";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -771,7 +771,7 @@ public class TruthTables {
 	@Test
 	public void atom10() {
 		String s1 = "┬";
-		String s2 = "av¬a";
+		String s2 = "a∨¬a";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -831,7 +831,7 @@ public class TruthTables {
 	@Test
 	public void atom15() {
 		String s1 = "a";
-		String s2 = "a∧(avb)";
+		String s2 = "a∧(a∨b)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -866,7 +866,7 @@ public class TruthTables {
 	@Test
 	public void testNotIffToNotAEquality() {
 		String s1 = "¬(p↔q)";
-		String s2 = "(p∧¬q)v(¬p∧q)";
+		String s2 = "(p∧¬q)∨(¬p∧q)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -877,7 +877,7 @@ public class TruthTables {
 	@Test
 	public void testDeMorganAndEquality() {
 		String s1 = "¬(p∧q)";
-		String s2 = "¬pv¬q";
+		String s2 = "¬p∨¬q";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -887,7 +887,7 @@ public class TruthTables {
 	
 	@Test
 	public void testDeMorganOrEquality() {
-		String s1 = "¬(pvq)";
+		String s1 = "¬(p∨q)";
 		String s2 = "¬p∧¬q";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -898,8 +898,8 @@ public class TruthTables {
 	
 	@Test
 	public void testDistributivityAndLeftEquality() {
-		String s1 = "p∧(qvr)";
-		String s2 = "(p∧q)v(p∧r)";
+		String s1 = "p∧(q∨r)";
+		String s2 = "(p∧q)∨(p∧r)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -920,8 +920,8 @@ public class TruthTables {
 
 	@Test
 	public void testDistributivityOrLeftEquality() {
-		String s1 = "pv(q∧r)";
-		String s2 = "(pvq)∧(pvr)";
+		String s1 = "p∨(q∧r)";
+		String s2 = "(p∨q)∧(p∨r)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -931,8 +931,8 @@ public class TruthTables {
 	
 	@Test
 	public void testDistributivityOrRightEquality() {
-		String s1 = "(p∧q)vr";
-		String s2 = "(pvr)∧(qvr)";
+		String s1 = "(p∧q)∨r";
+		String s2 = "(p∨r)∧(q∨r)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -942,7 +942,7 @@ public class TruthTables {
 	
 	@Test
 	public void testAbsorptionAndLeftEquality() {
-		String s1 = "p∧(pvq)";
+		String s1 = "p∧(p∨q)";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -953,7 +953,7 @@ public class TruthTables {
 	
 	@Test
 	public void testAbsorptionOrLeftEquality() {
-		String s1 = "pv(p∧q)";
+		String s1 = "p∨(p∧q)";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -964,7 +964,7 @@ public class TruthTables {
 	
 	@Test
 	public void testAbsorptionAndRightEquality() {
-		String s1 = "(pvq)∧p";
+		String s1 = "(p∨q)∧p";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -975,7 +975,7 @@ public class TruthTables {
 	
 	@Test
 	public void testAbsorptionOrRightEquality() {
-		String s1 = "(p∧q)vp";
+		String s1 = "(p∧q)∨p";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -1008,7 +1008,7 @@ public class TruthTables {
 
 	@Test
 	public void testOrTopEquality() {
-		String s1 = "pv┬";
+		String s1 = "p∨┬";
 		String s2 = "┬";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -1019,7 +1019,7 @@ public class TruthTables {
 
 	@Test
 	public void testOrBottomEquality() {
-		String s1 = "pv⊥";
+		String s1 = "p∨⊥";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -1032,7 +1032,7 @@ public class TruthTables {
 	
 	@Test
 	public void testAbsorptionOrFailure() {
-		String s1 = "(r∧q)vp";
+		String s1 = "(r∧q)∨p";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -1043,7 +1043,7 @@ public class TruthTables {
 	
 	@Test
 	public void testAbsorptionAndFailure() {
-		String s1 = "(pvq)∧q";
+		String s1 = "(p∨q)∧q";
 		String s2 = "p";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
@@ -1054,8 +1054,8 @@ public class TruthTables {
 	
 	@Test
 	public void testDifferentVariablesFailure() {
-		String s1 = "pvq";
-		String s2 = "avb";
+		String s1 = "p∨q";
+		String s2 = "a∨b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -1067,8 +1067,8 @@ public class TruthTables {
 	
 	@Test
 	public void testDifferentVariables() {
-		String s1 = "av¬a";
-		String s2 = "bv¬b";
+		String s1 = "a∨¬a";
+		String s2 = "b∨¬b";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);

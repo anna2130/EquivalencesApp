@@ -69,6 +69,19 @@ public class ExprBaseListener implements ExprListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
+	@Override public void enterQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
 	@Override public void enterNOT(@NotNull ExprParser.NOTContext ctx) { }
 	/**
 	 * {@inheritDoc}

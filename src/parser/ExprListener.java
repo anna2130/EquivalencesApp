@@ -53,6 +53,17 @@ public interface ExprListener extends ParseTreeListener {
 	void exitIMPLIES(@NotNull ExprParser.IMPLIESContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link ExprParser#QUANTIFIER_}.
+	 * @param ctx the parse tree
+	 */
+	void enterQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExprParser#QUANTIFIER_}.
+	 * @param ctx the parse tree
+	 */
+	void exitQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link ExprParser#NOT}.
 	 * @param ctx the parse tree
 	 */

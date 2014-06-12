@@ -139,6 +139,52 @@ public class RuleEngine {
 	 * 75. ┬		|- 	⊥→a
 	 * 76. a		|-  av(a∧b)
 	 * 77. a  		|-	a∧(avb)
+	 * 
+	 * ∀ | ∃ | ∧ | ∨ | ┬ | ⊥ | ¬ | → | ↔
+	 *  
+	 * First order - e and f represent any wff
+	 * 			   - t represents a wff with no free occurrences of x 
+	 * 
+	 * Equivalences involving ∀
+	 * 78. ∀x[¬e]   |- 	¬∃x[e]
+	 * 79. ∀x∀y[e]	|-	∀y∀x[e]
+	 * 80. ∀x[e∧f] 	|- 	∀x[e]∧∀x[f]
+	 * 81. ∀x[e∨t] 	|- 	∀x[e]∨t
+	 * 82. ∀x[e→t]  |-  ∃x[e]→t
+	 * 83. ∀x[t→e]	|-  t→∀x[e]
+	 * 84: ∀x[t]	|-  t
+	 * 
+	 * Equivalences involving ∃
+	 * 86: ∃x[¬e]  	|-	¬∀x[e]
+	 * 87: ∃x∃y[e] 	|-  ∃y∃x[e]
+	 * 88: ∃x[e∨f]	|-  ∃x[e]∨∃x[f]
+	 * 89: ∃x[e∧t]	|-  ∃x[e]∧t
+	 * 90: ∃x[e→t]  |-  ∃x[e]→t
+	 * 91: ∃x[t→e]  |-  t→∃x[e]
+	 * 92: ∃x[t]	|-  t
+	 * 
+	 * Equivalences involving ¬
+	 * 93: ¬∀x[e]	|- 	∃x[¬e]
+	 * 94: ¬∃x[e]	|-	∀x[¬e]
+	 * 
+	 * Equivalences involving ∧
+	 * 95: ∀x[e]∧∀x[f] 	|-	∀x[e∧f]
+	 * 96: ∃x[e]∧t		|-  ∃x[e∧t]
+	 * 
+	 * Equivalences involving ∨
+	 * 97: ∀x[e]∨t		|- 	∀x[e∨t]
+	 * 98: ∃x[e]∨∃x[f]	|- 	∃x[e∨f]
+	 * 
+	 * Equivalences involving →
+	 * 99: ∃x[e]→t 	|- 	∀x[e→t]
+	 * 100: t→∀x[e]	|- 	∀x[t→e]
+	 * 101: ∃x[e]→t |- 	∃x[e→t]
+	 * 
+	 * Equivalences involving user input
+	 * 102: ∀x[e]	|-  ∀y[e{x->y}]
+	 * 103: ∃x[e]	|-  ∃y[e{x->y}]
+	 * 104: t		|- 	∀x[t]
+	 * 105: t		|- 	∃x[t]
 	 */
 
 	public BitSet getApplicableRules(FormationTree tree, Node node) {
@@ -175,6 +221,11 @@ public class RuleEngine {
 					&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1]));
 			bs.set(17, rightChild.isOr() && tree.equalSubTrees(leftChild, rightGChildren[0]));
 			bs.set(18, leftChild.isOr() && tree.equalSubTrees(leftGChildren[0], rightChild));
+			if (leftChild.isAll()) {
+				String variable = leftChild.getVars().peek();
+				bs.set(97, !rightChild.hasFree(variable));
+			}
+			bs.set(98, leftChild.isExists() && rightChild.isExists());
 		}
 
 		// Equivalences involving ∧
@@ -213,6 +264,11 @@ public class RuleEngine {
 			bs.set(36, rightChild.isAnd() && tree.equalSubTrees(leftChild, rightGChildren[0]));
 			bs.set(37, leftChild.isAnd() && tree.equalSubTrees(leftGChildren[0], rightChild));
 			bs.set(38, leftChild.isNot());
+			bs.set(95, leftChild.isAll() && rightChild.isAll());
+			if (leftChild.isExists()) {
+				String variable = leftChild.getVars().peek();
+				bs.set(96, !rightChild.hasFree(variable));
+			}
 		}
 
 		// Equivalences involving ¬
@@ -231,6 +287,8 @@ public class RuleEngine {
 			bs.set(47, child.isIff());
 			bs.set(48, child.isAnd());
 			bs.set(49, child.isOr());
+			bs.set(93, child.isAll());
+			bs.set(94, child.isExists());
 		}
 
 		// Equivalences involving →
@@ -246,6 +304,14 @@ public class RuleEngine {
 			bs.set(54, rightChild.isBottom());
 			bs.set(55);
 			bs.set(56);
+			if (leftChild.isExists()) {
+				String variable = leftChild.getVars().peek();
+				bs.set(99, !rightChild.hasFree(variable));
+				bs.set(101, !rightChild.hasFree(variable));
+			} else if (rightChild.isAll()) {
+				String variable = rightChild.getVars().peek();
+				bs.set(100, !leftChild.hasFree(variable));
+			}
 		}
 
 		// Equivalences involving ↔
@@ -271,7 +337,56 @@ public class RuleEngine {
 			} else if (node.isTop()) {
 				bs.set(68);
 				bs.set(71, 76);
+			} else if (node.isAll()) {
+				bs.set(102);
+			} else if (node.isExists()) {
+				bs.set(103);
 			}
+			bs.set(104, 106);
+		}
+
+		// Equivalences involving ∀
+		else if (node.isAll()) {
+			UnaryOperator unary = (UnaryOperator) node;
+			Node child = unary.getChild();
+			String variable = unary.getVars().peek();
+			
+			bs.set(78);
+			bs.set(79, child.isAll());
+			bs.set(80, child.isAnd());
+			if (child.isOr()) {
+				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
+				bs.set(81, !rightGrandChild.hasFree(variable));
+			} else if (child.isImplies()) {
+				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
+				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
+
+				bs.set(82, !rightGrandChild.hasFree(variable));
+				bs.set(83, !leftGrandChild.hasFree(variable));
+			}
+			bs.set(84, !child.hasFree(variable));
+		}
+		
+		// Equivalences involving ∃
+		else if (node.isExists()) {
+			UnaryOperator unary = (UnaryOperator) node;
+			Node child = unary.getChild();
+			String variable = unary.getVars().peek();
+			
+			bs.set(86, child.isNot());
+			bs.set(87, child.isExists());
+			bs.set(88, child.isOr());
+			if (child.isAnd()) {
+				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
+				bs.set(89, !rightGrandChild.hasFree(variable));
+			} else if (child.isImplies()) {
+				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
+				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
+				
+				bs.set(90, !rightGrandChild.hasFree(variable));
+				bs.set(91, !leftGrandChild.hasFree(variable));
+			}
+			bs.set(92, !child.hasFree(variable));
 		}
 
 		return bs;
@@ -441,7 +556,62 @@ public class RuleEngine {
 		break;
 		case 77:	ra.applyAbsorptionAndBackwards(tree, (Atom) node, input);
 		break;
+		case 78: 	ra.applyAllComplementation(tree, (UnaryOperator) node);
+		break;
+		case 79:	ra.applyAllSwapQuantifiers(tree, (UnaryOperator) node);
+		break;
+		case 80:	ra.applyAllDistrubutionOfQuantifiers(tree, (UnaryOperator) node);
+		break;
+		case 81:	ra.applyAllDistrubutionOfQuantifiersWithNoFreeVariables(tree, (UnaryOperator) node);
+		break;
+		case 82:	ra.applyImpliesDistributionOfQuantifiersLeft(tree, (UnaryOperator) node);
+		break;
+		case 83: 	ra.applyAllImpliesDistributionOfQuantifiersRight(tree, (UnaryOperator) node);
+		break;
+		case 84: 	ra.applySimplificationOfQuantifiers(tree, (UnaryOperator) node);
+		break;
+		case 86:	ra.applyExistsComplementation(tree, (UnaryOperator) node);
+		break;
+		case 87:	ra.applyExistsSwapQuantifiers(tree, (UnaryOperator) node);
+		break;
+		case 88:	ra.applyExistsDistributionOfQuantifiers(tree, (UnaryOperator) node);
+		break;
+		case 89: 	ra.applyExistsDistributionOfQuantifiersWithNoFreeVariables(tree, (UnaryOperator) node);
+		break;
+		case 90: 	ra.applyImpliesDistributionOfQuantifiersLeft(tree, (UnaryOperator) node);
+		break;
+		case 91:	ra.applyExistsImpliesDistributionOfQuantifiersRight(tree, (UnaryOperator) node);
+		break;
+		case 92:	ra.applySimplificationOfQuantifiers(tree, (UnaryOperator) node);
+		break;
+		case 93: 	ra.applyAllComplementationBackwards(tree, (UnaryOperator) node);
+		break;
+		case 94:	ra.applyExistsComplementationBackwards(tree, (UnaryOperator) node);
+		break;
+		case 95:	ra.applyAllDistributionOfQuantifiersBackwards(tree, (BinaryOperator) node);
+		break;
+		case 96:	ra.applyExistsDistributionOfQuantifiersWithNoFreeVariablesBackwards(tree, (BinaryOperator) node);
+		break;
+		case 97:	ra.applyAllDistributionOfQuantifiersWithNoFreeVariablesBackwards(tree, (BinaryOperator) node);
+		break;
+		case 98:	ra.applyExistsDistributionOfQuantifiersBackwards(tree, (BinaryOperator) node);
+		break;
+		case 99: 	ra.applyAllImpliesDistributionBackwardsLeft(tree, (BinaryOperator) node);
+		break;
+		case 100:	ra.applyAllImpliesDistributionBackwardsRight(tree, (BinaryOperator) node);
+		break;
+		case 101:	ra.applyExistsImpliesDistributionBackwards(tree, (BinaryOperator) node);
+		break;
+		case 102:	ra.applyRenameVariable(tree, (UnaryOperator) node, input);
+		break;
+		case 103:	ra.applyRenameVariable(tree, (UnaryOperator) node, input);
+		break;
+		case 104:	ra.applyAddAll(tree, node, input);
+		break;
+		case 105:	ra.applyAddOr(tree, node, input);
+		break;
 		}
+		
 	}
 
 	public void applyRandomRules(FormationTree tree, int n) {

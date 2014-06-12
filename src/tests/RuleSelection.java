@@ -64,7 +64,7 @@ public class RuleSelection {
 	
 	@Test
 	public void testAndSelector1() {
-		FormationTree tree = compiler.compile("(rvp)∧(rvp)");
+		FormationTree tree = compiler.compile("(r∨p)∧(r∨p)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(0);
@@ -73,7 +73,7 @@ public class RuleSelection {
 		expected.set(14);
 		expected.set(15);
 		expected.set(16);
-		assertEquals("(rvs)∧(rvs)", bs, expected);
+		assertEquals("(r∨s)∧(r∨s)", bs, expected);
 	}
 	
 	@Test
@@ -111,17 +111,17 @@ public class RuleSelection {
 	
 	@Test
 	public void testOrSelector() {
-		FormationTree tree = compiler.compile("av(rvp)");
+		FormationTree tree = compiler.compile("a∨(r∨p)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(19);
 		expected.set(27);
-		assertEquals("av(rvp)", bs, expected);
+		assertEquals("a∨(r∨p)", bs, expected);
 	}
 	
 	@Test
 	public void testOrSelector1() {
-		FormationTree tree = compiler.compile("(r∧p)v(r∧p)");
+		FormationTree tree = compiler.compile("(r∧p)∨(r∧p)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(19);
@@ -130,17 +130,17 @@ public class RuleSelection {
 		expected.set(33);
 		expected.set(34);
 		expected.set(35);
-		assertEquals("(r∧p)v(r∧p)", bs, expected);
+		assertEquals("(r∧p)∨(r∧p)", bs, expected);
 	}
 	
 	@Test
 	public void testOrSelector2() {
-		FormationTree tree = compiler.compile("q→(rv(pvq))");
+		FormationTree tree = compiler.compile("q→(r∨(p∨q))");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(1, 1));
 		BitSet expected = new BitSet(noRules);
 		expected.set(19);
 		expected.set(27);
-		assertEquals("q→(rv(pvq))", bs, expected);
+		assertEquals("q→(r∨(p∨q))", bs, expected);
 	}
 	
 	/* TODO: Equivalences involving ¬
@@ -208,7 +208,7 @@ public class RuleSelection {
 	
 	@Test
 	public void testNotOrNot() {
-		FormationTree tree = compiler.compile("¬(av¬b)");
+		FormationTree tree = compiler.compile("¬(a∨¬b)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(42);
@@ -241,7 +241,7 @@ public class RuleSelection {
 
 	@Test
 	public void testNotOr() {
-		FormationTree tree = compiler.compile("¬(avb)");
+		FormationTree tree = compiler.compile("¬(a∨b)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(42);

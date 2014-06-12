@@ -15,9 +15,11 @@ public class ExprParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__4=1, T__3=2, T__2=3, T__1=4, T__0=5, BINOP=6, ATOM=7;
+		T__6=1, T__5=2, T__4=3, T__3=4, T__2=5, T__1=6, T__0=7, QUANTIFIER=8, 
+		PREDICATE=9, BINOP=10, ATOM=11;
 	public static final String[] tokenNames = {
-		"<INVALID>", "')'", "'('", "'→'", "'↔'", "'¬'", "BINOP", "ATOM"
+		"<INVALID>", "']'", "')'", "'['", "'('", "'→'", "'↔'", "'¬'", "QUANTIFIER", 
+		"PREDICATE", "BINOP", "ATOM"
 	};
 	public static final int
 		RULE_prog = 0, RULE_expr = 1;
@@ -156,6 +158,28 @@ public class ExprParser extends Parser {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitNOT(this);
 		}
 	}
+	public static class QUANTIFIER_Context extends ExprContext {
+		public TerminalNode ATOM(int i) {
+			return getToken(ExprParser.ATOM, i);
+		}
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
+		}
+		public List<TerminalNode> QUANTIFIER() { return getTokens(ExprParser.QUANTIFIER); }
+		public TerminalNode QUANTIFIER(int i) {
+			return getToken(ExprParser.QUANTIFIER, i);
+		}
+		public List<TerminalNode> ATOM() { return getTokens(ExprParser.ATOM); }
+		public QUANTIFIER_Context(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterQUANTIFIER_(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitQUANTIFIER_(this);
+		}
+	}
 	public static class ERRORContext extends ExprContext {
 		public ERRORContext(ExprContext ctx) { copyFrom(ctx); }
 		@Override
@@ -205,20 +229,21 @@ public class ExprParser extends Parser {
 		ExprContext _prevctx = _localctx;
 		int _startState = 2;
 		enterRecursionRule(_localctx, RULE_expr);
+		int _la;
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(15);
-			switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
+			setState(26);
+			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
 				_localctx = new NOTContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(7); match(5);
-				setState(8); expr(6);
+				setState(7); match(7);
+				setState(8); expr(7);
 				}
 				break;
 
@@ -227,22 +252,47 @@ public class ExprParser extends Parser {
 				_localctx = new EXPRContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(9); match(2);
+				setState(9); match(4);
 				setState(10); expr(0);
-				setState(11); match(1);
+				setState(11); match(2);
 				}
 				break;
 
 			case 3:
 				{
-				_localctx = new ATOM_Context(_localctx);
+				_localctx = new QUANTIFIER_Context(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(13); match(ATOM);
+				setState(17);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==QUANTIFIER) {
+					{
+					{
+					setState(13); match(QUANTIFIER);
+					setState(14); match(ATOM);
+					}
+					}
+					setState(19);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				setState(20); match(3);
+				setState(21); expr(0);
+				setState(22); match(1);
 				}
 				break;
 
 			case 4:
+				{
+				_localctx = new ATOM_Context(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(24); match(ATOM);
+				}
+				break;
+
+			case 5:
 				{
 				_localctx = new ERRORContext(_localctx);
 				_ctx = _localctx;
@@ -251,24 +301,24 @@ public class ExprParser extends Parser {
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(28);
+			setState(39);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			while ( _alt!=2 && _alt!=-1 ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(26);
-					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+					setState(37);
+					switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 					case 1:
 						{
 						_localctx = new BINOP_Context(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(17);
-						if (!(5 >= _localctx._p)) throw new FailedPredicateException(this, "5 >= $_p");
-						setState(18); match(BINOP);
-						setState(19); expr(6);
+						setState(28);
+						if (!(6 >= _localctx._p)) throw new FailedPredicateException(this, "6 >= $_p");
+						setState(29); match(BINOP);
+						setState(30); expr(7);
 						}
 						break;
 
@@ -276,10 +326,10 @@ public class ExprParser extends Parser {
 						{
 						_localctx = new IMPLIESContext(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(20);
+						setState(31);
 						if (!(4 >= _localctx._p)) throw new FailedPredicateException(this, "4 >= $_p");
-						setState(21); match(3);
-						setState(22); expr(5);
+						setState(32); match(5);
+						setState(33); expr(5);
 						}
 						break;
 
@@ -287,18 +337,18 @@ public class ExprParser extends Parser {
 						{
 						_localctx = new IFFContext(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(23);
+						setState(34);
 						if (!(3 >= _localctx._p)) throw new FailedPredicateException(this, "3 >= $_p");
-						setState(24); match(4);
-						setState(25); expr(4);
+						setState(35); match(6);
+						setState(36); expr(4);
 						}
 						break;
 					}
 					} 
 				}
-				setState(30);
+				setState(41);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			}
 			}
 		}
@@ -321,7 +371,7 @@ public class ExprParser extends Parser {
 	}
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return 5 >= _localctx._p;
+		case 0: return 6 >= _localctx._p;
 
 		case 1: return 4 >= _localctx._p;
 
@@ -331,16 +381,19 @@ public class ExprParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\t\"\4\2\t\2\4\3\t"+
-		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\22\n\3\3\3\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\7\3\35\n\3\f\3\16\3 \13\3\3\3\2\4\2\4\2\2%\2"+
-		"\6\3\2\2\2\4\21\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\7\2"+
-		"\2\n\22\5\4\3\2\13\f\7\4\2\2\f\r\5\4\3\2\r\16\7\3\2\2\16\22\3\2\2\2\17"+
-		"\22\7\t\2\2\20\22\3\2\2\2\21\b\3\2\2\2\21\13\3\2\2\2\21\17\3\2\2\2\21"+
-		"\20\3\2\2\2\22\36\3\2\2\2\23\24\6\3\2\3\24\25\7\b\2\2\25\35\5\4\3\2\26"+
-		"\27\6\3\3\3\27\30\7\5\2\2\30\35\5\4\3\2\31\32\6\3\4\3\32\33\7\6\2\2\33"+
-		"\35\5\4\3\2\34\23\3\2\2\2\34\26\3\2\2\2\34\31\3\2\2\2\35 \3\2\2\2\36\34"+
-		"\3\2\2\2\36\37\3\2\2\2\37\5\3\2\2\2 \36\3\2\2\2\5\21\34\36";
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\r-\4\2\t\2\4\3\t"+
+		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7\3\22\n\3\f\3\16\3\25"+
+		"\13\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\35\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\7\3(\n\3\f\3\16\3+\13\3\3\3\2\4\2\4\2\2\62\2\6\3\2\2\2\4\34\3\2"+
+		"\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\t\2\2\n\35\5\4\3\2\13\f"+
+		"\7\6\2\2\f\r\5\4\3\2\r\16\7\4\2\2\16\35\3\2\2\2\17\20\7\n\2\2\20\22\7"+
+		"\r\2\2\21\17\3\2\2\2\22\25\3\2\2\2\23\21\3\2\2\2\23\24\3\2\2\2\24\26\3"+
+		"\2\2\2\25\23\3\2\2\2\26\27\7\5\2\2\27\30\5\4\3\2\30\31\7\3\2\2\31\35\3"+
+		"\2\2\2\32\35\7\r\2\2\33\35\3\2\2\2\34\b\3\2\2\2\34\13\3\2\2\2\34\23\3"+
+		"\2\2\2\34\32\3\2\2\2\34\33\3\2\2\2\35)\3\2\2\2\36\37\6\3\2\3\37 \7\f\2"+
+		"\2 (\5\4\3\2!\"\6\3\3\3\"#\7\7\2\2#(\5\4\3\2$%\6\3\4\3%&\7\b\2\2&(\5\4"+
+		"\3\2\'\36\3\2\2\2\'!\3\2\2\2\'$\3\2\2\2(+\3\2\2\2)\'\3\2\2\2)*\3\2\2\2"+
+		"*\5\3\2\2\2+)\3\2\2\2\6\23\34\')";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

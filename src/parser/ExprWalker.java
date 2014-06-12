@@ -1,9 +1,10 @@
 package parser;
 
+import java.util.LinkedList;
+import java.util.Stack;
+
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.TerminalNode;
-
-import java.util.Stack;
 
 import treeBuilder.Atom;
 import treeBuilder.BinaryOperator;
@@ -61,7 +62,7 @@ public class ExprWalker extends ExprBaseListener {
 	@Override 
 	public void enterIFF(ExprParser.IFFContext ctx) {
 		addBinary();
-        tree.addNode(new BinaryOperator(key, depth(), "↔"));
+        tree.addNode(new BinaryOperator(key, depth(), "↔", null));
 	}
 
 	@Override 
@@ -72,18 +73,40 @@ public class ExprWalker extends ExprBaseListener {
     @Override 
     public void enterIMPLIES(ExprParser.IMPLIESContext ctx) {
         addBinary();
-        tree.addNode(new BinaryOperator(key, depth(), "→"));
+        tree.addNode(new BinaryOperator(key, depth(), "→", null));
     }
     
 	@Override 
 	public void exitIMPLIES(ExprParser.IMPLIESContext ctx) {
 		remove();
 	}
+	
+	@Override public void enterQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx) {
+		int i = 0;
+		String quantifier = ctx.getChild(i).getText();
+		String variable = ctx.getChild(i+1).getText();
+		
+		while (!quantifier.equals("[")) {
+			addUnary();
+
+			LinkedList<String> vars = new LinkedList<String>();
+	    	vars.add(variable);
+			tree.addNode(new UnaryOperator(key, depth(), quantifier, vars));
+			
+			i = i + 2;
+			quantifier = ctx.getChild(i).getText();
+			variable = ctx.getChild(i+1).getText();
+		}
+	}
+
+	@Override public void exitQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx) {
+		remove();
+	}
     
     @Override 
     public void enterNOT(ExprParser.NOTContext ctx) { 
         addUnary();
-        tree.addNode(new UnaryOperator(key, depth(), "¬"));
+        tree.addNode(new UnaryOperator(key, depth(), "¬", null));
     }
     
 	@Override public void exitNOT(ExprParser.NOTContext ctx) {
@@ -98,7 +121,7 @@ public class ExprWalker extends ExprBaseListener {
         int i = ctx.getText().indexOf(ctx.getChild(1).getText());
         String c = ctx.getText().charAt(i) + "";
         
-        tree.addNode(new BinaryOperator(key, depth(), c));
+        tree.addNode(new BinaryOperator(key, depth(), c, null));
     }
     
     @Override 
@@ -110,17 +133,19 @@ public class ExprWalker extends ExprBaseListener {
     public void enterATOM_(ExprParser.ATOM_Context ctx) { 
         addUnary();
     	TerminalNode e = ctx.ATOM();
-        tree.addNode(new Atom(key, depth(), e.getText()));
+    	String text = e.getText();
+    	String value = text.charAt(0) + "";
+    	
+    	LinkedList<String> vars = new LinkedList<String>();
+    	for (int i = 1; i < text.length(); ++i)
+    		vars.add(text.charAt(i) + "");
+    	
+        tree.addNode(new Atom(key, depth(), value, vars));
     }
     
 	@Override public void exitATOM_(ExprParser.ATOM_Context ctx) {
 		remove();
 	}
-	
-//	@Override public void enterERROR2(@NotNull ExprParser.ERROR2Context ctx) {
-//		tree.setErrorFlag(true);
-//		System.out.println("Error!!!");
-//	}
 	
 	@Override public void enterERROR(@NotNull ExprParser.ERRORContext ctx) {
 		tree.setErrorFlag(true);

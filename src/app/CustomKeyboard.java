@@ -51,8 +51,8 @@ class CustomKeyboard {
     private OnKeyboardActionListener mOnKeyboardActionListener = new OnKeyboardActionListener() {
 
         public final static int CodeHide 	= -3;
-        public final static int CodeTop 	= 55001;
-        public final static int CodeBot 	= 55002;
+        public final static int CodeLeft 	= 55004;
+        public final static int CodeRight 	= 55005;
         public final static int CodeUndo 	= 55006;
         public final static int CodeClear	= 55007;
 
@@ -69,13 +69,13 @@ class CustomKeyboard {
             int start = edittext.getSelectionStart();
             
             // Apply the key to the edittext
-            if (primaryCode == CodeTop)
-            	editable.insert(start, "┬");
-            else if (primaryCode == CodeBot)
-            	editable.insert(start, "⊥");
-            else if (primaryCode == CodeHide)
+            if (primaryCode == CodeLeft) {
+                if( start > 0 ) edittext.setSelection(start - 1);
+            } else if (primaryCode == CodeRight) {
+                if (start < edittext.length()) edittext.setSelection(start + 1);
+            } else if (primaryCode == CodeHide) {
                 hideCustomKeyboard();
-            else if (primaryCode == CodeClear) {
+            } else if (primaryCode == CodeClear) {
                 if( editable != null )
                 	editable.clear();
                 ((EnterEquivalencesActivity) mHostActivity).hideErrorMessage();

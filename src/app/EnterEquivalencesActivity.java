@@ -6,7 +6,6 @@ import treeManipulation.RuleEngine;
 import treeManipulation.TruthTable;
 import android.app.Activity;
 import android.content.Intent;
-import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -27,11 +26,9 @@ public class EnterEquivalencesActivity extends Activity {
 	private int percent;
 	
 	private String initialFormula;
+	private boolean firstOrder;
 
 	private static CustomKeyboard mCustomKeyboard;
-
-	static Activity activity;
-	static KeyboardView mKeyboardView;
 
 	private Compiler c;
 	private RuleEngine re;
@@ -44,20 +41,18 @@ public class EnterEquivalencesActivity extends Activity {
 		Intent intent = getIntent();
 		int difficulty = intent.getIntExtra(MainActivity.DIFFICULTY, 0);
 		percent = intent.getIntExtra(MainActivity.PERCENT, 50);
-		
-		System.out.println(percent);
+		firstOrder = intent.getBooleanExtra(MainActivity.FIRSTORDER, false);
 		
 		switch (difficulty) {
 		case 0: numVars = 3;
 				depth = 0;
 				numRules = 3;
-				System.out.println("Beginner");
 				break;
 		case 1: numVars = 5;
 				depth = 1;
 				numRules = 4;
 				break;
-		case 2: numVars = 10;
+		case 2: numVars = 6;
 				depth = 2;
 				numRules = 5;
 				break;
@@ -65,7 +60,11 @@ public class EnterEquivalencesActivity extends Activity {
 		
 		initialFormula = "";
 		
-		mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
+		if (firstOrder)
+			mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.firstorderkbd );
+		else		
+			mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
+		
 		mCustomKeyboard.registerEditText(R.id.start_equivalence);
 		mCustomKeyboard.registerEditText(R.id.end_equivalence);
 
@@ -102,18 +101,24 @@ public class EnterEquivalencesActivity extends Activity {
 				setErrorMessage("Incorrect syntax");
 			} else {
 				if (t1 != null && t2 != null) {
-					TruthTable tt1 = new TruthTable(t1);
-					TruthTable tt2 = new TruthTable(t2);
-
-					if (tt1.testEquivalence(tt2)) {
-						startEquivalence = t1.toString();
-						endEquivalence = t2.toString();
-						
+					if (firstOrder) {
 						intent.putExtra(START_EQUIVALENCE, startEquivalence);
 						intent.putExtra(END_EQUIVALENCE, endEquivalence);
 						startActivity(intent);
 					} else {
-						setErrorMessage("Not equivalent");
+						TruthTable tt1 = new TruthTable(t1);
+						TruthTable tt2 = new TruthTable(t2);
+	
+						if (tt1.testEquivalence(tt2)) {
+							startEquivalence = t1.toString();
+							endEquivalence = t2.toString();
+							
+							intent.putExtra(START_EQUIVALENCE, startEquivalence);
+							intent.putExtra(END_EQUIVALENCE, endEquivalence);
+							startActivity(intent);
+						} else {
+							setErrorMessage("Not equivalent");
+						}
 					}
 				}
 			}

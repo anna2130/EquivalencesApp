@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Random;
 
 public enum Variable {
-	A("a", 100), B("b", 100), C("c", 100), D("d", 100), E("e", 100), F("f", 100), 
-	G("g", 100), H("h", 10), I("i", 100), TRUTH("┬", 50), FALSE("⊥", 50);
+	U("u", 100), V("v", 100), W("w", 100), X("x", 100), Y("y", 100), Z("z", 100), 
+	TRUTH("┬", 50), FALSE("⊥", 50);
 
 	private String value;
 	private int weight;

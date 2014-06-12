@@ -24,32 +24,25 @@ public class Compiler {
 		binaryOps = new ArrayList<String>(Arrays.asList("∧", "∨", "→", "↔"));
 		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
 	}
-	
+
+	 /* 102: ∀x[e]	|-  ∀y[e{x->y}]
+	 * 103: ∃x[e]	|-  ∃y[e{x->y}]
+	 * 104: t		|- 	∀x[t]
+	 * 105: t		|- 	∃x[t]
+	 */
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 
-//		String s = compiler.generateRandomEquivalence(8, 2, 100);
-		String s = "v∧x→y";
+//		String s = "∀x∀y[Px→¬(Px→∃z[Qxyz])]";
+		String s = "∃x[e]";
 		FormationTree tree = compiler.compile(s);
+		System.out.println(tree.toTreeString());
 		
 		RuleEngine re = new RuleEngine();
+		re.applyRuleFromBitSet(103, tree, tree.findNode(0, 0), "y");
 		
-		re.applyRandomRules(tree, 3);
-		System.out.println("Done: " + s);
-//		String s1 = "pvq";
-//		String s2 = "avb";
-//		FormationTree tree1 = compiler.compile(s1);
-//		FormationTree tree2 = compiler.compile(s2);
-//		System.out.println(tree1);
-//
-//		TruthTable tt1 = new TruthTable(tree1);
-//		TruthTable tt2 = new TruthTable(tree2);
-//
-//		System.out.println();
-//		System.out.println(tt1);
-//		System.out.println(tt2);
-//		
-//		System.out.println(tt1.testEquivalence(tt2));
+		System.out.println("Done: " + tree.toTreeString());
+		System.out.println(tree);
 	}
 	
 	public FormationTree compile(String expr) {

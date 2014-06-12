@@ -26,7 +26,7 @@ public class EquivalenceGeneration {
 		n = 100;
 
 		variables = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "┬", "⊥"));
-		binaryOps = new ArrayList<String>(Arrays.asList("∧", "v", "→", "↔"));
+		binaryOps = new ArrayList<String>(Arrays.asList("∧", "∨", "→", "↔"));
 		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
 	}
 

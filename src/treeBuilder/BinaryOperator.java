@@ -1,6 +1,7 @@
 package treeBuilder;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.SortedSet;
 
 public class BinaryOperator extends Node {
@@ -8,8 +9,8 @@ public class BinaryOperator extends Node {
 	private Node leftChild;
 	private Node rightChild;
 	
-	public BinaryOperator(int key, int depth, String value) {
-		super(key, depth, value);
+	public BinaryOperator(int key, int depth, String value, LinkedList<String> vars) {
+		super(key, depth, value, vars);
 	}
 
 	public Node getLeftChild() {
@@ -84,7 +85,7 @@ public class BinaryOperator extends Node {
 
 	@Override
 	public Node clone() {
-		BinaryOperator clone = new BinaryOperator(getKey(), getDepth(), getValue());
+		BinaryOperator clone = new BinaryOperator(getKey(), getDepth(), getValue(), getVars());
 		
 		clone.setLeftChild(getLeftChild().clone());
 		clone.setRightChild(getRightChild().clone());
@@ -132,6 +133,20 @@ public class BinaryOperator extends Node {
 	@Override
 	public boolean isIff() {
 		return getValue().equals("↔");
+	}
+
+	// Binary connectives. x is free in (φ \rightarrow ψ) if and only if x is 
+	// free in either φ or ψ. 
+	// x is bound in (φ \rightarrow ψ) if and only if x is bound in either φ or ψ. 
+	// The same rule applies to any other binary connective in place of \rightarrow.
+	@Override
+	public boolean hasFree(String variable) {
+		return leftChild.hasFree(variable) || rightChild.hasFree(variable);
+	}
+
+	@Override
+	public boolean isBound(String variable) {
+		return leftChild.isBound(variable) || rightChild.isBound(variable);
 	}
 
 }

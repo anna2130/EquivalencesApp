@@ -1,5 +1,7 @@
 package treeManipulation;
 
+import java.util.LinkedList;
+
 import treeBuilder.Atom;
 import treeBuilder.BinaryOperator;
 import treeBuilder.FormationTree;
@@ -47,30 +49,38 @@ public class RuleApplicator {
 		relabelNode(parent);
 	}
 	
-	public Atom createNewAtom(String type) {
-		return new Atom(0, 0, type);
+	public Atom createNewAtom(String type, LinkedList<String> vars) {
+		return new Atom(0, 0, type, vars);
 	}
 	
 	public Atom createNewTop() {
-		return createNewAtom("┬");
+		return createNewAtom("┬", null);
 	}
 	
 	public Atom createNewBottom() {
-		return createNewAtom("⊥");
+		return createNewAtom("⊥", null);
 	}
 
-	public UnaryOperator createNewUnary(String type, Node child) {
-		UnaryOperator result = new UnaryOperator(0, 0, type);
+	public UnaryOperator createNewUnary(String type, Node child, LinkedList<String> vars) {
+		UnaryOperator result = new UnaryOperator(0, 0, type, vars);
 		result.setChild(child.clone());
 		return result;
 	}
 	
+	public UnaryOperator createNewAll(Node child, LinkedList<String> vars) {
+		return createNewUnary("∀", child, vars);
+	}
+	
+	public UnaryOperator createNewExists(Node child, LinkedList<String> vars) {
+		return createNewUnary("∃", child, vars);
+	}
+	
 	public UnaryOperator createNewNot(Node child) {
-		return createNewUnary("¬", child);
+		return createNewUnary("¬", child, null);
 	}
 	
 	public BinaryOperator createNewBinary(String type, Node leftChild, Node rightChild) {
-		BinaryOperator result = new BinaryOperator(0, 0, type);
+		BinaryOperator result = new BinaryOperator(0, 0, type, null);
 		result.setLeftChild(leftChild.clone());
 		result.setRightChild(rightChild.clone());
 		return result;
@@ -463,50 +473,50 @@ public class RuleApplicator {
 	
 	// 69. ⊥		|-  a∧⊥
 	public void applyAtomAndBottom(FormationTree tree, Node node, String atom) {
-		replaceNode(tree, node, createNewAnd(createNewAtom(atom), node));
+		replaceNode(tree, node, createNewAnd(createNewAtom(atom, null), node));
 	}
 	
 	// 70. ⊥		|-  a∧¬a
 	public void applyBottomToAndAtom(FormationTree tree, Node node, String atom) {
-		UnaryOperator not = createNewNot(createNewAtom(atom));
-		replaceNode(tree, node, createNewAnd(createNewAtom(atom), not));
+		UnaryOperator not = createNewNot(createNewAtom(atom, null));
+		replaceNode(tree, node, createNewAnd(createNewAtom(atom, null), not));
 	}
 	
 	// 71. ┬		|-  av┬
 	public void applyAtomOrTop(FormationTree tree, Node node, String atom) {
-		replaceNode(tree, node, createNewOr(createNewAtom(atom), node));
+		replaceNode(tree, node, createNewOr(createNewAtom(atom, null), node));
 	}
 	
 	// 72. ┬		|-  av¬a
 	public void applyTopToOrAtom(FormationTree tree, Node node, String atom) {
-		UnaryOperator not = createNewNot(createNewAtom(atom));
-		replaceNode(tree, node, createNewOr(createNewAtom(atom), not));
+		UnaryOperator not = createNewNot(createNewAtom(atom, null));
+		replaceNode(tree, node, createNewOr(createNewAtom(atom, null), not));
 	}
 	
 	// 73. ┬		|- 	a→a	
 	public void applyTopToImpliesAtom(FormationTree tree, Node node, String atom) {
-		replaceNode(tree, node, createNewImplies(createNewAtom(atom), createNewAtom(atom)));
+		replaceNode(tree, node, createNewImplies(createNewAtom(atom, null), createNewAtom(atom, null)));
 	}
 	
 	// 74. ┬		|- 	a→┬
 	public void applyTopToImpliesAtomTop(FormationTree tree, Node node, String atom) {
-		replaceNode(tree, node, createNewImplies(createNewAtom(atom), node));
+		replaceNode(tree, node, createNewImplies(createNewAtom(atom, null), node));
 	}
 	
 	// 75. ┬		|- 	⊥→a
 	public void applyTopToImpliesBottomAtom(FormationTree tree, Node node, String atom) {
-		replaceNode(tree, node, createNewImplies(createNewBottom(), createNewAtom(atom)));
+		replaceNode(tree, node, createNewImplies(createNewBottom(), createNewAtom(atom, null)));
 	}
 	
 	// 76. a		|-  av(a∧b)
 	public void applyAbsorptionOrBackwards(FormationTree tree, Node node, String atom) {
-		BinaryOperator and = createNewAnd(node, createNewAtom(atom));
+		BinaryOperator and = createNewAnd(node, createNewAtom(atom, null));
 		replaceNode(tree, node, createNewOr(node, and));
 	}
 	
 	// 77. a  		|-	a∧(avb)
 	public void applyAbsorptionAndBackwards(FormationTree tree, Node node, String atom) {
-		BinaryOperator or = createNewOr(node, createNewAtom(atom));
+		BinaryOperator or = createNewOr(node, createNewAtom(atom, null));
 		replaceNode(tree, node, createNewAnd(node, or));
 	}
 	
@@ -565,4 +575,181 @@ public class RuleApplicator {
 		rightChild.setLeftChild(node);
 		relabelNode(parent);
 	}
+
+	// 78. ∀x[¬e]   |- 	¬∃x[e]
+	public void applyAllComplementation(FormationTree tree,
+			UnaryOperator node) {
+		UnaryOperator not = (UnaryOperator) node.getChild();
+		Node child = not.getChild();
+		replaceNode(tree, node, createNewNot(createNewExists(child, node.getVars())));
+	}
+
+	// 79. ∀x∀y[e]	|-	∀y∀x[e]
+	public void applyAllSwapQuantifiers(FormationTree tree, UnaryOperator node) {
+		UnaryOperator inner = (UnaryOperator) node.getChild();
+		Node child = inner.getChild();
+		replaceNode(tree, node, createNewAll(createNewAll(child, node.getVars()), inner.getVars()));
+	}
+	
+	// 80. ∀x[e∧f] 	|- 	∀x[e]∧∀x[f]
+	public void applyAllDistrubutionOfQuantifiers(FormationTree tree,
+			UnaryOperator node) {
+		BinaryOperator and = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewAnd(createNewAll(and.getLeftChild(), 
+				node.getVars()), createNewAll(and.getRightChild(), node.getVars())));
+	}
+
+	// 81. ∀x[e∨t] 	|- 	∀x[e]∨t
+	public void applyAllDistrubutionOfQuantifiersWithNoFreeVariables(
+			FormationTree tree, UnaryOperator node) {
+		BinaryOperator or = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewOr(createNewAll(or.getLeftChild(), node.getVars()), or.getRightChild()));
+	}
+	
+	// 82. ∀x[e→t]  |-  ∃x[e]→t
+	// 90: ∃x[e→t]  |-  ∃x[e]→t
+	public void applyImpliesDistributionOfQuantifiersLeft(FormationTree tree,
+			UnaryOperator node) {
+		BinaryOperator implies = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewImplies(createNewExists(implies.getLeftChild(), node.getVars()), implies.getRightChild()));
+	}
+	
+	// 83. ∀x[t→e]	|-  t→∀x[e]
+	public void applyAllImpliesDistributionOfQuantifiersRight(FormationTree tree,
+			UnaryOperator node) {
+		BinaryOperator implies = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewImplies(implies.getLeftChild(), createNewAll(implies.getRightChild(), node.getVars())));
+	}
+
+	// 84: ∀x[t]	|-  t
+	// 92: ∃x[t]	|-  t
+	public void applySimplificationOfQuantifiers(FormationTree tree,
+			UnaryOperator node) {
+		replaceNode(tree, node, node.getChild());
+	}
+	
+	// 86: ∃x[¬e]  	|-	¬∀x[e]
+	public void applyExistsComplementation(FormationTree tree,
+			UnaryOperator node) {
+		UnaryOperator not = (UnaryOperator) node.getChild();
+		Node child = not.getChild();
+		replaceNode(tree, node, createNewNot(createNewAll(child, node.getVars())));
+	}
+
+	// 87: ∃x∃y[e] 	|-  ∃y∃x[e]
+	public void applyExistsSwapQuantifiers(FormationTree tree,
+			UnaryOperator node) {
+		UnaryOperator inner = (UnaryOperator) node.getChild();
+		Node child = inner.getChild();
+		replaceNode(tree, node, createNewExists(createNewExists(child, node.getVars()), inner.getVars()));
+	}
+
+	// 88: ∃x[e∨f]	|-  ∃x[e]∨∃x[f]
+	public void applyExistsDistributionOfQuantifiers(FormationTree tree,
+			UnaryOperator node) {
+		BinaryOperator or = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewOr(createNewExists(or.getLeftChild(), 
+				node.getVars()), createNewExists(or.getRightChild(), node.getVars())));
+	}
+
+	// 89: ∃x[e∧t]	|-  ∃x[e]∧t
+	public void applyExistsDistributionOfQuantifiersWithNoFreeVariables(
+			FormationTree tree, UnaryOperator node) {
+		BinaryOperator and = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewAnd(createNewExists(and.getLeftChild(), node.getVars()), and.getRightChild()));
+	}
+
+	// 91: ∃x[t→e]  |-  t→∃x[e]
+	public void applyExistsImpliesDistributionOfQuantifiersRight(
+			FormationTree tree, UnaryOperator node) {
+		BinaryOperator implies = (BinaryOperator) node.getChild();
+		replaceNode(tree, node, createNewImplies(implies.getLeftChild(), createNewExists(implies.getRightChild(), node.getVars())));
+	}
+	
+	// 93: ¬∀x[e]	|- 	∃x[¬e]
+	public void applyAllComplementationBackwards(FormationTree tree,
+			UnaryOperator node) {
+		Node child = ((UnaryOperator) node.getChild()).getChild();
+		replaceNode(tree, node, createNewExists(createNewNot(child), node.getChild().getVars()));
+	}
+
+	// 94: ¬∃x[e]	|-	∀x[¬e]
+	public void applyExistsComplementationBackwards(FormationTree tree,
+			UnaryOperator node) {
+		Node child = ((UnaryOperator) node.getChild()).getChild();
+		replaceNode(tree, node, createNewAll(createNewNot(child), node.getChild().getVars()));
+	}
+
+	// 95: ∀x[e]∧∀x[f] 	|-	∀x[e∧f]
+	public void applyAllDistributionOfQuantifiersBackwards(FormationTree tree,
+			BinaryOperator node) {
+		Node leftChild = ((UnaryOperator) node.getLeftChild()).getChild();
+		Node rightChild = ((UnaryOperator) node.getRightChild()).getChild();
+		replaceNode(tree, node, createNewAll(createNewAnd(leftChild, rightChild), node.getLeftChild().getVars()));
+	}
+
+	// 96: ∃x[e]∧t		|-  ∃x[e∧t]
+	public void applyExistsDistributionOfQuantifiersWithNoFreeVariablesBackwards(
+			FormationTree tree, BinaryOperator node) {
+		Node leftChild = ((UnaryOperator) node.getLeftChild()).getChild();
+		replaceNode(tree, node, createNewExists(createNewAnd(leftChild, node.getRightChild()), node.getLeftChild().getVars()));
+	}
+
+	// 97: ∀x[e]∨t		|- 	∀x[e∨t]
+	public void applyAllDistributionOfQuantifiersWithNoFreeVariablesBackwards(
+			FormationTree tree, BinaryOperator node) {
+		Node leftChild = ((UnaryOperator) node.getLeftChild()).getChild();
+		replaceNode(tree, node, createNewAll(createNewOr(leftChild, node.getRightChild()), node.getLeftChild().getVars()));
+	}
+
+	// 98: ∃x[e]∨∃x[f]	|- 	∃x[e∨f]
+	public void applyExistsDistributionOfQuantifiersBackwards(
+			FormationTree tree, BinaryOperator node) {
+		Node leftChild = ((UnaryOperator) node.getLeftChild()).getChild();
+		Node rightChild = ((UnaryOperator) node.getRightChild()).getChild();
+		replaceNode(tree, node, createNewExists(createNewOr(leftChild, rightChild), node.getLeftChild().getVars()));
+	}
+
+	// 99: ∃x[e]→t 	|- 	∀x[e→t]
+	public void applyAllImpliesDistributionBackwardsLeft(FormationTree tree,
+			BinaryOperator node) {
+		Node leftChild = ((UnaryOperator) node.getLeftChild()).getChild();
+		replaceNode(tree, node, createNewAll(createNewImplies(leftChild, node.getRightChild()), node.getLeftChild().getVars()));
+	}
+
+	// 100: t→∀x[e]	|- 	∀x[t→e]
+	public void applyAllImpliesDistributionBackwardsRight(FormationTree tree,
+			BinaryOperator node) {
+		Node rightChild = ((UnaryOperator) node.getRightChild()).getChild();
+		replaceNode(tree, node, createNewAll(createNewImplies(node.getLeftChild(), rightChild), node.getRightChild().getVars()));
+	}
+
+	// 101: ∃x[e]→t |- 	∃x[e→t]
+	public void applyExistsImpliesDistributionBackwards(FormationTree tree,
+			BinaryOperator node) {
+		Node leftChild = ((UnaryOperator) node.getLeftChild()).getChild();
+		replaceNode(tree, node, createNewExists(createNewImplies(leftChild, node.getRightChild()), node.getLeftChild().getVars()));
+	}
+
+	// 102: ∀x[e]	|-  ∀y[e{x->y}]
+	// 103: ∃x[e]	|-  ∃y[e{x->y}]
+	public void applyRenameVariable(FormationTree tree, UnaryOperator node,
+			String input) {
+		node.replaceVariable(node.getVars().peek(), input);
+	}
+
+	// 104: t		|- 	∀x[t]
+	public void applyAddAll(FormationTree tree, Node node, String input) {
+		LinkedList<String> vars = new LinkedList<String>();
+		vars.add(input);
+		replaceNode(tree, node, createNewAll(node, vars));
+	}
+
+	// 105: t		|- 	∃x[t]
+	public void applyAddOr(FormationTree tree, Node node, String input) {
+		LinkedList<String> vars = new LinkedList<String>();
+		vars.add(input);
+		replaceNode(tree, node, createNewExists(node, vars));
+	}
+	
 }

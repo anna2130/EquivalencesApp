@@ -19,6 +19,8 @@ public class MainActivity extends Activity {
 	= "app.DIFFICULTY";
 	public final static String PERCENT 
 	= "app.PERCENT";
+	public final static String FIRSTORDER 
+	= "app.FIRSTORDER";
 
 	private static SeekBar seekbar;
 	private int percent;
@@ -56,9 +58,16 @@ public class MainActivity extends Activity {
 	}
 
 	/** Called when the user clicks the Start button */
-	public void startPropositional(View view) {		
-		// Use intents to carry extra information to the activity
-		// such as the equivalences used
+	public void startPropositional(View view) {
+		startLogic(view, false);
+	}
+
+	/** Called when the user clicks the Start button */
+	public void startFirstOrder(View view) {
+		startLogic(view, true);
+	}
+	
+	public void startLogic(View view, boolean firstOrder) {
 		Intent intent = new Intent(this, EnterEquivalencesActivity.class);
 
 		Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -78,6 +87,7 @@ public class MainActivity extends Activity {
 
 		intent.putExtra(DIFFICULTY, difficulty);
 		intent.putExtra(PERCENT, percent);
+		intent.putExtra(FIRSTORDER, firstOrder);
 		startActivity(intent);
 	}
 
