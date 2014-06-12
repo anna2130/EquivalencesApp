@@ -48,26 +48,26 @@ public class RuleEngine {
 
 	/* The BitSet returns the rules applicable to a node in the order below:
 	 * 
-	 * Equivalences involving ^
-	 * 0.  a^b 			|- 	b^a				-- Commutativity
-	 * 1.  a^a			|-  a 				-- Idempotence
-	 * 2.  a^┬			|- 	a
-	 * 3.  ┬^a			|-  a
-	 * 4.  ⊥^a			|-  ⊥
-	 * 5.  a^⊥			|-  ⊥
-	 * 6.  a^¬a			|-  ⊥
-	 * 7.  ¬a^a			|-  ⊥				
-	 * 8.  a^(b^c)		|-  (a^b)^c			-- Associativity
-	 * 9.  (a^b)^c  	|- 	a^(b^c)			-- Associativity
-	 * 10. a^¬b 		|-	¬(a→b)
-	 * 11. (a→b)^(b→a)	|-  a↔b
-	 * 12. ¬a^¬b		|-	¬(avb)			-- De Morgan laws
-	 * 13. a^(bvc) 		|- 	(a^b)v(a^c)		-- Distributitivity
-	 * 14. (avb)^c		|-  (a^c)v(b^c)		-- Distributitivity
-	 * 15. (avb)^(avc)	|- 	av(b^c)			-- Distributitivity
-	 * 16. (avc)^(bvc)	|-	(a^b)vc			-- Distributitivity
-	 * 17. a^(avb)  	|-	a				-- Absoption
-	 * 18. (avb)^a  	|-	a				-- Absoption
+	 * Equivalences involving ∧
+	 * 0.  a∧b 			|- 	b∧a				-- Commutativity
+	 * 1.  a∧a			|-  a 				-- Idempotence
+	 * 2.  a∧┬			|- 	a
+	 * 3.  ┬∧a			|-  a
+	 * 4.  ⊥∧a			|-  ⊥
+	 * 5.  a∧⊥			|-  ⊥
+	 * 6.  a∧¬a			|-  ⊥
+	 * 7.  ¬a∧a			|-  ⊥				
+	 * 8.  a∧(b∧c)		|-  (a∧b)∧c			-- Associativity
+	 * 9.  (a∧b)∧c  	|- 	a∧(b∧c)			-- Associativity
+	 * 10. a∧¬b 		|-	¬(a→b)
+	 * 11. (a→b)∧(b→a)	|-  a↔b
+	 * 12. ¬a∧¬b		|-	¬(avb)			-- De Morgan laws
+	 * 13. a∧(bvc) 		|- 	(a∧b)v(a∧c)		-- Distributitivity
+	 * 14. (avb)∧c		|-  (a∧c)v(b∧c)		-- Distributitivity
+	 * 15. (avb)∧(avc)	|- 	av(b∧c)			-- Distributitivity
+	 * 16. (avc)∧(bvc)	|-	(a∧b)vc			-- Distributitivity
+	 * 17. a∧(avb)  	|-	a				-- Absoption
+	 * 18. (avb)∧a  	|-	a				-- Absoption
 	 * 
 	 * Equivalences involving v
 	 * 19. avb				|- 	bva				-- Commutativity
@@ -80,15 +80,15 @@ public class RuleEngine {
 	 * 26. ⊥va				|-  a
 	 * 27. av(bvc)			|-  (avb)vc			-- Associativity
 	 * 28. (avb)vc  		|- 	av(bvc)			-- Associativity
-	 * 29. (a^b)v(¬a^¬b)	|-	a↔b
-	 * 30. (a^¬b)v(¬a^b) 	|-  ¬(a↔b)
-	 * 31. ¬av¬b			|-  ¬(a^b)			-- De Morgan laws
-	 * 32. av(b^c)			|- 	(avb)^(avc)		-- Distributitivity
-	 * 33. (a^b)vc			|-	(avc)^(bvc)		-- Distributitivity
-	 * 34. (a^b)v(a^c) 		|- 	a^(bvc)			-- Distributitivity
-	 * 35. (a^c)v(b^c)		|-  (avb)^c			-- Distributitivity
-	 * 36. av(a^b)			|-  a				-- Absoption
-	 * 37. (a^b)va			|-  a				-- Absoption
+	 * 29. (a∧b)v(¬a∧¬b)	|-	a↔b
+	 * 30. (a∧¬b)v(¬a∧b) 	|-  ¬(a↔b)
+	 * 31. ¬av¬b			|-  ¬(a∧b)			-- De Morgan laws
+	 * 32. av(b∧c)			|- 	(avb)∧(avc)		-- Distributitivity
+	 * 33. (a∧b)vc			|-	(avc)∧(bvc)		-- Distributitivity
+	 * 34. (a∧b)v(a∧c) 		|- 	a∧(bvc)			-- Distributitivity
+	 * 35. (a∧c)v(b∧c)		|-  (avb)∧c			-- Distributitivity
+	 * 36. av(a∧b)			|-  a				-- Absoption
+	 * 37. (a∧b)va			|-  a				-- Absoption
 	 * 38. ¬avb				|- 	a→b
 	 * 
 	 * Equivalences involving ¬
@@ -96,13 +96,13 @@ public class RuleEngine {
 	 * 40. ¬⊥		|-  ┬
 	 * 41. ¬¬a 		|- 	a
 	 * 42. ¬a		|-  a→⊥
-	 * 43. ¬(a→b) 	|-	a^¬b
+	 * 43. ¬(a→b) 	|-	a∧¬b
 	 * 44. ¬(av¬b)	|- 	a→b
 	 * 45. ¬(a↔b) 	|- 	a↔¬b
 	 * 46. ¬(a↔b) 	|-  ¬a↔b
-	 * 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)	-- Exclusive or of a and b
-	 * 48. ¬(a^b)	|-  ¬av¬b			-- De Morgan laws
-	 * 49. ¬(avb)	|-	¬a^¬b			-- De Morgan laws
+	 * 47. ¬(a↔b) 	|-  (a∧¬b)v(¬a∧b)	-- Exclusive or of a and b
+	 * 48. ¬(a∧b)	|-  ¬av¬b			-- De Morgan laws
+	 * 49. ¬(avb)	|-	¬a∧¬b			-- De Morgan laws
 	 * 
 	 * Equivalences involving →
 	 * 50. a→a		|- 	┬
@@ -114,14 +114,14 @@ public class RuleEngine {
 	 * 56. a→b 		|- 	¬(av¬b)
 	 * 
 	 * Equivalences involving ↔
-	 * 57. a↔b		|-  (a→b)^(b→a)
-	 * 58. a↔b		|-	(a^b)v(¬a^¬b)
+	 * 57. a↔b		|-  (a→b)∧(b→a)
+	 * 58. a↔b		|-	(a∧b)v(¬a∧¬b)
 	 * 59. a↔¬b 	|- 	¬(a↔b)
 	 * 60. ¬a↔b 	|-  ¬(a↔b)
 	 * 
 	 * Equivalences involving atoms
-	 * 61. a		|-  a^a
-	 * 62. a		|-  a^┬
+	 * 61. a		|-  a∧a
+	 * 62. a		|-  a∧┬
 	 * 63. a		|-  ava
 	 * 64. a		|-  av⊥
 	 * 65. a		|-  ¬¬a
@@ -130,21 +130,21 @@ public class RuleEngine {
 	 * 68. ┬		|-  ¬⊥
 	 * 
 	 * Equivalences involving user input
-	 * 69. ⊥		|-  a^⊥
-	 * 70. ⊥		|-  a^¬a
+	 * 69. ⊥		|-  a∧⊥
+	 * 70. ⊥		|-  a∧¬a
 	 * 71. ┬		|-  av┬
 	 * 72. ┬		|-  av¬a
 	 * 73. ┬		|- 	a→a	
 	 * 74. ┬		|- 	a→┬
 	 * 75. ┬		|- 	⊥→a
-	 * 76. a		|-  av(a^b)
-	 * 77. a  		|-	a^(avb)
+	 * 76. a		|-  av(a∧b)
+	 * 77. a  		|-	a∧(avb)
 	 */
 
 	public BitSet getApplicableRules(FormationTree tree, Node node) {
 		BitSet bs = new BitSet(noRules);
 
-		// Equivalences involving ^
+		// Equivalences involving ∧
 		if (node.isAnd()) {
 			BinaryOperator binary = (BinaryOperator) node;
 			Node leftChild = binary.getLeftChild();
@@ -160,8 +160,8 @@ public class RuleEngine {
 			bs.set(5, rightChild.isBottom());
 			bs.set(6, rs.rightIsNotOfLeft(tree, binary));
 			bs.set(7, rs.leftIsNotOfRight(tree, binary));
-			bs.set(8, rs.isLeftAssociative(tree, binary, "^"));
-			bs.set(9, rs.isRightAssociative(tree, binary, "^"));
+			bs.set(8, rs.isLeftAssociative(tree, binary, "∧"));
+			bs.set(9, rs.isRightAssociative(tree, binary, "∧"));
 			bs.set(10, rightChild.isNot());
 			bs.set(11, leftChild.isImplies() && rightChild.isImplies() 
 					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[1])
@@ -177,7 +177,7 @@ public class RuleEngine {
 			bs.set(18, leftChild.isOr() && tree.equalSubTrees(leftGChildren[0], rightChild));
 		}
 
-		// Equivalences involving ^
+		// Equivalences involving ∧
 		else if (node.isOr()) {
 			BinaryOperator binary = (BinaryOperator) node;
 			Node leftChild = binary.getLeftChild();
@@ -193,8 +193,8 @@ public class RuleEngine {
 			bs.set(24, rs.leftIsNotOfRight(tree, binary));
 			bs.set(25, rightChild.isBottom());
 			bs.set(26, leftChild.isBottom());
-			bs.set(27, rs.isLeftAssociative(tree, binary, "v"));
-			bs.set(28, rs.isRightAssociative(tree, binary, "v"));
+			bs.set(27, rs.isLeftAssociative(tree, binary, "∨"));
+			bs.set(28, rs.isRightAssociative(tree, binary, "∨"));
 			bs.set(29, leftChild.isAnd() && rightChild.isAnd()
 					&& rightGChildren[0].isNot() && rightGChildren[1].isNot()
 					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])

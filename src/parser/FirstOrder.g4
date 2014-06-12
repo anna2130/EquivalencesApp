@@ -16,6 +16,5 @@ expr: '(' expr ')' 			#EXPR
 
 QUANTIFIER: ('∀' | '∃');
 PREDICATE: ('A'..'Z');
-FUNCTION: ('f'..'h');
-BINOP: ('^' | 'v');
+BINOP: ('^' | '∨');
 ATOM:  ('a'..'e' | 'i'..'r' | '┬' | '⊥');

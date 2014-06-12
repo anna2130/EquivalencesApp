@@ -21,14 +21,15 @@ public class Compiler {
 	private ArrayList<String> unaryOps;
 	
 	public Compiler() {
-		binaryOps = new ArrayList<String>(Arrays.asList("^", "v", "→", "↔"));
+		binaryOps = new ArrayList<String>(Arrays.asList("∧", "∨", "→", "↔"));
 		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
 	}
 	
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 
-		String s = compiler.generateRandomEquivalence(8, 2, 100);
+//		String s = compiler.generateRandomEquivalence(8, 2, 100);
+		String s = "v∧x→y";
 		FormationTree tree = compiler.compile(s);
 		
 		RuleEngine re = new RuleEngine();

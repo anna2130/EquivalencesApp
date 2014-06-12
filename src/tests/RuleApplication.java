@@ -28,231 +28,231 @@ public class RuleApplication {
 
 	// TODO: And tests
 	
-	// 0.  a^b 		|- 	b^a				-- Commutativity
+	// 0.  a∧b 		|- 	b∧a				-- Commutativity
 	@Test
 	public void testAndCommutativity() {
-		FormationTree tree = compiler.compile("q^p");
+		FormationTree tree = compiler.compile("q∧p");
 		ra.applyCommutativity((BinaryOperator) tree.findNode(0, 0));
-		assertEquals("q^p: ", tree.toTreeString(), "0-0: ^ (0-1: p, 1-1: q)");
+		assertEquals("q∧p: ", tree.toTreeString(), "0-0: ∧ (0-1: p, 1-1: q)");
 	}
 
 	@Test
 	public void testAndCommutativityComplex() {
-		FormationTree tree = compiler.compile("(¬q→r)^(pva)");
+		FormationTree tree = compiler.compile("(¬q→r)∧(pva)");
 		ra.applyCommutativity((BinaryOperator) tree.findNode(0, 0));
-		assertEquals("(¬q→r)^(pva): ", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: p, 1-2: a), 1-1: → (2-2: ¬ (4-3: q), 3-2: r))");
+		assertEquals("(¬q→r)∧(pva): ", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: p, 1-2: a), 1-1: → (2-2: ¬ (4-3: q), 3-2: r))");
 	}
 	
-	// 1.  a^a		|-  a 				-- Idempotence
+	// 1.  a∧a		|-  a 				-- Idempotence
 	@Test
 	public void testAndIdempotence() {
-		FormationTree tree = compiler.compile("p^p");
+		FormationTree tree = compiler.compile("p∧p");
 		ra.applyIdempotence(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("p^p: ", tree.toTreeString(), "0-0: p");
+		assertEquals("p∧p: ", tree.toTreeString(), "0-0: p");
 	}
 	
 	@Test
 	public void testAndIdempotenceComplex() {
-		FormationTree tree = compiler.compile("(¬q→r)^(¬q→r)");
+		FormationTree tree = compiler.compile("(¬q→r)∧(¬q→r)");
 		ra.applyIdempotence(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("(¬q→r)^(¬q→r): ", tree.toTreeString(), "0-0: → (0-1: ¬ (0-2: q), 1-1: r)");
+		assertEquals("(¬q→r)∧(¬q→r): ", tree.toTreeString(), "0-0: → (0-1: ¬ (0-2: q), 1-1: r)");
 	}
 
-	// 2.  a^┬		|- 	a
+	// 2.  a∧┬		|- 	a
 	// 25. av⊥		|-  a
 	@Test
 	public void testAndTop() {
-		FormationTree tree = compiler.compile("a^┬");
+		FormationTree tree = compiler.compile("a∧┬");
 		ra.applyToLeftChild(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: a");
 	}
 
-	// 3.  ┬^a		|-  a
+	// 3.  ┬∧a		|-  a
 	// 26. ⊥va		|-  a
 	// 51. ┬→a		|- 	a
 	@Test
 	public void testTopAnd() {
-		FormationTree tree = compiler.compile("┬^a");
+		FormationTree tree = compiler.compile("┬∧a");
 		ra.applyToRightChild(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: a");
 	}
 
 	@Test
 	public void testTopAndComplex() {
-		FormationTree tree = compiler.compile("┬^(av¬b)");
+		FormationTree tree = compiler.compile("┬∧(av¬b)");
 		ra.applyToRightChild(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: v (0-1: a, 1-1: ¬ (2-2: b))");
 	}
 	
-	// 4.  ⊥^a		|-  ⊥
-	// 5.  a^⊥		|-  ⊥
-	// 6.  a^¬a		|-  ⊥
-	// 7.  ¬a^a		|-  ⊥	
+	// 4.  ⊥∧a		|-  ⊥
+	// 5.  a∧⊥		|-  ⊥
+	// 6.  a∧¬a		|-  ⊥
+	// 7.  ¬a∧a		|-  ⊥	
 	@Test
 	public void testBottomAnd() {
-		FormationTree tree = compiler.compile("⊥^a");
+		FormationTree tree = compiler.compile("⊥∧a");
 		ra.applyToBottom(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: ⊥");
 	}
 	
-	// 8.  a^(b^c)		|-  (a^b)^c			-- Associativity
+	// 8.  a∧(b∧c)		|-  (a∧b)∧c			-- Associativity
 	@Test
 	public void testAndRightAssociativity() {
-		FormationTree tree = compiler.compile("(p^q)^r");
+		FormationTree tree = compiler.compile("(p∧q)∧r");
 		ra.applyRightAssociativity(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("(p^q)^r: ", tree.toTreeString(), "0-0: ^ (0-1: p, 1-1: ^ (2-2: q, 3-2: r))");
+		assertEquals("(p∧q)∧r: ", tree.toTreeString(), "0-0: ∧ (0-1: p, 1-1: ∧ (2-2: q, 3-2: r))");
 	}
 
 	@Test
 	public void testAndRightAssociativityComplex() {
-		FormationTree tree = compiler.compile("bv((¬p^q)^(r→a))");
+		FormationTree tree = compiler.compile("bv((¬p∧q)∧(r→a))");
 		ra.applyRightAssociativity(tree,(BinaryOperator) tree.findNode(1, 1));
-		assertEquals("bv((¬p^q)^(r→a)): ", tree.toTreeString(), "0-0: v (0-1: b, 1-1: ^ (2-2: ¬ (4-3: p), 3-2: ^ (6-3: q, 7-3: → (14-4: r, 15-4: a))))");
+		assertEquals("bv((¬p∧q)∧(r→a)): ", tree.toTreeString(), "0-0: v (0-1: b, 1-1: ∧ (2-2: ¬ (4-3: p), 3-2: ∧ (6-3: q, 7-3: → (14-4: r, 15-4: a))))");
 	}
 	
-	// 9.  (a^b)^c  	|- 	a^(b^c)			-- Associativity
+	// 9.  (a∧b)∧c  	|- 	a∧(b∧c)			-- Associativity
 	@Test
 	public void testAndLeftAssociativity() {
-		FormationTree tree = compiler.compile("p^(q^r)");
+		FormationTree tree = compiler.compile("p∧(q∧r)");
 		ra.applyLeftAssociativity(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("p^(q^r): ", tree.toTreeString(), "0-0: ^ (0-1: ^ (0-2: p, 1-2: q), 1-1: r)");
+		assertEquals("p∧(q∧r): ", tree.toTreeString(), "0-0: ∧ (0-1: ∧ (0-2: p, 1-2: q), 1-1: r)");
 	}
 
 	@Test
 	public void testAndLeftAssociativityComplex() {
-		FormationTree tree = compiler.compile("((r→a)^(¬p^q))vb");
+		FormationTree tree = compiler.compile("((r→a)∧(¬p∧q))vb");
 		ra.applyLeftAssociativity(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("((r→a)^(¬p^q))vb: ", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: ^ (0-3: → (0-4: r, 1-4: a), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: b)");
+		assertEquals("((r→a)∧(¬p∧q))vb: ", tree.toTreeString(), "0-0: v (0-1: ∧ (0-2: ∧ (0-3: → (0-4: r, 1-4: a), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: b)");
 	}
 	
-	// 10. a^¬b 		|-	¬(a→b)
+	// 10. a∧¬b 		|-	¬(a→b)
 	@Test
 	public void testAndNotToNotImplies() {
-		FormationTree tree = compiler.compile("a^¬b");
+		FormationTree tree = compiler.compile("a∧¬b");
 		ra.applyAndNotToNotImplies(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: ¬ (0-1: → (0-2: a, 1-2: b))");
 	}
 	
-	// 11. (a→b)^(b→a)	|-  a↔b
+	// 11. (a→b)∧(b→a)	|-  a↔b
 	@Test
 	public void testAndImpliesToIff() {
-		FormationTree tree = compiler.compile("(a→b)^(b→a)");
+		FormationTree tree = compiler.compile("(a→b)∧(b→a)");
 		ra.applyAndImpliesToIff(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: ↔ (0-1: a, 1-1: b)");
 	}
 	
-	// 12. ¬a^¬b		|-	¬(avb)			-- De Morgan laws
+	// 12. ¬a∧¬b		|-	¬(avb)			-- De Morgan laws
 	@Test
 	public void testDeMorganOrBackwards() {
-		FormationTree tree = compiler.compile("¬a^¬b");
+		FormationTree tree = compiler.compile("¬a∧¬b");
 		ra.applyDeMorganOrBackwards(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: a, 1-2: b))");
 	}
 	
-	// 13. a^(bvc) 		|- 	(a^b)v(a^c)		-- Distributitivity
+	// 13. a∧(bvc) 		|- 	(a∧b)v(a∧c)		-- Distributitivity
 	@Test
 	public void testDistributivityAndLeftForwards() {
-		FormationTree tree = compiler.compile("a^(bvc)");
+		FormationTree tree = compiler.compile("a∧(bvc)");
 		ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "(a^b)v(a^c)");
+		assertEquals("", tree.toString(), "(a∧b)v(a∧c)");
 	}
 	
-	// 14. (avb)^c		|-  (a^c)v(b^c)		-- Distributitivity
+	// 14. (avb)∧c		|-  (a∧c)v(b∧c)		-- Distributitivity
 	@Test
 	public void testDistributivityAndRightForwards() {
-		FormationTree tree = compiler.compile("(avb)^c");
+		FormationTree tree = compiler.compile("(avb)∧c");
 		ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "(a^c)v(b^c)");
+		assertEquals("", tree.toString(), "(a∧c)v(b∧c)");
 	}
 	
-	// 15. (avb)^(avc)	|- 	av(b^c)			-- Distributitivity
+	// 15. (avb)∧(avc)	|- 	av(b∧c)			-- Distributitivity
 	@Test
 	public void testDistributivityOrLeftBackwards() {
-		FormationTree tree = compiler.compile("(avb)^(avc)");
+		FormationTree tree = compiler.compile("(avb)∧(avc)");
 		ra.applyDistributivityOrLeftBackwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "av(b^c)");
+		assertEquals("", tree.toString(), "av(b∧c)");
 	}
 	
-	// 16. (avc)^(bvc)	|-	(a^b)vc			-- Distributitivity
+	// 16. (avc)∧(bvc)	|-	(a∧b)vc			-- Distributitivity
 	@Test
 	public void testDistributivityOrRightBackwards() {
-		FormationTree tree = compiler.compile("(avc)^(bvc)");
+		FormationTree tree = compiler.compile("(avc)∧(bvc)");
 		ra.applyDistributivityOrRightBackwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "(a^b)vc");
+		assertEquals("", tree.toString(), "(a∧b)vc");
 	}
 	
-	// 17. a^(avb)  	|-	a				-- Absoption
+	// 17. a∧(avb)  	|-	a				-- Absoption
 	@Test
 	public void applyLeftAbsorption() {
-		FormationTree tree = compiler.compile("a^(avb)");
+		FormationTree tree = compiler.compile("a∧(avb)");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toString(), "a");
 	}
 	
-	// 18. (avb)^a  	|-	a				-- Absoption
+	// 18. (avb)∧a  	|-	a				-- Absoption
 	@Test
 	public void applyRightAbsorption() {
-		FormationTree tree = compiler.compile("(avb)^a");
+		FormationTree tree = compiler.compile("(avb)∧a");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toString(), "a");
 	}
 	
-	// A^(BvC) 	|- 	(A^B)v(A^C)
+	// A∧(BvC) 	|- 	(A∧B)v(A∧C)
 	@Test
 	public void testDistributivityAndLeftRoot() {
-		FormationTree tree = compiler.compile("a^(bvc)");
+		FormationTree tree = compiler.compile("a∧(bvc)");
 		ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a^(bvc)", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: a, 1-2: b), 1-1: ^ (2-2: a, 3-2: c))");
+		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: v (0-1: ∧ (0-2: a, 1-2: b), 1-1: ∧ (2-2: a, 3-2: c))");
 	}
 
 	@Test
 	public void testDistributivityAndLeftUnary() {
-		FormationTree tree = compiler.compile("¬(a^(bvc))");
+		FormationTree tree = compiler.compile("¬(a∧(bvc))");
 		ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬a^(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ^ (0-3: a, 1-3: b), 1-2: ^ (2-3: a, 3-3: c)))");
+		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ∧ (0-3: a, 1-3: b), 1-2: ∧ (2-3: a, 3-3: c)))");
 	}
 	
 	@Test
 	public void testDistributivityAndLeftBinaryLeft() {
-		FormationTree tree = compiler.compile("(a^(bvc))^a");
+		FormationTree tree = compiler.compile("(a∧(bvc))∧a");
 		ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a^(bvc))^a", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: ^ (0-3: a, 1-3: b), 1-2: ^ (2-3: a, 3-3: c)), 1-1: a)");
+		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ∧ (0-3: a, 1-3: b), 1-2: ∧ (2-3: a, 3-3: c)), 1-1: a)");
 	}
 	
 	@Test
 	public void testDistributivityAndLeftBinaryRight() {
-		FormationTree tree = compiler.compile("a^(a^(bvc))");
+		FormationTree tree = compiler.compile("a∧(a∧(bvc))");
 		ra.applyDistributivityAndLeftForwards(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a^(bvc))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: v (2-2: ^ (4-3: a, 5-3: b), 3-2: ^ (6-3: a, 7-3: c)))");
+		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: v (2-2: ∧ (4-3: a, 5-3: b), 3-2: ∧ (6-3: a, 7-3: c)))");
 	}
 
-	// (AvB)^C	|-  (A^C)v(B^C)
+	// (AvB)∧C	|-  (A∧C)v(B∧C)
 	@Test
 	public void testDistributivityAndRightRoot() {
-		FormationTree tree = compiler.compile("(avb)^c");
+		FormationTree tree = compiler.compile("(avb)∧c");
 		ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a^(bvc)", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: a, 1-2: c), 1-1: ^ (2-2: b, 3-2: c))");
+		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: v (0-1: ∧ (0-2: a, 1-2: c), 1-1: ∧ (2-2: b, 3-2: c))");
 	}
 
 	@Test
 	public void testDistributivityAndRightUnary() {
-		FormationTree tree = compiler.compile("¬((avb)^c)");
+		FormationTree tree = compiler.compile("¬((avb)∧c)");
 		ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬a^(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ^ (0-3: a, 1-3: c), 1-2: ^ (2-3: b, 3-3: c)))");
+		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ∧ (0-3: a, 1-3: c), 1-2: ∧ (2-3: b, 3-3: c)))");
 	}
 	
 	@Test
 	public void testDistributivityAndRightBinaryLeft() {
-		FormationTree tree = compiler.compile("((avb)^c)^a");
+		FormationTree tree = compiler.compile("((avb)∧c)∧a");
 		ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a^(bvc))^a", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: ^ (0-3: a, 1-3: c), 1-2: ^ (2-3: b, 3-3: c)), 1-1: a)");
+		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ∧ (0-3: a, 1-3: c), 1-2: ∧ (2-3: b, 3-3: c)), 1-1: a)");
 	}
 	
 	@Test
 	public void testDistributivityAndRightBinaryRight() {
-		FormationTree tree = compiler.compile("a^((avb)^c)");
+		FormationTree tree = compiler.compile("a∧((avb)∧c)");
 		ra.applyDistributivityAndRightForwards(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a^(bvc))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: v (2-2: ^ (4-3: a, 5-3: c), 3-2: ^ (6-3: b, 7-3: c)))");
+		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: v (2-2: ∧ (4-3: a, 5-3: c), 3-2: ∧ (6-3: b, 7-3: c)))");
 	}
 
 	// TODO: Or tests
@@ -308,9 +308,9 @@ public class RuleApplication {
 
 	@Test
 	public void testOrLeftAssociativityComplex() {
-		FormationTree tree = compiler.compile("((r→a)v(¬pvq))^b");
+		FormationTree tree = compiler.compile("((r→a)v(¬pvq))∧b");
 		ra.applyLeftAssociativity(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("((r→a)v(¬pvq))^b: ", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: v (0-3: → (0-4: r, 1-4: a), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: b)");
+		assertEquals("((r→a)v(¬pvq))∧b: ", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: v (0-3: → (0-4: r, 1-4: a), 1-3: ¬ (2-4: p)), 1-2: q), 1-1: b)");
 	}
 
 	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
@@ -323,107 +323,107 @@ public class RuleApplication {
 
 	@Test
 	public void testOrRightAssociativityComplex() {
-		FormationTree tree = compiler.compile("b^((¬pvq)v(r→a))");
+		FormationTree tree = compiler.compile("b∧((¬pvq)v(r→a))");
 		ra.applyRightAssociativity(tree,(BinaryOperator) tree.findNode(1, 1));
-		assertEquals("b^((¬pvq)v(r→a)): ", tree.toTreeString(), "0-0: ^ (0-1: b, 1-1: v (2-2: ¬ (4-3: p), 3-2: v (6-3: q, 7-3: → (14-4: r, 15-4: a))))");
+		assertEquals("b∧((¬pvq)v(r→a)): ", tree.toTreeString(), "0-0: ∧ (0-1: b, 1-1: v (2-2: ¬ (4-3: p), 3-2: v (6-3: q, 7-3: → (14-4: r, 15-4: a))))");
 	}
 	
-	// 29. (a^b)v(¬a^¬b)	|-	a↔b
+	// 29. (a∧b)v(¬a∧¬b)	|-	a↔b
 	@Test
 	public void applyOrAndToIff() {
-		FormationTree tree = compiler.compile("(a^b)v(¬a^¬b)");
+		FormationTree tree = compiler.compile("(a∧b)v(¬a∧¬b)");
 		ra.applyOrAndToIff(tree,(BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toString(), "a↔b");
 	}
 	
-	// 30. (a^¬b)v(¬a^b) 	|-  ¬(a↔b)
+	// 30. (a∧¬b)v(¬a∧b) 	|-  ¬(a↔b)
 	@Test
 	public void applyOrAndToNotIff() {
-		FormationTree tree = compiler.compile("(a^¬b)v(¬a^b)");
+		FormationTree tree = compiler.compile("(a∧¬b)v(¬a∧b)");
 		ra.applyOrAndToNotIff(tree,(BinaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toString(), "¬(a↔b)");
 	}
 	
-	// 31. ¬av¬b			|-  ¬(a^b)
+	// 31. ¬av¬b			|-  ¬(a∧b)
 	@Test
 	public void applyDeMorganAndBackwards() {
 		FormationTree tree = compiler.compile("¬av¬b");
 		ra.applyDeMorganAndBackwards(tree,(BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "¬(a^b)");
+		assertEquals("", tree.toString(), "¬(a∧b)");
 	}
 	
-	// Av(B^C)	|- 	(AvB)^(AvC)
+	// Av(B∧C)	|- 	(AvB)∧(AvC)
 	@Test
 	public void testDistributivityOrLeftRoot() {
-		FormationTree tree = compiler.compile("av(b^c)");
+		FormationTree tree = compiler.compile("av(b∧c)");
 		ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a^(bvc)", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: a, 1-2: b), 1-1: v (2-2: a, 3-2: c))");
+		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: a, 1-2: b), 1-1: v (2-2: a, 3-2: c))");
 	}
 
 	@Test
 	public void testDistributivityOrLeftUnary() {
-		FormationTree tree = compiler.compile("¬(av(b^c))");
+		FormationTree tree = compiler.compile("¬(av(b∧c))");
 		ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬a^(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: ^ (0-2: v (0-3: a, 1-3: b), 1-2: v (2-3: a, 3-3: c)))");
+		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: ∧ (0-2: v (0-3: a, 1-3: b), 1-2: v (2-3: a, 3-3: c)))");
 	}
 	
 	@Test
 	public void testDistributivityOrLeftBinaryLeft() {
-		FormationTree tree = compiler.compile("(av(b^c))^a");
+		FormationTree tree = compiler.compile("(av(b∧c))∧a");
 		ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a^(bvc))^a", tree.toTreeString(), "0-0: ^ (0-1: ^ (0-2: v (0-3: a, 1-3: b), 1-2: v (2-3: a, 3-3: c)), 1-1: a)");
+		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: ∧ (0-2: v (0-3: a, 1-3: b), 1-2: v (2-3: a, 3-3: c)), 1-1: a)");
 	}
 	
 	@Test
 	public void testDistributivityOrLeftBinaryRight() {
-		FormationTree tree = compiler.compile("a^(av(b^c))");
+		FormationTree tree = compiler.compile("a∧(av(b∧c))");
 		ra.applyDistributivityOrLeftForwards(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a^(bvc))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ^ (2-2: v (4-3: a, 5-3: b), 3-2: v (6-3: a, 7-3: c)))");
+		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ∧ (2-2: v (4-3: a, 5-3: b), 3-2: v (6-3: a, 7-3: c)))");
 	}
 
-	// (A^B)vC	|-	(AvC)^(BvC)
+	// (A∧B)vC	|-	(AvC)∧(BvC)
 	@Test
 	public void testDistributivityOrRightRoot() {
-		FormationTree tree = compiler.compile("(a^b)vc");
+		FormationTree tree = compiler.compile("(a∧b)vc");
 		ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a^(bvc)", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: a, 1-2: c), 1-1: v (2-2: b, 3-2: c))");
+		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: a, 1-2: c), 1-1: v (2-2: b, 3-2: c))");
 	}
 
 	@Test
 	public void testDistributivityOrRightUnary() {
-		FormationTree tree = compiler.compile("¬((a^b)vc)");
+		FormationTree tree = compiler.compile("¬((a∧b)vc)");
 		ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬a^(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: ^ (0-2: v (0-3: a, 1-3: c), 1-2: v (2-3: b, 3-3: c)))");
+		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: ∧ (0-2: v (0-3: a, 1-3: c), 1-2: v (2-3: b, 3-3: c)))");
 	}
 	
 	@Test
 	public void testDistributivityOrRightBinaryLeft() {
-		FormationTree tree = compiler.compile("((a^b)vc)^a");
+		FormationTree tree = compiler.compile("((a∧b)vc)∧a");
 		ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a^(bvc))^a", tree.toTreeString(), "0-0: ^ (0-1: ^ (0-2: v (0-3: a, 1-3: c), 1-2: v (2-3: b, 3-3: c)), 1-1: a)");
+		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: ∧ (0-2: v (0-3: a, 1-3: c), 1-2: v (2-3: b, 3-3: c)), 1-1: a)");
 	}
 	
 	@Test
 	public void testDistributivityOrRightBinaryRight() {
-		FormationTree tree = compiler.compile("a^((a^b)vc)");
+		FormationTree tree = compiler.compile("a∧((a∧b)vc)");
 		ra.applyDistributivityOrRightForwards(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a^(bvc))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ^ (2-2: v (4-3: a, 5-3: c), 3-2: v (6-3: b, 7-3: c)))");
+		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ∧ (2-2: v (4-3: a, 5-3: c), 3-2: v (6-3: b, 7-3: c)))");
 	}
 	
-	// 34. (a^b)v(a^c) 		|- 	a^(bvc)		-- Distributitivity
+	// 34. (a∧b)v(a∧c) 		|- 	a∧(bvc)		-- Distributitivity
 	@Test
 	public void applyDistributivityAndLeftBackwards() {
-		FormationTree tree = compiler.compile("(a^b)v(a^c)");
+		FormationTree tree = compiler.compile("(a∧b)v(a∧c)");
 		ra.applyDistributivityAndLeftBackwards(tree,(BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "a^(bvc)");
+		assertEquals("", tree.toString(), "a∧(bvc)");
 	}
 	
-	// 35. (a^c)v(b^c)		|-  (avb)^c		-- Distributitivity
+	// 35. (a∧c)v(b∧c)		|-  (avb)∧c		-- Distributitivity
 	@Test
 	public void applyDistributivityAndRightBackwards() {
-		FormationTree tree = compiler.compile("(a^c)v(b^c)");
+		FormationTree tree = compiler.compile("(a∧c)v(b∧c)");
 		ra.applyDistributivityAndRightBackwards(tree,(BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "(avb)^c");
+		assertEquals("", tree.toString(), "(avb)∧c");
 	}
 	
 	// 38. ¬avb				|- 	a→b
@@ -469,16 +469,16 @@ public class RuleApplication {
 	
 	@Test
 	public void testNotNotBinaryLeft() {
-		FormationTree tree = compiler.compile("¬¬a^b");
+		FormationTree tree = compiler.compile("¬¬a∧b");
 		ra.applyNotNot(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬¬a^b", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: b)");
+		assertEquals("¬¬a∧b", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: b)");
 	}
 	
 	@Test
 	public void testNotNotBinaryRight() {
-		FormationTree tree = compiler.compile("b^¬¬a");
+		FormationTree tree = compiler.compile("b∧¬¬a");
 		ra.applyNotNot(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("b^¬¬a", tree.toTreeString(), "0-0: ^ (0-1: b, 1-1: a)");
+		assertEquals("b∧¬¬a", tree.toTreeString(), "0-0: ∧ (0-1: b, 1-1: a)");
 	}
 	
 	// 42. ¬a		|-  a→⊥
@@ -489,39 +489,39 @@ public class RuleApplication {
 		assertEquals("", tree.toString(), "a→⊥");
 	}
 	
-	// 43. ¬(a→b) 	|-	a^¬b
+	// 43. ¬(a→b) 	|-	a∧¬b
 	@Test
 	public void testNotImpilesRoot() {
 		FormationTree tree = compiler.compile("¬(a→b)");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 0));
-		assertEquals("a→b", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ¬ (2-2: b))");
+		assertEquals("a→b", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ¬ (2-2: b))");
 	}
 
 	@Test
 	public void testNotImpilesUnary() {
 		FormationTree tree = compiler.compile("¬¬(a→b)");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬(a→b)", tree.toTreeString(), "0-0: ¬ (0-1: ^ (0-2: a, 1-2: ¬ (2-3: b)))");
+		assertEquals("¬(a→b)", tree.toTreeString(), "0-0: ¬ (0-1: ∧ (0-2: a, 1-2: ¬ (2-3: b)))");
 	}
 	
 	@Test
 	public void testNotImpilesBinaryLeft() {
-		FormationTree tree = compiler.compile("¬(a→b)^a");
+		FormationTree tree = compiler.compile("¬(a→b)∧a");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("(a→b)^a", tree.toTreeString(), "0-0: ^ (0-1: ^ (0-2: a, 1-2: ¬ (2-3: b)), 1-1: a)");
+		assertEquals("(a→b)∧a", tree.toTreeString(), "0-0: ∧ (0-1: ∧ (0-2: a, 1-2: ¬ (2-3: b)), 1-1: a)");
 	}
 	
 	@Test
 	public void testNotImpilesBinaryRight() {
-		FormationTree tree = compiler.compile("a^¬(a→b)");
+		FormationTree tree = compiler.compile("a∧¬(a→b)");
 		ra.applyNotImplies(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a→b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ^ (2-2: a, 3-2: ¬ (6-3: b)))");
+		assertEquals("a∧(a→b)", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ∧ (2-2: a, 3-2: ¬ (6-3: b)))");
 	}
 
-	// 44. ¬(a^¬b)	|- 	a→b
+	// 44. ¬(a∧¬b)	|- 	a→b
 	@Test
 	public void applyNotOrToImplies() {
-		FormationTree tree = compiler.compile("¬(a^¬b)");
+		FormationTree tree = compiler.compile("¬(a∧¬b)");
 		ra.applyNotAndToImplies(tree,(UnaryOperator) tree.findNode(0, 0));
 		assertEquals("", tree.toString(), "a→b");
 	}
@@ -544,16 +544,16 @@ public class RuleApplication {
 	
 	@Test
 	public void testNotIffToNotBBinaryLeft() {
-		FormationTree tree = compiler.compile("(¬(a↔b))^a");
+		FormationTree tree = compiler.compile("(¬(a↔b))∧a");
 		ra.applyNotIffToNotB(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("(¬(a↔b))^a", tree.toTreeString(), "0-0: ^ (0-1: ↔ (0-2: a, 1-2: ¬ (2-3: b)), 1-1: a)");
+		assertEquals("(¬(a↔b))∧a", tree.toTreeString(), "0-0: ∧ (0-1: ↔ (0-2: a, 1-2: ¬ (2-3: b)), 1-1: a)");
 	}
 	
 	@Test
 	public void testNotIffToNotBBinaryRight() {
-		FormationTree tree = compiler.compile("a^(¬(a↔b))");
+		FormationTree tree = compiler.compile("a∧(¬(a↔b))");
 		ra.applyNotIffToNotB(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(¬(a↔b))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ↔ (2-2: a, 3-2: ¬ (6-3: b)))");
+		assertEquals("a∧(¬(a↔b))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ↔ (2-2: a, 3-2: ¬ (6-3: b)))");
 	}
 	
 	// 46. ¬(a↔b) 	|-  ¬a↔b
@@ -573,103 +573,103 @@ public class RuleApplication {
 	
 	@Test
 	public void testNotIffToNotABinaryLeft() {
-		FormationTree tree = compiler.compile("(¬(a↔b))^a");
+		FormationTree tree = compiler.compile("(¬(a↔b))∧a");
 		ra.applyNotIffToNotA(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("(¬(a↔b))^a", tree.toTreeString(), "0-0: ^ (0-1: ↔ (0-2: ¬ (0-3: a), 1-2: b), 1-1: a)");
+		assertEquals("(¬(a↔b))∧a", tree.toTreeString(), "0-0: ∧ (0-1: ↔ (0-2: ¬ (0-3: a), 1-2: b), 1-1: a)");
 	}
 	
 	@Test
 	public void testNotIffToNotABinaryRight() {
-		FormationTree tree = compiler.compile("a^(¬(a↔b))");
+		FormationTree tree = compiler.compile("a∧(¬(a↔b))");
 		ra.applyNotIffToNotA(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(¬(a↔b))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ↔ (2-2: ¬ (4-3: a), 3-2: b))");
+		assertEquals("a∧(¬(a↔b))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ↔ (2-2: ¬ (4-3: a), 3-2: b))");
 	}
 	
-	// 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)
+	// 47. ¬(a↔b) 	|-  (a∧¬b)v(¬a∧b)
 	@Test
 	public void testNotIffToOrAndRoot() {
 		FormationTree tree = compiler.compile("¬(a↔b)");
 		ra.applyNotIffToOrAnd(tree, (UnaryOperator) tree.findNode(0, 0));
-		assertEquals("¬(a↔b)", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: a, 1-2: ¬ (2-3: b)), 1-1: ^ (2-2: ¬ (4-3: a), 3-2: b))");
+		assertEquals("¬(a↔b)", tree.toTreeString(), "0-0: v (0-1: ∧ (0-2: a, 1-2: ¬ (2-3: b)), 1-1: ∧ (2-2: ¬ (4-3: a), 3-2: b))");
 	}
 
 	@Test
 	public void testNotIffToOrAndUnary() {
 		FormationTree tree = compiler.compile("¬¬(a↔b)");
 		ra.applyNotIffToOrAnd(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬¬(a↔b)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ^ (0-3: a, 1-3: ¬ (2-4: b)), 1-2: ^ (2-3: ¬ (4-4: a), 3-3: b)))");
+		assertEquals("¬¬(a↔b)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ∧ (0-3: a, 1-3: ¬ (2-4: b)), 1-2: ∧ (2-3: ¬ (4-4: a), 3-3: b)))");
 	}
 	
 	@Test
 	public void testNotIffToOrAndBinaryLeft() {
-		FormationTree tree = compiler.compile("(¬(a↔b))^a");
+		FormationTree tree = compiler.compile("(¬(a↔b))∧a");
 		ra.applyNotIffToOrAnd(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("(¬(a↔b))^a", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: ^ (0-3: a, 1-3: ¬ (2-4: b)), 1-2: ^ (2-3: ¬ (4-4: a), 3-3: b)), 1-1: a)");
+		assertEquals("(¬(a↔b))∧a", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ∧ (0-3: a, 1-3: ¬ (2-4: b)), 1-2: ∧ (2-3: ¬ (4-4: a), 3-3: b)), 1-1: a)");
 	}
 	
 	@Test
 	public void testNotIffToOrAndBinaryRight() {
-		FormationTree tree = compiler.compile("a^(¬(a↔b))");
+		FormationTree tree = compiler.compile("a∧(¬(a↔b))");
 		ra.applyNotIffToOrAnd(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(¬(a↔b))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: v (2-2: ^ (4-3: a, 5-3: ¬ (10-4: b)), 3-2: ^ (6-3: ¬ (12-4: a), 7-3: b)))");
+		assertEquals("a∧(¬(a↔b))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: v (2-2: ∧ (4-3: a, 5-3: ¬ (10-4: b)), 3-2: ∧ (6-3: ¬ (12-4: a), 7-3: b)))");
 	}
 	
-	// 48. ¬(a^b)	|-  ¬av¬b
+	// 48. ¬(a∧b)	|-  ¬av¬b
 	@Test
 	public void testDeMorgansAndRoot() {
-		FormationTree tree = compiler.compile("¬(a^b)");
+		FormationTree tree = compiler.compile("¬(a∧b)");
 		ra.applyDeMorganAndForwards(tree, (UnaryOperator) tree.findNode(0, 0));
-		assertEquals("¬(a^b)", tree.toTreeString(), "0-0: v (0-1: ¬ (0-2: a), 1-1: ¬ (2-2: b))");
+		assertEquals("¬(a∧b)", tree.toTreeString(), "0-0: v (0-1: ¬ (0-2: a), 1-1: ¬ (2-2: b))");
 	}
 
 	@Test
 	public void testDeMorgansAndUnary() {
-		FormationTree tree = compiler.compile("¬¬(a^b)");
+		FormationTree tree = compiler.compile("¬¬(a∧b)");
 		ra.applyDeMorganAndForwards(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬¬(a^b)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)))");
+		assertEquals("¬¬(a∧b)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)))");
 	}
 	
 	@Test
 	public void testDeMorgansAndBinaryLeft() {
-		FormationTree tree = compiler.compile("¬(a^b)^a");
+		FormationTree tree = compiler.compile("¬(a∧b)∧a");
 		ra.applyDeMorganAndForwards(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬(a^b)^a", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)), 1-1: a)");
+		assertEquals("¬(a∧b)∧a", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)), 1-1: a)");
 	}
 	
 	@Test
 	public void testDeMorgansAndBinaryRight() {
-		FormationTree tree = compiler.compile("a^¬(a^b)");
+		FormationTree tree = compiler.compile("a∧¬(a∧b)");
 		ra.applyDeMorganAndForwards(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a^¬(a^b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: v (2-2: ¬ (4-3: a), 3-2: ¬ (6-3: b)))");
+		assertEquals("a∧¬(a∧b)", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: v (2-2: ¬ (4-3: a), 3-2: ¬ (6-3: b)))");
 	}
 	
-	// 49. ¬(avb)	|-	¬a^¬b
+	// 49. ¬(avb)	|-	¬a∧¬b
 	@Test
 	public void testDeMorgansOrRoot() {
 		FormationTree tree = compiler.compile("¬(avb)");
 		ra.applyDeMorganOrForwards(tree, (UnaryOperator) tree.findNode(0, 0));
-		assertEquals("¬(a^b)", tree.toTreeString(), "0-0: ^ (0-1: ¬ (0-2: a), 1-1: ¬ (2-2: b))");
+		assertEquals("¬(a∧b)", tree.toTreeString(), "0-0: ∧ (0-1: ¬ (0-2: a), 1-1: ¬ (2-2: b))");
 	}
 
 	@Test
 	public void testDeMorgansOrUnary() {
 		FormationTree tree = compiler.compile("¬¬(avb)");
 		ra.applyDeMorganOrForwards(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬¬(a^b)", tree.toTreeString(), "0-0: ¬ (0-1: ^ (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)))");
+		assertEquals("¬¬(a∧b)", tree.toTreeString(), "0-0: ¬ (0-1: ∧ (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)))");
 	}
 	
 	@Test
 	public void testDeMorgansOrBinaryLeft() {
-		FormationTree tree = compiler.compile("¬(avb)^a");
+		FormationTree tree = compiler.compile("¬(avb)∧a");
 		ra.applyDeMorganOrForwards(tree, (UnaryOperator) tree.findNode(0, 1));
-		assertEquals("¬(a^b)^a", tree.toTreeString(), "0-0: ^ (0-1: ^ (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)), 1-1: a)");
+		assertEquals("¬(a∧b)∧a", tree.toTreeString(), "0-0: ∧ (0-1: ∧ (0-2: ¬ (0-3: a), 1-2: ¬ (2-3: b)), 1-1: a)");
 	}
 	
 	@Test
 	public void testDeMorgansOrBinaryRight() {
-		FormationTree tree = compiler.compile("a^¬(avb)");
+		FormationTree tree = compiler.compile("a∧¬(avb)");
 		ra.applyDeMorganOrForwards(tree, (UnaryOperator) tree.findNode(1, 1));
-		assertEquals("a^¬(a^b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ^ (2-2: ¬ (4-3: a), 3-2: ¬ (6-3: b)))");
+		assertEquals("a∧¬(a∧b)", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ∧ (2-2: ¬ (4-3: a), 3-2: ¬ (6-3: b)))");
 	}
 	
 	// TODO: Implies tests
@@ -699,16 +699,16 @@ public class RuleApplication {
 	
 	@Test
 	public void testImpilesToOrBinaryLeft() {
-		FormationTree tree = compiler.compile("(a→b)^a");
+		FormationTree tree = compiler.compile("(a→b)∧a");
 		ra.applyImpliesToOr(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a→b)^a", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: ¬ (0-3: a), 1-2: b), 1-1: a)");
+		assertEquals("(a→b)∧a", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ¬ (0-3: a), 1-2: b), 1-1: a)");
 	}
 	
 	@Test
 	public void testImpilesToOrBinaryRight() {
-		FormationTree tree = compiler.compile("a^(a→b)");
+		FormationTree tree = compiler.compile("a∧(a→b)");
 		ra.applyImpliesToOr(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a→b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: v (2-2: ¬ (4-3: a), 3-2: b))");
+		assertEquals("a∧(a→b)", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: v (2-2: ¬ (4-3: a), 3-2: b))");
 	}
 
 	// 56. a→b 		|- 	¬(av¬b)
@@ -716,67 +716,67 @@ public class RuleApplication {
 	public void applyImpliesToNotAnd() {
 		FormationTree tree = compiler.compile("a→b");
 		ra.applyImpliesToNotAnd(tree,(BinaryOperator) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "¬(a^¬b)");
+		assertEquals("", tree.toString(), "¬(a∧¬b)");
 	}
 	
 	// TODO: Iff tests
 	
-	// 57. a↔b				|-  (a→b)^(b→a)
+	// 57. a↔b				|-  (a→b)∧(b→a)
 	@Test
 	public void testIffToAndRoot() {
 		FormationTree tree = compiler.compile("a↔b");
 		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a↔b", tree.toTreeString(), "0-0: ^ (0-1: → (0-2: a, 1-2: b), 1-1: → (2-2: b, 3-2: a))");
+		assertEquals("a↔b", tree.toTreeString(), "0-0: ∧ (0-1: → (0-2: a, 1-2: b), 1-1: → (2-2: b, 3-2: a))");
 	}
 
 	@Test
 	public void testIffToAndUnary() {
 		FormationTree tree = compiler.compile("¬(a↔b)");
 		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬(a↔b)", tree.toTreeString(), "0-0: ¬ (0-1: ^ (0-2: → (0-3: a, 1-3: b), 1-2: → (2-3: b, 3-3: a)))");
+		assertEquals("¬(a↔b)", tree.toTreeString(), "0-0: ¬ (0-1: ∧ (0-2: → (0-3: a, 1-3: b), 1-2: → (2-3: b, 3-3: a)))");
 	}
 	
 	@Test
 	public void testIffToAndBinaryLeft() {
-		FormationTree tree = compiler.compile("(a↔b)^a");
+		FormationTree tree = compiler.compile("(a↔b)∧a");
 		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a↔b)^a", tree.toTreeString(), "0-0: ^ (0-1: ^ (0-2: → (0-3: a, 1-3: b), 1-2: → (2-3: b, 3-3: a)), 1-1: a)");
+		assertEquals("(a↔b)∧a", tree.toTreeString(), "0-0: ∧ (0-1: ∧ (0-2: → (0-3: a, 1-3: b), 1-2: → (2-3: b, 3-3: a)), 1-1: a)");
 	}
 	
 	@Test
 	public void testIffToAndBinaryRight() {
-		FormationTree tree = compiler.compile("a^(a↔b)");
+		FormationTree tree = compiler.compile("a∧(a↔b)");
 		ra.applyIffToAndImplies(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a↔b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: ^ (2-2: → (4-3: a, 5-3: b), 3-2: → (6-3: b, 7-3: a)))");
+		assertEquals("a∧(a↔b)", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: ∧ (2-2: → (4-3: a, 5-3: b), 3-2: → (6-3: b, 7-3: a)))");
 	}
 
-	// 58. a↔b				|-	(a^b)v(¬a^¬b)
+	// 58. a↔b				|-	(a∧b)v(¬a∧¬b)
 	@Test
 	public void testIffToOrAndRoot() {
 		FormationTree tree = compiler.compile("a↔b");
 		ra.applyIffToOrAnd(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a↔b", tree.toTreeString(), "0-0: v (0-1: ^ (0-2: a, 1-2: b), 1-1: ^ (2-2: ¬ (4-3: a), 3-2: ¬ (6-3: b)))");
+		assertEquals("a↔b", tree.toTreeString(), "0-0: v (0-1: ∧ (0-2: a, 1-2: b), 1-1: ∧ (2-2: ¬ (4-3: a), 3-2: ¬ (6-3: b)))");
 	}
 
 	@Test
 	public void testIffToOrAndUnary() {
 		FormationTree tree = compiler.compile("¬(a↔b)");
 		ra.applyIffToOrAnd(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬(a↔b)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ^ (0-3: a, 1-3: b), 1-2: ^ (2-3: ¬ (4-4: a), 3-3: ¬ (6-4: b))))");
+		assertEquals("¬(a↔b)", tree.toTreeString(), "0-0: ¬ (0-1: v (0-2: ∧ (0-3: a, 1-3: b), 1-2: ∧ (2-3: ¬ (4-4: a), 3-3: ¬ (6-4: b))))");
 	}
 	
 	@Test
 	public void testIffToOrAndBinaryLeft() {
-		FormationTree tree = compiler.compile("(a↔b)^a");
+		FormationTree tree = compiler.compile("(a↔b)∧a");
 		ra.applyIffToOrAnd(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a↔b)^a", tree.toTreeString(), "0-0: ^ (0-1: v (0-2: ^ (0-3: a, 1-3: b), 1-2: ^ (2-3: ¬ (4-4: a), 3-3: ¬ (6-4: b))), 1-1: a)");
+		assertEquals("(a↔b)∧a", tree.toTreeString(), "0-0: ∧ (0-1: v (0-2: ∧ (0-3: a, 1-3: b), 1-2: ∧ (2-3: ¬ (4-4: a), 3-3: ¬ (6-4: b))), 1-1: a)");
 	}
 	
 	@Test
 	public void testIffToOrAndBinaryRight() {
-		FormationTree tree = compiler.compile("a^(a↔b)");
+		FormationTree tree = compiler.compile("a∧(a↔b)");
 		ra.applyIffToOrAnd(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a↔b)", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: v (2-2: ^ (4-3: a, 5-3: b), 3-2: ^ (6-3: ¬ (12-4: a), 7-3: ¬ (14-4: b))))");
+		assertEquals("a∧(a↔b)", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: v (2-2: ∧ (4-3: a, 5-3: b), 3-2: ∧ (6-3: ¬ (12-4: a), 7-3: ¬ (14-4: b))))");
 	}
 	
 	// 59. a↔¬b 			|- 	¬(a↔b)
@@ -797,20 +797,20 @@ public class RuleApplication {
 	
 	// TODO: Atom tests
 	
-	// 61. a		|-  a^a
+	// 61. a		|-  a∧a
 	@Test
 	public void applyAndIdempotenceBackwards() {
 		FormationTree tree = compiler.compile("a");
 		ra.applyAndIdempotenceBackwards(tree, (Atom) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "a^a");
+		assertEquals("", tree.toString(), "a∧a");
 	}
 	
-	// 62. a		|-  a^┬
+	// 62. a		|-  a∧┬
 	@Test
 	public void applyAndTop() {
 		FormationTree tree = compiler.compile("a");
 		ra.applyAndTop(tree, (Atom) tree.findNode(0, 0));
-		assertEquals("", tree.toString(), "a^┬");
+		assertEquals("", tree.toString(), "a∧┬");
 	}
 	
 	// 63. a		|-  ava
@@ -863,20 +863,20 @@ public class RuleApplication {
 	
 	// TODO: User input tests
 	
-	// 69. ⊥		|-  a^⊥
+	// 69. ⊥		|-  a∧⊥
 	@Test
 	public void applyAtomAndBottom() {
 		FormationTree tree = compiler.compile("⊥");
 		ra.applyAtomAndBottom(tree, (Atom) tree.findNode(0, 0), "a");
-		assertEquals("", tree.toString(), "a^⊥");
+		assertEquals("", tree.toString(), "a∧⊥");
 	}
 
-	// 70. ⊥		|-  a^¬a
+	// 70. ⊥		|-  a∧¬a
 	@Test
 	public void applyBottomToAndAtom() {
 		FormationTree tree = compiler.compile("⊥");
 		ra.applyBottomToAndAtom(tree, (Atom) tree.findNode(0, 0), "a");
-		assertEquals("", tree.toString(), "a^¬a");
+		assertEquals("", tree.toString(), "a∧¬a");
 	}
 
 	// 71. ┬		|-  av┬
@@ -919,83 +919,83 @@ public class RuleApplication {
 		assertEquals("", tree.toString(), "⊥→a");
 	}
 
-	// 76. a		|-  av(a^b)
+	// 76. a		|-  av(a∧b)
 	@Test
 	public void applyAbsorptionOrBackwards() {
 		FormationTree tree = compiler.compile("a");
 		ra.applyAbsorptionOrBackwards(tree, (Atom) tree.findNode(0, 0), "b");
-		assertEquals("", tree.toString(), "av(a^b)");
+		assertEquals("", tree.toString(), "av(a∧b)");
 	}
 
-	// 77. a  		|-	a^(avb)
+	// 77. a  		|-	a∧(avb)
 	@Test
 	public void applyAbsorptionAndBackwards() {
 		FormationTree tree = compiler.compile("a");
 		ra.applyAbsorptionAndBackwards(tree, (Atom) tree.findNode(0, 0), "b");
-		assertEquals("", tree.toString(), "a^(avb)");
+		assertEquals("", tree.toString(), "a∧(avb)");
 	}
 
 	// TODO: Multi method tests
 	
-	// 22. A^(AvB)  v-	A
-	// 23. Av(A^B)	v-  A
+	// 22. A∧(AvB)  v-	A
+	// 23. Av(A∧B)	v-  A
 	@Test
 	public void testLeftAbsorptionAndRoot() {
-		FormationTree tree = compiler.compile("a^(bva)");
+		FormationTree tree = compiler.compile("a∧(bva)");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a^(bvc)", tree.toTreeString(), "0-0: a");
+		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: a");
 	}
 
 	@Test
 	public void testLeftAbsorptionAndUnary() {
-		FormationTree tree = compiler.compile("¬(a^(bva))");
+		FormationTree tree = compiler.compile("¬(a∧(bva))");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬a^(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: a)");
+		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: a)");
 	}
 	
 	@Test
 	public void testLeftAbsorptionAndBinaryLeft() {
-		FormationTree tree = compiler.compile("(a^(bva))^a");
+		FormationTree tree = compiler.compile("(a∧(bva))∧a");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a^(bvc))^a", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: a)");
+		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
 	
 	@Test
 	public void testLeftAbsorptionAndBinaryRight() {
-		FormationTree tree = compiler.compile("a^(a^(bva))");
+		FormationTree tree = compiler.compile("a∧(a∧(bva))");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a^(bvc))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: a)");
+		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
 	
 
-	// 24. (AvB)^A  v-	A
-	// 25. (A^B)vA	v-  A
+	// 24. (AvB)∧A  v-	A
+	// 25. (A∧B)vA	v-  A
 	@Test
 	public void testRightAbsorptionAndRoot() {
-		FormationTree tree = compiler.compile("(avb)^a");
+		FormationTree tree = compiler.compile("(avb)∧a");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 0));
-		assertEquals("a^(bvc)", tree.toTreeString(), "0-0: a");
+		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: a");
 	}
 
 	@Test
 	public void testRightAbsorptionAndUnary() {
-		FormationTree tree = compiler.compile("¬((avb)^a)");
+		FormationTree tree = compiler.compile("¬((avb)∧a)");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("¬a^(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: a)");
+		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: a)");
 	}
 	
 	@Test
 	public void testRightAbsorptionAndBinaryLeft() {
-		FormationTree tree = compiler.compile("((avb)^a)^a");
+		FormationTree tree = compiler.compile("((avb)∧a)∧a");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
-		assertEquals("(a^(bvc))^a", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: a)");
+		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
 	
 	@Test
 	public void testRightAbsorptionAndBinaryRight() {
-		FormationTree tree = compiler.compile("a^((avb)^a)");
+		FormationTree tree = compiler.compile("a∧((avb)∧a)");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(1, 1));
-		assertEquals("a^(a^(bvc))", tree.toTreeString(), "0-0: ^ (0-1: a, 1-1: a)");
+		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
 	
 }

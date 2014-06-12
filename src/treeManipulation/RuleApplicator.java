@@ -77,11 +77,11 @@ public class RuleApplicator {
 	}
 	
 	public BinaryOperator createNewAnd(Node leftChild, Node rightChild) {
-		return createNewBinary("^", leftChild, rightChild);
+		return createNewBinary("∧", leftChild, rightChild);
 	}
 	
 	public BinaryOperator createNewOr(Node leftChild, Node rightChild) {
-		return createNewBinary("v", leftChild, rightChild);
+		return createNewBinary("∨", leftChild, rightChild);
 	}
 	
 	public BinaryOperator createNewImplies(Node leftChild, Node rightChild) {
@@ -92,13 +92,13 @@ public class RuleApplicator {
 		return createNewBinary("↔", leftChild, rightChild);
 	}
 
-	// 2.  a^┬		|- 	a
+	// 2.  a∧┬		|- 	a
 	// 25. av⊥		|-  a
 	public void applyToLeftChild(FormationTree tree, BinaryOperator node) {
 		replaceNode(tree, node, node.getLeftChild());
 	}
 
-	// 3.  ┬^a		|-  a
+	// 3.  ┬∧a		|-  a
 	// 26. ⊥va		|-  a
 	// 51. ┬→a		|- 	a
 	public void applyToRightChild(FormationTree tree, BinaryOperator node) {
@@ -116,17 +116,17 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewTop());
 	}
 
-	// 4.  ⊥^a		|-  ⊥
-	// 5.  a^⊥		|-  ⊥
-	// 6.  a^¬a		|-  ⊥				-- Could do inverse operation here requiring user input (to define variable)
-	// 7.  ¬a^a		|-  ⊥	
+	// 4.  ⊥∧a		|-  ⊥
+	// 5.  a∧⊥		|-  ⊥
+	// 6.  a∧¬a		|-  ⊥				-- Could do inverse operation here requiring user input (to define variable)
+	// 7.  ¬a∧a		|-  ⊥	
 	public void applyToBottom(FormationTree tree, Node node) {
 		replaceNode(tree, node, createNewBottom());
 	}
 	
 	// TODO: Basic Rules
 
-	// 0.  a^b 		|- 	b^a				-- Commutativity
+	// 0.  a∧b 		|- 	b∧a				-- Commutativity
 	// 19. avb		|- 	bva				-- Commutativity
 	public void applyCommutativity(BinaryOperator node) {
 		Node leftChild = node.getLeftChild();
@@ -136,53 +136,53 @@ public class RuleApplicator {
 		relabelNode(node);
 	}
 
-	// 1.  a^a		|-  a 				-- Idempotence
+	// 1.  a∧a		|-  a 				-- Idempotence
 	// 20. ava		|- 	a 				-- Idempotence
 	public void applyIdempotence(FormationTree tree, BinaryOperator node) {
 		Node child = node.getLeftChild();
 		replaceNode(tree, node, child);
 	}
 
-	// 8.  a^(b^c)	|-  (a^b)^c			-- Associativity
+	// 8.  a∧(b∧c)	|-  (a∧b)∧c			-- Associativity
 	// 27. av(bvc)	|-  (avb)vc			-- Associativity
 	public void applyLeftAssociativity(FormationTree tree, BinaryOperator node) {
 		applyLeftRotation(tree, node);
 	}
 	
-	// 9.  (a^b)^c  |- 	a^(b^c)			-- Associativity
+	// 9.  (a∧b)∧c  |- 	a∧(b∧c)			-- Associativity
 	// 28. (avb)vc  |- 	av(bvc)			-- Associativity
 	public void applyRightAssociativity(FormationTree tree, BinaryOperator node) {
 		applyRightRotation(tree, node);
 	}
 
-	// 17. a^(avb)  |-	a
-	// 36. av(a^b)	|-  a
+	// 17. a∧(avb)  |-	a
+	// 36. av(a∧b)	|-  a
 	public void applyLeftAbsorption(FormationTree tree, BinaryOperator node) {
 		replaceNode(tree, node, node.getLeftChild());
 	}
 	
-	// 18. (avb)^a  |-	a
-	// 37. (a^b)va	|-  a
+	// 18. (avb)∧a  |-	a
+	// 37. (a∧b)va	|-  a
 	public void applyRightAbsorption(FormationTree tree, BinaryOperator node) {
 		replaceNode(tree, node, node.getRightChild());
 	}
 	
 	// TODO: And Rules
 
-	// 10. a^¬b 		|-	¬(a→b)
+	// 10. a∧¬b 		|-	¬(a→b)
 	public void applyAndNotToNotImplies(FormationTree tree, BinaryOperator node) {
 		UnaryOperator rightChild = (UnaryOperator) node.getRightChild();
 		BinaryOperator implies = createNewImplies(node.getLeftChild(), rightChild.getChild());
 		replaceNode(tree, node, createNewNot(implies));
 	}
 	
-	// 11. (a→b)^(b→a)	|-  a↔b
+	// 11. (a→b)∧(b→a)	|-  a↔b
 	public void applyAndImpliesToIff(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		replaceNode(tree, node, createNewIff(leftChild.getLeftChild(), leftChild.getRightChild()));
 	}
 	
-	// 12. ¬a^¬b		|-	¬(avb)			-- De Morgan laws
+	// 12. ¬a∧¬b		|-	¬(avb)			-- De Morgan laws
 	public void applyDeMorganOrBackwards(FormationTree tree, BinaryOperator node) {
 		UnaryOperator leftChild = (UnaryOperator) node.getLeftChild();
 		UnaryOperator rightChild = (UnaryOperator) node.getRightChild();
@@ -190,7 +190,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewNot(or));
 	}
 	
-	// 13. a^(bvc) 		|- 	(a^b)v(a^c)		-- Distributitivity
+	// 13. a∧(bvc) 		|- 	(a∧b)v(a∧c)		-- Distributitivity
 	public void applyDistributivityAndLeftForwards(FormationTree tree, BinaryOperator node) {
 		Node leftChild = node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
@@ -199,7 +199,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(leftAnd, rightAnd));
 	}
 	
-	// 14. (avb)^c		|-  (a^c)v(b^c)		-- Distributitivity
+	// 14. (avb)∧c		|-  (a∧c)v(b∧c)		-- Distributitivity
 	public void applyDistributivityAndRightForwards(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		Node rightChild = node.getRightChild();
@@ -208,7 +208,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(leftAnd, rightAnd));
 	}
 	
-	// 15. (avb)^(avc)	|- 	av(b^c)		-- Distributitivity
+	// 15. (avb)∧(avc)	|- 	av(b∧c)		-- Distributitivity
 	public void applyDistributivityOrLeftBackwards(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
@@ -216,7 +216,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(leftChild.getLeftChild(), and));
 	}
 	
-	// 16. (avc)^(bvc)	|-	(a^b)vc		-- Distributitivity
+	// 16. (avc)∧(bvc)	|-	(a∧b)vc		-- Distributitivity
 	public void applyDistributivityOrRightBackwards(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
@@ -226,13 +226,13 @@ public class RuleApplicator {
 
 	// TODO: Or Rules
 	
-	// 29. (a^b)v(¬a^¬b)	|-	a↔b
+	// 29. (a∧b)v(¬a∧¬b)	|-	a↔b
 	public void applyOrAndToIff(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		replaceNode(tree, node, createNewIff(leftChild.getLeftChild(), leftChild.getRightChild()));
 	}
 	
-	// 30. (a^¬b)v(¬a^b) 	|-  ¬(a↔b)
+	// 30. (a∧¬b)v(¬a∧b) 	|-  ¬(a↔b)
 	public void applyOrAndToNotIff(FormationTree tree, BinaryOperator node) {
 		Node leftChild = ((BinaryOperator) node.getLeftChild()).getLeftChild();
 		Node rightChild = ((BinaryOperator) node.getRightChild()).getRightChild();
@@ -240,7 +240,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewNot(iff));
 	}
 	
-	// 31. ¬av¬b	|-  ¬(a^b)			-- De Morgan laws
+	// 31. ¬av¬b	|-  ¬(a∧b)			-- De Morgan laws
 	public void applyDeMorganAndBackwards(FormationTree tree, BinaryOperator node) {
 		UnaryOperator leftChild = (UnaryOperator) node.getLeftChild();
 		UnaryOperator rightChild = (UnaryOperator) node.getRightChild();
@@ -248,7 +248,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewNot(and));
 	}
 	
-	// 32. av(b^c)	|- 	(avb)^(avc)		-- Distributitivity
+	// 32. av(b∧c)	|- 	(avb)∧(avc)		-- Distributitivity
 	public void applyDistributivityOrLeftForwards(FormationTree tree, BinaryOperator node) {
 		Node leftChild = node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
@@ -257,7 +257,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewAnd(leftOr, rightOr));
 	}
 	
-	// 33. (a^b)vc	|-	(avc)^(bvc)		-- Distributitivity
+	// 33. (a∧b)vc	|-	(avc)∧(bvc)		-- Distributitivity
 	public void applyDistributivityOrRightForwards(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		Node rightChild = node.getRightChild();
@@ -266,7 +266,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewAnd(leftOr, rightOr));
 	}
 	
-	// 34. (a^b)v(a^c) 	|- 	a^(bvc)		-- Distributitivity
+	// 34. (a∧b)v(a∧c) 	|- 	a∧(bvc)		-- Distributitivity
 	public void applyDistributivityAndLeftBackwards(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
@@ -274,7 +274,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewAnd(leftChild.getLeftChild(), or));
 	}
 	
-	// 35. (a^c)v(b^c)	|-  (avb)^c		-- Distributitivity
+	// 35. (a∧c)v(b∧c)	|-  (avb)∧c		-- Distributitivity
 	public void applyDistributivityAndRightBackwards(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = (BinaryOperator) node.getLeftChild();
 		BinaryOperator rightChild = (BinaryOperator) node.getRightChild();
@@ -311,14 +311,14 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewImplies(node.getChild(), createNewBottom()));
 	}
 	
-	// 43. ¬(a→b) 	|-	a^¬b
+	// 43. ¬(a→b) 	|-	a∧¬b
 	public void applyNotImplies(FormationTree tree, UnaryOperator node) {
 		BinaryOperator implies = (BinaryOperator) node.getChild();
 		UnaryOperator not = createNewNot(implies.getRightChild());
 		replaceNode(tree, node, createNewAnd(implies.getLeftChild(), not));
 	}
 	
-	// 44. ¬(a^¬b)	|- 	a→b
+	// 44. ¬(a∧¬b)	|- 	a→b
 	public void applyNotAndToImplies(FormationTree tree, UnaryOperator node) {
 		BinaryOperator and = (BinaryOperator) node.getChild();
 		UnaryOperator not = (UnaryOperator) and.getRightChild();
@@ -339,7 +339,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewIff(not, iff.getRightChild()));
 	}
 	
-	// 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)	-- Exclusive or of A and b
+	// 47. ¬(a↔b) 	|-  (a∧¬b)v(¬a∧b)	-- Exclusive or of A and b
 	public void applyNotIffToOrAnd(FormationTree tree, UnaryOperator node) {
 		BinaryOperator iff = (BinaryOperator) node.getChild();
 		Node leftChild = createNewAnd(iff.getLeftChild(), createNewNot(iff.getRightChild()));
@@ -347,7 +347,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(leftChild, rightChild));
 	}
 	
-	// 48. ¬(a^b)	|-  ¬av¬b			-- De Morgan laws
+	// 48. ¬(a∧b)	|-  ¬av¬b			-- De Morgan laws
 	public void applyDeMorganAndForwards(FormationTree tree, UnaryOperator node) {
 		BinaryOperator and = (BinaryOperator) node.getChild();
 		Node leftChild = createNewNot(and.getLeftChild());
@@ -355,7 +355,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(leftChild, rightChild));
 	}
 	
-	// 49. ¬(avb)	|-	¬a^¬b			-- De Morgan laws
+	// 49. ¬(avb)	|-	¬a∧¬b			-- De Morgan laws
 	public void applyDeMorganOrForwards(FormationTree tree, UnaryOperator node) {
 		BinaryOperator or = (BinaryOperator) node.getChild();
 		Node leftChild = createNewNot(or.getLeftChild());
@@ -376,7 +376,7 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewOr(not, node.getRightChild()));
 	}
 	
-	// 56. a→b 		|- 	¬(a^¬b)
+	// 56. a→b 		|- 	¬(a∧¬b)
 	public void applyImpliesToNotAnd(FormationTree tree, BinaryOperator node) {
 		UnaryOperator not = createNewNot(node.getRightChild());
 		BinaryOperator and = createNewAnd(node.getLeftChild(), not);
@@ -385,14 +385,14 @@ public class RuleApplicator {
 
 	// TODO: Iff Rules
 	
-	// 57. a↔b				|-  (a→b)^(b→a)
+	// 57. a↔b				|-  (a→b)∧(b→a)
 	public void applyIffToAndImplies(FormationTree tree, BinaryOperator node) {
 		BinaryOperator leftChild = createNewImplies(node.getLeftChild(), node.getRightChild());
 		BinaryOperator rightChild = createNewImplies(node.getRightChild(), node.getLeftChild());
 		replaceNode(tree, node, createNewAnd(leftChild, rightChild));
 	}
 	
-	// 58. a↔b				|-	(a^b)v(¬a^¬b)
+	// 58. a↔b				|-	(a∧b)v(¬a∧¬b)
 	public void applyIffToOrAnd(FormationTree tree, BinaryOperator node) {
 		Node leftChild = node.getLeftChild();
 		Node rightChild = node.getRightChild();
@@ -419,12 +419,12 @@ public class RuleApplicator {
 	
 	// TODO: Equivalences involving atoms
 	
-	// 61. a		|-  a^a
+	// 61. a		|-  a∧a
 	public void applyAndIdempotenceBackwards(FormationTree tree, Atom node) {
 		replaceNode(tree, node, createNewAnd(node, node));
 	}
 	
-	// 62. a		|-  a^┬
+	// 62. a		|-  a∧┬
 	public void applyAndTop(FormationTree tree, Atom node) {
 		replaceNode(tree, node, createNewAnd(node, createNewTop()));
 	}
@@ -461,12 +461,12 @@ public class RuleApplicator {
 	
 	// TODO: Equivalences involving user input
 	
-	// 69. ⊥		|-  a^⊥
+	// 69. ⊥		|-  a∧⊥
 	public void applyAtomAndBottom(FormationTree tree, Node node, String atom) {
 		replaceNode(tree, node, createNewAnd(createNewAtom(atom), node));
 	}
 	
-	// 70. ⊥		|-  a^¬a
+	// 70. ⊥		|-  a∧¬a
 	public void applyBottomToAndAtom(FormationTree tree, Node node, String atom) {
 		UnaryOperator not = createNewNot(createNewAtom(atom));
 		replaceNode(tree, node, createNewAnd(createNewAtom(atom), not));
@@ -498,13 +498,13 @@ public class RuleApplicator {
 		replaceNode(tree, node, createNewImplies(createNewBottom(), createNewAtom(atom)));
 	}
 	
-	// 76. a		|-  av(a^b)
+	// 76. a		|-  av(a∧b)
 	public void applyAbsorptionOrBackwards(FormationTree tree, Node node, String atom) {
 		BinaryOperator and = createNewAnd(node, createNewAtom(atom));
 		replaceNode(tree, node, createNewOr(node, and));
 	}
 	
-	// 77. a  		|-	a^(avb)
+	// 77. a  		|-	a∧(avb)
 	public void applyAbsorptionAndBackwards(FormationTree tree, Node node, String atom) {
 		BinaryOperator or = createNewOr(node, createNewAtom(atom));
 		replaceNode(tree, node, createNewAnd(node, or));

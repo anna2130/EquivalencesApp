@@ -116,12 +116,12 @@ public class BinaryOperator extends Node {
 
 	@Override
 	public boolean isAnd() {
-		return getValue().equals("^");
+		return getValue().equals("∧");
 	}
 
 	@Override
 	public boolean isOr() {
-		return getValue().equals("v");
+		return getValue().equals("∨");
 	}
 
 	@Override

@@ -30,41 +30,41 @@ public class RuleSelection {
 	// TODO: RuleSelector tests
 	
 	/* And tests
-	 * Equivalences involving ^
-	 * 0.  a^b 			|- 	b^a				-- Commutativity
-	 * 1.  a^a			|-  a 				-- Idempotence
-	 * 2.  a^┬			|- 	a
-	 * 3.  ┬^a			|-  a
-	 * 4.  ⊥^a			|-  ⊥
-	 * 5.  a^⊥			|-  ⊥
-	 * 6.  a^¬a			|-  ⊥
-	 * 7.  ¬a^a			|-  ⊥				
-	 * 8.  a^(b^c)		|-  (a^b)^c			-- Associativity
-	 * 9.  (a^b)^c  	|- 	a^(b^c)			-- Associativity
-	 * 10. a^¬b 		|-	¬(a→b)
-	 * 11. (a→b)^(b→a)	|-  a↔b
-	 * 12. ¬a^¬b		|-	¬(avb)			-- De Morgan laws
-	 * 13. a^(bvc) 		|- 	(a^b)v(a^c)		-- Distributitivity
-	 * 14. (avb)^c		|-  (a^c)v(b^c)		-- Distributitivity
-	 * 15. (avb)^(avc)	|- 	av(b^c)			-- Distributitivity
-	 * 16. (avc)^(bvc)	|-	(a^b)vc			-- Distributitivity
-	 * 17. a^(avb)  	|-	a				-- Absoption
-	 * 18. (avb)^a  	|-	a				-- Absoption
+	 * Equivalences involving ∧
+	 * 0.  a∧b 			|- 	b∧a				-- Commutativity
+	 * 1.  a∧a			|-  a 				-- Idempotence
+	 * 2.  a∧┬			|- 	a
+	 * 3.  ┬∧a			|-  a
+	 * 4.  ⊥∧a			|-  ⊥
+	 * 5.  a∧⊥			|-  ⊥
+	 * 6.  a∧¬a			|-  ⊥
+	 * 7.  ¬a∧a			|-  ⊥				
+	 * 8.  a∧(b∧c)		|-  (a∧b)∧c			-- Associativity
+	 * 9.  (a∧b)∧c  	|- 	a∧(b∧c)			-- Associativity
+	 * 10. a∧¬b 		|-	¬(a→b)
+	 * 11. (a→b)∧(b→a)	|-  a↔b
+	 * 12. ¬a∧¬b		|-	¬(avb)			-- De Morgan laws
+	 * 13. a∧(bvc) 		|- 	(a∧b)v(a∧c)		-- Distributitivity
+	 * 14. (avb)∧c		|-  (a∧c)v(b∧c)		-- Distributitivity
+	 * 15. (avb)∧(avc)	|- 	av(b∧c)			-- Distributitivity
+	 * 16. (avc)∧(bvc)	|-	(a∧b)vc			-- Distributitivity
+	 * 17. a∧(avb)  	|-	a				-- Absoption
+	 * 18. (avb)∧a  	|-	a				-- Absoption
 	 */
 	
 	@Test
 	public void testAndSelector() {
-		FormationTree tree = compiler.compile("a^(r^b)");
+		FormationTree tree = compiler.compile("a∧(r∧b)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(0);
 		expected.set(8);
-		assertEquals("a^(r^b)", bs, expected);
+		assertEquals("a∧(r∧b)", bs, expected);
 	}
 	
 	@Test
 	public void testAndSelector1() {
-		FormationTree tree = compiler.compile("(rvp)^(rvp)");
+		FormationTree tree = compiler.compile("(rvp)∧(rvp)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(0);
@@ -73,17 +73,17 @@ public class RuleSelection {
 		expected.set(14);
 		expected.set(15);
 		expected.set(16);
-		assertEquals("(rvs)^(rvs)", bs, expected);
+		assertEquals("(rvs)∧(rvs)", bs, expected);
 	}
 	
 	@Test
 	public void testAndSelector2() {
-		FormationTree tree = compiler.compile("q→(r^(p^q))");
+		FormationTree tree = compiler.compile("q→(r∧(p∧q))");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(1, 1));
 		BitSet expected = new BitSet(8);
 		expected.set(0);
 		expected.set(8);
-		assertEquals("q→(r^(p^q))", bs, expected);
+		assertEquals("q→(r∧(p∧q))", bs, expected);
 	}
 	
 	/* TODO: Equivalences involving v
@@ -97,15 +97,15 @@ public class RuleSelection {
 	 * 26. ⊥va				|-  a
 	 * 27. av(bvc)			|-  (avb)vc			-- Associativity
 	 * 28. (avb)vc  		|- 	av(bvc)			-- Associativity
-	 * 29. (a^b)v(¬a^¬b)	|-	a↔b
-	 * 30. (a^¬b)v(¬a^b) 	|-  ¬(a↔b)
-	 * 31. ¬av¬b			|-  ¬(a^b)			-- De Morgan laws
-	 * 32. av(b^c)			|- 	(avb)^(avc)		-- Distributitivity
-	 * 33. (a^b)vc			|-	(avc)^(bvc)		-- Distributitivity
-	 * 34. (a^b)v(a^c) 		|- 	a^(bvc)		-- Distributitivity
-	 * 35. (a^c)v(b^c)		|-  (avb)^c		-- Distributitivity
-	 * 36. av(a^b)			|-  a				-- Absoption
-	 * 37. (a^b)va			|-  a				-- Absoption
+	 * 29. (a∧b)v(¬a∧¬b)	|-	a↔b
+	 * 30. (a∧¬b)v(¬a∧b) 	|-  ¬(a↔b)
+	 * 31. ¬av¬b			|-  ¬(a∧b)			-- De Morgan laws
+	 * 32. av(b∧c)			|- 	(avb)∧(avc)		-- Distributitivity
+	 * 33. (a∧b)vc			|-	(avc)∧(bvc)		-- Distributitivity
+	 * 34. (a∧b)v(a∧c) 		|- 	a∧(bvc)		-- Distributitivity
+	 * 35. (a∧c)v(b∧c)		|-  (avb)∧c		-- Distributitivity
+	 * 36. av(a∧b)			|-  a				-- Absoption
+	 * 37. (a∧b)va			|-  a				-- Absoption
 	 * 38. ¬avb				|- 	a→b
 	 */
 	
@@ -121,7 +121,7 @@ public class RuleSelection {
 	
 	@Test
 	public void testOrSelector1() {
-		FormationTree tree = compiler.compile("(r^p)v(r^p)");
+		FormationTree tree = compiler.compile("(r∧p)v(r∧p)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(19);
@@ -130,7 +130,7 @@ public class RuleSelection {
 		expected.set(33);
 		expected.set(34);
 		expected.set(35);
-		assertEquals("(r^p)v(r^p)", bs, expected);
+		assertEquals("(r∧p)v(r∧p)", bs, expected);
 	}
 	
 	@Test
@@ -148,13 +148,13 @@ public class RuleSelection {
 	 * 40. ¬⊥		|-  ┬
 	 * 41. ¬¬a 		|- 	a
 	 * 42. ¬a		|-  a→⊥
-	 * 43. ¬(a→b) 	|-	a^¬b
+	 * 43. ¬(a→b) 	|-	a∧¬b
 	 * 44. ¬(av¬b)	|- 	a→b
 	 * 45. ¬(a↔b) 	|- 	a↔¬b
 	 * 46. ¬(a↔b) 	|-  ¬a↔b
-	 * 47. ¬(a↔b) 	|-  (a^¬b)v(¬a^b)	-- Exclusive or of A and b
-	 * 48. ¬(a^b)	|-  ¬av¬b			-- De Morgan laws
-	 * 49. ¬(avb)	|-	¬a^¬b			-- De Morgan laws
+	 * 47. ¬(a↔b) 	|-  (a∧¬b)v(¬a∧b)	-- Exclusive or of A and b
+	 * 48. ¬(a∧b)	|-  ¬av¬b			-- De Morgan laws
+	 * 49. ¬(avb)	|-	¬a∧¬b			-- De Morgan laws
 	 */
 	
 	@Test
@@ -231,7 +231,7 @@ public class RuleSelection {
 	
 	@Test
 	public void testNotAnd() {
-		FormationTree tree = compiler.compile("¬(a^b)");
+		FormationTree tree = compiler.compile("¬(a∧b)");
 		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
 		BitSet expected = new BitSet(noRules);
 		expected.set(42);
@@ -315,8 +315,8 @@ public class RuleSelection {
 	}
 	
 	/* TODO: Equivalences involving ↔
-	 * 57. a↔b		|-  (a→b)^(b→a)
-	 * 58. a↔b		|-	(a^b)v(¬a^¬b)
+	 * 57. a↔b		|-  (a→b)∧(b→a)
+	 * 58. a↔b		|-	(a∧b)v(¬a∧¬b)
 	 * 59. a↔¬b 	|- 	¬(a↔b)
 	 * 60. ¬a↔b 	|-  ¬(a↔b)
 	 */
@@ -354,8 +354,8 @@ public class RuleSelection {
 	}
 	
 	/* TODO: Equivalences involving atoms
-	 * 61. a		|-  a^a
-	 * 62. a		|-  a^┬
+	 * 61. a		|-  a∧a
+	 * 62. a		|-  a∧┬
 	 * 63. a		|-  ava
 	 * 64. a		|-  av⊥
 	 * 65. a		|-  ¬¬a
@@ -364,15 +364,15 @@ public class RuleSelection {
 	 * 68. ┬		|-  ¬⊥
 	 * 
 	 *  TODO: Equivalences involving user input
-	 * 69. ⊥		|-  a^⊥
-	 * 70. ⊥		|-  a^¬a
+	 * 69. ⊥		|-  a∧⊥
+	 * 70. ⊥		|-  a∧¬a
 	 * 71. ┬		|-  av┬
 	 * 72. ┬		|-  av¬a
 	 * 73. ┬		|- 	a→a	
 	 * 74. ┬		|- 	a→┬
 	 * 75. ┬		|- 	⊥→a
-	 * 76. a		|-  av(a^b)
-	 * 77. a  		|-	a^(avb)
+	 * 76. a		|-  av(a∧b)
+	 * 77. a  		|-	a∧(avb)
 	 */
 
 	@Test

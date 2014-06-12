@@ -11,5 +11,5 @@ expr: '(' expr ')' 			#EXPR
 	| 						#ERROR
 	;
 
-BINOP: ('^' | 'v');
-ATOM:  ('a'..'r' | '┬' | '⊥');
+BINOP: ('∧' | '∨');
+ATOM:  ('a'..'z' | '┬' | '⊥');
