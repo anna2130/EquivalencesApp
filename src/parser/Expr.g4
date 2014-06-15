@@ -8,6 +8,7 @@ expr: '(' expr ')' 						#EXPR
 	| (QUANTIFIER ATOM)* '[' expr ']'	#QUANTIFIER_
 	| expr '→' expr						#IMPLIES
 	| expr '↔' expr						#IFF
+	| TERM								#TERM_
 	| ATOM								#ATOM_
 	| 									#ERROR
 	;
@@ -15,4 +16,5 @@ expr: '(' expr ')' 						#EXPR
 QUANTIFIER: ('∀' | '∃');
 PREDICATE: ('A'..'Z');
 BINOP: ('∧' | '∨');
-ATOM:  ('a'..'z' | '┬' | '⊥' | PREDICATE ATOM* );
+TERM:  (PREDICATE ATOM*);
+ATOM: ('a'..'z' | '┬' | '⊥');

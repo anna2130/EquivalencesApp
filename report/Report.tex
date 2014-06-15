@@ -1,4 +1,4 @@
-\documentclass{report}
+\documentclass[draft]{report}
 
 \usepackage{titletoc}
 \usepackage{parskip}
@@ -6,14 +6,21 @@
 \usepackage{verbatim}
 \usepackage{fontspec}
 \usepackage{minted}
+\usepackage{enumitem}
+\usepackage[toc]{appendix}
+\usepackage{placeins}
+\usepackage{url}
+\usepackage[width=.9\textwidth]{caption}
 
 % Main font set so symbols display outside code blocks. You may not need this
 \setmainfont[Ligatures=TeX]{Linux Libertine O}
 
 % This font supports all logic symbols in monospace as far as I can tell. You may need to install
-\setmonofont{DejaVu Sans Mono}
+\setmonofont[Scale=0.88]{DejaVu Sans Mono}
 
 \graphicspath{ {/home/anna/workspace/EquivalencesApp/report/i/} }
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\sourcefile}{\url}
 
 \makeatletter
 \def\@makechapterhead#1{%
@@ -28,26 +35,41 @@
 \begin{document}
 % This line removes red boxes from "incorrect syntax". Needs to be NOT in the pre-amble
 \expandafter\def\csname PY@tok@err\endcsname{}
+\renewcommand{\abstractname}{\large Abstract}
 
-\title{Equivalence Teaching Tool}
-\author{Anna Thomas}
+\begin{titlepage}
+\begin{center}
 
-\maketitle
+\textsc{\LARGE Imperial College London}\\[1.5cm]
 
-%The abstract is a very brief summary of the report's contents. It should be about half a page long. Somebody unfamiliar with your project should have a good idea of what it's about having read the abstract alone and will know whether it will be of interest to them. Note that the abstract is a summary of the entire project including its conclusions. A common mistake is to provide only introductory elements in the abstract without saying what has been achieved.
+\textsc{\Large Final year project}\\[0.5cm]
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Equivalences Teaching Tool \\[0.4cm] }
+
+\HRule \\[1.5cm]
+
+Anna Thomas (at711)
+
+CID: 00687463
+
+\vfill
+
+{\large \today}
+
+\end{center}
+\end{titlepage}
 
 \begin{abstract}
-One logical formula can be converted into another using logical equivalences. In this report, we describe an Android application to help students new to logic understand propositional and first order logical equivalences. The app is intended as a learning tool and is designed to encourage practice and understanding of equivalences.
+One logical formula can be converted into another using logical equivalences. In this report, we describe a teaching tool to help students new to logic understand propositional and first order logical equivalences.
 
-We begin by explaining the underlying components separate to the actual Android app. The application uses a generated parser to parse a formula and build its internal tree representation. This tree can be manipulated to apply equivalence rules so that one formula can be proven equivalent to another step by step. Truth tables are used to ensure the two inputted formulae are equivalent before the proof begins.
-
-These main components were combined together into an Android application. Either propositional logic or first order logic can be selected, as well as selecting a difficulty for the proof. A user can either enter their own formulae manually or use a randomly generated pair. The application shows the current formulae as their formation trees, where each node is clickable to apply a rule to itself. Previous equivalent formulae are displayed to the user so they are able to undo to a previous stage. Help is provided to assist the user and when the equivalence is complete the user is alerted.
+We created a parser for propositional and first order logic to generate a tree which can be manipulated to apply equivalence rules. Using this underlying structure we created an Android app to convert one formula to another. The formation tree of the current formulae are shown and help is provided to encourage practice and understanding of equivalences.
 
 \end{abstract}
 
-\renewcommand{\abstractname}{Acknowledgements}
+\renewcommand{\abstractname}{\large Acknowledgements}
 \begin{abstract}
-I would like to thank Dr. Krysia Broda for her continuous support and guidance throughout the project. I would also like to thank everyone who helped me test the application and provided feedback.
+I would like to thank Dr. Krysia Broda for her continuous support and guidance throughout the project. I would also like to thank friends and family for their support and everyone who helped test the application and provided feedback.
 \end{abstract}
 
 \tableofcontents
@@ -56,23 +78,25 @@ I would like to thank Dr. Krysia Broda for her continuous support and guidance t
 
 \section{Motivation}
 
-All logics are based on propositional logic in some form, so it is important that new students learn how to use it. Propositional logic consists of syntax, semantics and proof theory; syntax is the formal language which is used to express concepts, semantics provide meaning for the language and proof theory provides a way to convert one formula into another using a defined set of rules.
+All logics, including first order logic, are based on propositional logic in some form, so it is important that new students learn how to use it. New students learning propositional logic can struggle to understand the rules and how they should be applied to formulae. Having been through this situation myself and after speaking to my peers I understand the difficulties that can be had learning the concepts. 
 
-We know that new students learning propositional logic can struggle to understand the rules and how they should be applied to formulae. To help with this our idea is to create an equivalence teaching tool. This will be a tablet application which will allow a user to apply rules to a formula until they have reached the desired equivalence.
+To help with this our idea is to create an equivalence teaching tool. This will be a tablet application which will allow a user to apply rules to a formula until they have reached the desired equivalence.
+
+%Propositional logic consists of syntax, semantics and proof theory; syntax is the formal language which is used to express concepts, semantics provide meaning for the language and proof theory provides a way to convert one formula into another using a defined set of rules.
 
 \section{Approach}
 
-We decided early on in the project that the tool should be an Android tablet application as opposed to a web or mobile app (Section \ref{chap:android_vs_web}). This allows for an intuitive, interactive design while still having a large screen space.
+We decided early on in the project that the tool should be an Android tablet application as opposed to a web or mobile app (Chapter \ref{chap:android_vs_web}). This allows for an intuitive, interactive design while still having a large screen space.
 
-The tool can be divided up into its main component parts: the parser, tree builder, tree processing and tablet interface. The parser will be generated by the ANTLR4 parser generator, the tree builder, processing code and the tablet interface will be written in Java with the interface using the Android SDK.
+The tool can be divided up into its main component parts: the parser, tree builder, tree processing and tablet interface. The parser will be generated by the \emph{ANTLR4} parser generator, the tree builder, processing code and the tablet interface will be written in Java with the interface using the Android SDK.
 
-The parser requires a grammar to generate the relevant parser components. This will be used to parse the initial equivalence and return the ANTLR4 tree representation of the string (Section \ref{chap:parser}).
+The parser requires a grammar to generate the relevant parser components. This will be used to parse the initial equivalence and return the \emph{ANTLR4} tree representation of the string (Chapter \ref{chap:parser}).
 
-The tree builder is required to take the ANTLR4 representation of a tree and convert it into a more useful data structure which can be modified and displayed easily (Section \ref{chap:internal_tree_representation}). The operators and atoms of the formula will be represented as nodes and leaves respectively.
+The tree builder is required to take the \emph{ANTLR4} representation of a tree and convert it into a more useful data structure which can be modified and displayed easily (Chapter \ref{chap:internal_tree_representation}). The operators and atoms of the formula will be represented as nodes and leaves respectively.
 
-Tree processing will be used to internally calculate which rules are applicable to each node and will allow us to subsequently manipulate the tree by applying these rules (Section \ref{chap:tree_manipulation}).
+Tree processing will be used to internally calculate which rules are applicable to each node and will allow us to subsequently manipulate the tree by applying these rules (Chapter \ref{chap:tree_manipulation}).
 
-The interface will have an functional design displaying the current formula's formation tree (generated by the tree builder) and allowing a user to click on a node to apply a rule (Section \ref{chap:the_app}).
+The interface will have an functional design displaying the current formula's formation tree (generated by the tree builder) and allowing a user to click on a node to apply a rule (Chapter \ref{chap:the_app}).
 
 \section{Contributions}
 \label{sec:objectives}
@@ -82,13 +106,13 @@ In this report we present a logic equivalence teaching tool to be used on an And
 The application contains some key features. These are outlined below:
 
 \begin{enumerate}
-\item Graphical tree representation of formulae
+\item \textbf{Graphical tree representation of formulae}
 
 Representing the formula as its formation tree will allow a user to see exactly how the formula is constructed and can help them understand the order of precedence of operations. It also allows the user to click on an operator to select a rule for it. This is much easier than clicking on a section of the formula to apply a rule to.
 
-\item Undo/Redo functionality
+\item \textbf{Undo/Redo functionality}
 
-Previous equivalent formulae will be displayed above the current formula. When an old formula is selected it will expand into tree form and the formulae below it are faded out \textit{(Undo)}. This will allow a user to perform rules on the old tree or select one of the later faded trees \textit{(Redo)}. When a rule is applied, the faded formulae will be removed from the history allowing the user to continue on from that point (Figure \ref{undo}).
+Previously equivalent formulae will be displayed above the current formula. When an old formula is selected it will expand into tree form and the formulae below it are faded out (Undo). This will allow a user to perform rules on the old tree or select one of the later faded trees (Redo). When a rule is applied, the faded formulae will be removed from the history allowing the user to continue on from that point (Figure \ref{undo}).
 
 \begin{figure}[ht]
     \centering
@@ -97,15 +121,15 @@ Previous equivalent formulae will be displayed above the current formula. When a
     \label{undo}
 \end{figure}
 
-\item Generated equivalences
+\item \textbf{Generated equivalences}
 
 We want to allow the user to have equivalences automatically generated for them to solve. This would be implemented by running the tool on a generated formula to give a significantly different equivalent one. The key advantage of having this feature as well as allowing manual entry of equivalences would be that the user will have a continuous supply of new equivalent logic formulae. This also requires generating the initial formula for the tool to be run upon or allowing the user to manually enter the first formula and have the second one generated for them.
 
-\item Difficulty setting
+\item \textbf{Difficulty setting}
 
 Extending the idea of generated equivalences, we could allow the user to select a difficulty. This would be calculated by the length of the generated formula and how many rules were applied to get its equivalent formula.
 
-\item Help
+\item \textbf{Help}
 
 Providing the user with help is key to their improvement. Mistakes such as cycles in equivalences should be pointed out to the user. We will also provide help by only displaying the rules that can be applied to the selected node instead of the whole set.
 
@@ -113,9 +137,7 @@ Providing the user with help is key to their improvement. Mistakes such as cycle
 
 \end{enumerate}
 
-\chapter{Logic}
-
-We are assuming a basic understanding of propositional logic, including the operators and rules that are defined in the system. For more information on these please visit the Wikipedia article\cite{propositionalwiki}.
+\chapter{Background} 
 
 \section{Propositional Logic}
 
@@ -124,9 +146,9 @@ Propositional logic is a branch of logic that studies ways of combining and modi
 A logical system contains three major parts:
 
 \begin{enumerate}
-\item Syntax - the formal language that is used to express concepts.
-\item Semantics - provide meaning for the language.
-\item Proof theory - provides a way to convert one formula into another using a defined set of rules.
+\item \textbf{Syntax} - the formal language that is used to express concepts.
+\item \textbf{Semantics} - provide meaning for the language.
+\item \textbf{Proof theory} - provides a way to convert one formula into another using a defined set of rules.
 \end{enumerate}
 
 Logical definitions:
@@ -166,18 +188,19 @@ First order logic is differentiated from propositional logic by its use of \text
 
 Adding to propositional logic, first order logic also includes the quantifier symbols `$\forall$' and `$\exists$' in its alphabet as well as predicate and function symbols such as `P' and `f'. Predicate symbols are usually represented by upper case letters P, Q, R, etc. Predicate and function symbols have a \textit{valence} (number of arguments), for example P(x) has valence 1.
 
-In a well-formed formula (wff), variables can either be free or bound. If a variable is quantified it is classed as bound, otherwise it is a free variable. A sentence is a formula with no free variables.
+In a \emph{well-formed formula} (wff), variables can either be \emph{free} or \emph{bound}. If a variable is quantified it is classed as bound, otherwise it is a free variable. A \emph{sentence} is a formula with no free variables.
 
 \section{Truth tables}
 \label{sec:truth_tables}
 
 It is necessary to understand the meanings of the symbols used in a language. Truth tables are mathematical tables used in logic to compute the functional values of logical expressions. They can be used to determine whether or not a propositional logic statement is logically valid.
 
-A \textit{situation} determines whether each propositional atom is true or false. A truth table shows all the situations the input variables can be in. We write 1 for true and 0 for false as shown below:
+A \textit{situation} determines whether each propositional atom is true or false. A truth table shows all the situations the input variables can be in. We write 1 for true and 0 for false as shown below in Table \ref{table:a_and_b_truth_table}:
 
 \vspace{5 mm}
+\begin{table}[ht]
 \begin{center}
-  \begin{tabular}{ || c | c || c | c || }
+  \begin{tabular}{ | c | c || c | c | }
     \hline
     A & B & A$\land$B & A$\lor$B \\ \hline
     1 & 1 & 1 & 1 \\
@@ -186,27 +209,20 @@ A \textit{situation} determines whether each propositional atom is true or false
     0 & 0 & 0 & 0 \\
     \hline
   \end{tabular}
+\caption{Truth table for A$\land$B and A$\lor$B}
+\label{table:a_and_b_truth_table}
 \end{center}
+\end{table}
 \vspace{5 mm}
 
 Truth tables can be used to define any operator in propositional logic, including any new ones which might be desired. However, truth tables cannot be used with first order logic. With quantifiers, there is not finite set of propositions and variables do not refer to specific items in the domain.
 
-\chapter{Related Work}
-\label{chap:related_work}
+\section{Related Work}
+\label{sec:related_work}
 
-\section{Logic Daemon}
+\subsection{Logic Daemon}
 
-Created in Texas A\&M University, the Logic Daemon\cite{logicdaemon} is an online logic proof checker. It comprises a simple web page with two small text input boxes for the premises and conclusion and then one large text box for applying primitive rules (Figure: \ref{logicdaemon}).
-
-While this tool does allow us to apply rules to prove equivalences we do not find it very intuitive to use at all. The interface itself looks quite unclear and isn't user friendly so it would not be suited to new students. Applying the rules to the premises is also quite confusing as it shows all the rules and does not alert the user to the fact they cannot be applied until they have already clicked on it. We found this a frustrating way of attempting a proof; as such, we intend to only display the rules that can be applied in the current situation.
-
-However, it is a useful tool for those more knowledgeable about logic for checking proofs once they have got to grips with the interface. It also has a \textit{`Get Help'} button to suggest which rule to use next. We hope to use the idea of a help button in our project but to build upon it in order to provide more extensive help such as showing when an action has been repeated (i.e. a cycle has been reached).
-
-We hope that our tool will be more intuitive to use because we will display formulae as formation trees with interactive nodes to apply rules with. This should provide a more straight forward way of presenting the rules to new students.
-
-The website also provides a simple equivalence checker, well-formed formula checker and countermodel checker. These are all similar tools useful in logic but again the interface is not particularly intuitive or user friendly.
-
-The Logic Daemon tool also provides support for first order logic which we are not planning on covering in our main tool. However, this could be implemented as an extension at the end of our project.
+Created in \emph{Texas A\&M University}, the \emph{Logic Daemon}\cite{logicdaemon} is an online logic proof checker. It comprises a simple web page with two small text input boxes for the premises and conclusion and then one large text box for applying primitive rules (Figure: \ref{logicdaemon}).
 
 \begin{figure}[ht]
     \centering
@@ -215,14 +231,20 @@ The Logic Daemon tool also provides support for first order logic which we are n
     \label{logicdaemon}
 \end{figure}
 
-\section{Pandora}
-\label{sec:pandora}
+While this tool does allow us to apply rules to prove equivalences we do not find it very intuitive to use at all. The interface itself looks quite unclear and isn't user friendly so it would not be suited to new students. Applying the rules to the premises is also quite confusing as it shows all the rules and does not alert the user to the fact they cannot be applied until they have already clicked on it. We found this a frustrating way of attempting a proof; consequently, we intend to only display the rules that can be applied in the current situation.
 
-Pandora\cite{pandora} is a tool created by Imperial College London; it stands for `Proof Assistant for Natural Deduction using Organised Rectangular Areas'. It can be used to prove that a goal formula follows from the given formulae. Pandora allows the user to repeatedly apply natural deduction rules (Figure: \ref{pandora}).
+However, it is a useful tool for those more knowledgeable about logic for checking proofs once they have got to grips with the interface. It also has a \textit{``Get Help''} button to suggest which rule to use next. We have used the idea of a help button in our project but to build upon it in order to provide more extensive help such as showing when an action has been repeated (a cycle has been reached).
 
-We do not intend to include natural deduction in our tool as we want to focus more on solving propositional logic equivalences. Pandora is a much nicer tool than the Logic Daemon and we find it much more intuitive and easy to use.
+We think that our tool feels more intuitive to use because we display the formulae as formation trees with interactive nodes to apply rules with. This provides a more straight forward way of presenting the rules to new students.
 
-Pandora allows a user to apply rules forwards or backwards. We know from using Pandora that some proofs are easier to complete working backwards. This is an idea we would like to incorporate into our tool by allowing the user to expand both the top and bottom formula to show their formation trees to apply rules. 
+The website also provides a simple equivalence checker, well-formed formula checker and countermodel checker. These are all similar tools useful in logic but again the interface is not particularly intuitive or user friendly.
+
+The \emph{Logic Daemon} tool also provides support for first order logic which we have implemented as an extension.
+
+\subsection{Pandora}
+\label{sub:pandora}
+
+\emph{Pandora}\cite{pandora} is a tool created by Imperial College London; it stands for Proof Assistant for Natural Deduction using Organised Rectangular Areas. It can be used to prove that a goal formula follows from the given formulae. Pandora allows the user to repeatedly apply natural deduction rules (Figure \ref{pandora}).
 
 \begin{figure}[ht!]
     \centering
@@ -231,128 +253,175 @@ Pandora allows a user to apply rules forwards or backwards. We know from using P
     \label{pandora}
 \end{figure}
 
-\section{Logic Solver}
+We have not included natural deduction in our tool as we wanted to focus on solving propositional logic equivalences. \emph{Pandora} is a much nicer tool than the \emph{Logic Daemon} and we find it much more intuitive and easy to use.
+
+\emph{Pandora} allows a user to apply rules forwards or backwards. We know from using \emph{Pandora} that some proofs are easier to complete working backwards. This is an idea we have incorporated into our tool by allowing the user to expand both the top and bottom formula to show their formation trees to apply rules. 
+
+\subsection{Logic Solver}
 
 This is an Android application to show truth tables and possible logical equivalences. It looks like it has been made as a phone application as on a tablet it fills very little of the screen and it is difficult to click on some of the links (Figure \ref{logicsolver}).
 
-The user can apply rules to the formula they enter into the application; this is done by selecting the rule they want out of a list which is then applied to the formula. However they cannot use this application to solve an equivalence as they can only enter one formula and then apply rules to that. We want to improve upon this in our own application by allowing the user to enter two formulae and work from either end to solve it.
-
-The list of rules that is offered to the user only shows the rules that can be applied to the current formula. We want to also offer this behaviour as there are far too many rules to display them all to the user and expect them to sort through which could be applied.
-
-Formulae are displayed simply in the application. This could be improved upon so we want to display our current formula as its formation tree.
-
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{logicsolver.png}
+    \includegraphics[width=0.7\textwidth]{logicsolver.png}
     \caption{Logic Solver Android Application}
     \label{logicsolver}
 \end{figure}
 
-\section{Truth Tables}
+The user can apply rules to the formula they enter into the application; this is done by selecting the rule they want out of a list which is then applied to the formula. However, they cannot use this application to solve an equivalence as they can only enter one formula and then apply rules to that.
 
-Truth Tables is also an Android application mainly for use on a phone. It simply generates and displays truth tables based on a logical formula (Figure \ref{truthtables}).
+The list of rules that is offered to the user only shows the rules that can be applied to the current formula. We have also offered this behaviour as there are far too many rules to display them all to the user and expect them to sort through which could be applied.
 
-We do not plan on adding the ability to view truth tables to our application, although we will need to implement them to check formulae are equivalent. However, this could be added as an extension at the end of the project.
+Formulae are displayed simply in the application. This could be improved upon so we are displaying the current formulae with their formation trees.
+
+\subsection{Truth Tables}
+
+\emph{Truth Tables} is also an Android application mainly for use on a phone. It simply generates and displays truth tables based on a logical formula (Figure \ref{truthtables}).
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{truthtables.png}
+    \includegraphics[width=0.7\textwidth]{truthtables.png}
     \caption{Truth Tables Android Application}
     \label{truthtables}
 \end{figure}
 
-\section{LogicCalc}
+We have not added the ability to view truth tables to our application, although we have implemented them to check formulae are equivalent. However, this could always be added as an extension.
 
-LogicCalc is an Android application for solving problems with propositional logic. It allows the user to create workbooks to save and print their proofs (Figure \ref{logiccalcapp}). However we had trouble running it on our Nexus tablet.
+\subsection{LogicCalc}
 
-We like the idea of saving proofs in workbooks for future reference. This is something we had not considered before and are curious to explore as an extension. This functionality would be useful for students completing exercises that needed a paper hand in as they would be able to save and print them off.
+\emph{LogicCalc} is an Android application for solving problems with propositional logic. It allows the user to create workbooks to save and print their proofs (Figure \ref{logiccalcapp}). However, we had trouble running it on our Nexus tablet.
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{logiccalcapp.png}
+    \includegraphics[width=0.8\textwidth]{logiccalcapp.png}
     \caption{LogicCalc Android Application}
     \label{logiccalcapp}
 \end{figure}
 
-\section{Propositional Logic Calculator}
+We liked the idea of saving proofs in workbooks for future reference. This is something we considered implementing, but decided to go in other directions. This functionality would be useful for students completing exercises that needed a paper hand in as they would be able to save and print them off.
 
-The Propositional Logic Calculator\cite{logiccalc} finds all of the models of a given propositional formula. The website tells us that the only limitation for this calculator is that we have only three atomic propositions to choose from: p, q and r (Figure: \ref{logiccalc}).
+\subsection{Propositional Logic Calculator}
 
-Propositions are entered using the keyboard they provide on the calculator and the reasoning process is initiated by clicking `ENTER'. It then calculates the truth value assignments that will make the formula true in the `MODELS' section and the truth value assignments making the formula false in the `COUNTERMODELS' section.
-
-This tool is used simply for calculating truth values of a formula. As previously mentioned we do not intend on displaying the truth tables to the user.
+The \emph{Propositional Logic Calculator}\cite{logiccalc} finds all of the models of a given propositional formula. The website tells us that the only limitation for this calculator is that we have only three atomic propositions to choose from: \emph{p}, \emph{q} and \emph{r} (Figure: \ref{logiccalc}).
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{logiccalc.png}
+    \includegraphics[width=0.8\textwidth]{logiccalc.png}
     \caption{Propositional Logic Calculator}
     \label{logiccalc}
 \end{figure}
 
-%\section{Previous Year Projects}
+Propositions are entered using the keyboard they provide on the calculator and the reasoning process is initiated by clicking `ENTER'. It then calculates the truth value assignments that will make the formula true in the `MODELS' section and the truth value assignments making the formula false in the `COUNTERMODELS' section.
 
-%Once we have made more progress on our tool we will look into finding out what previous years did when they were assigned similar projects. We do not want to look into these this early in the project so we can generate our own implementation ideas as these projects will be very similar to ours.
+\FloatBarrier
+\section{Parsers}
+
+Parsing is the process of breaking down data into smaller elements according the rules of a formal grammar. A parser will normally build a data structure such as a parse tree or abstract syntax tree from the elements. It is usually used as a component of a compiler and comprises of three parts: 
+
+\begin{enumerate}
+\item Lexical analysis: A lexer creates tokens from the input stream.
+
+\item Syntactic analysis: Uses a context-free grammar to check that the generated tokens form a meaningful expression.
+
+\item Semantic parsing: Takes the validated expression and performs the necessary actions based on their meaning.
+\end{enumerate}
+
+\subsection{Formal Grammars}
+
+A grammar provides a set of rules which tell the parser how to form valid elements from the language's alphabet. The grammar ensures that the elements comply with the syntax of the language, but it does not describe meaning to these elements. A grammar will normally begin with a ``start symbol'', this defines where the parser should begin reading from.
+
+\subsubsection{Context-Free Grammar}
+
+A grammar is context-free if the left-hand side of each rule only contains a nonterminal symbol, the right hand side can be constructed of any symbols. If a language can be generated by a context-free grammar then it can be called a context-free language.
+
+\subsubsection{Regular Grammar}
+
+A regular grammar is similar to a context-free grammar in that the left-hand side of each rule still must only contain a nonterminal symbol, but the right-hand side is limited. The right-hand side can only be a single terminal symbol, a terminal symbol followed by a single nonterminal symbol or the empty string.
+
+\subsubsection{EBNF}
+
+Extended Backus–Naur Form (\emph{EBNF}) is a code used to express context-free grammars for a formal language. It can use terminal and nonterminal symbols to make up the rules. A terminal symbol can be an alphanumeric character, a punctuation mark or a variety of other characters.
+
+\subsection{Types of Parsers}
+
+A parser has the job of determining how to read the input from the ``start symbol'' in the grammar. This can either be done with top-down parsing or bottom-up parsing. 
+
+\subsubsection{Top-Down Parser}
+
+A parser is a top-down parser if it looks at the top level of the parse tree initially and then works down the tree according to the rules of the given grammar. It tries to find the left-most derivations of the input stream using a top-down expansion of the provided rules.
+
+\emph{LL} parsers are an example of top-down parsers. \emph{LL(k)} is a variation of an \emph{LL} parser which uses k tokens of lookahead, whereas an \emph{LL(*)} parser is not restricted to a finite k lookahead tokens when parsing a sentence. An \emph{LL(*)} parser instead makes decisions based on whether or not the following tokens are a part of a regular language (a language generated by a regular grammar).
+
+\subsubsection{Bottom-Up Parser}
+
+Bottom-up parsers begin with the stream-input and try to rewrite it up to the ``start symbol''. It tries to identify the input's lowest level basic elements first, then the elements containing those, etc. An example of a bottom-up parser is an LR parser.
 
 \chapter{Parser}
 \label{chap:parser}
 
-\section{Parser Generation}
+\section{Parser Generator}
 
 A parser generator is a tool which creates a parser from an inputted grammar. This is necessary so that we can parse the logic equivalences entered in to our application and create an internal tree representation.
 
 \subsection{ANTLR4}
 
-ANTLR is a widely used powerful parser generator that can be used to read, process, execute or translate structured text. It is used by a variety of companies such as Twitter for query parsing and Hadoop in data analysis systems. ANTLR supports a wide range of languages including Java making it a very suitable choice for our project.
+\emph{ANTLR} is a widely used powerful parser generator that can be used to read, process, execute or translate structured text. It is used by a variety of companies such as \emph{Twitter} for query parsing and \emph{Hadoop} in data analysis systems. \emph{ANTLR} supports a wide range of languages including Java making it a very suitable choice for our project.
 
-From a grammar ANTLR generates a parser for that language and has the ability to automatically build parse trees representing the input. More interestingly, ANTLR also generates tree walkers which can be customised to visit the nodes of those trees and perform actions on those nodes. We use this functionality to build our own custom tree as described in Section \ref{sub:walker}.
+From a grammar \emph{ANTLR} generates a parser for that language and has the ability to automatically build parse trees representing the input. More interestingly, \emph{ANTLR} also generates tree walkers which can be customised to visit the nodes of those trees and perform actions on those nodes. We use this functionality to build our own custom tree as described in Subsection \ref{sub:walker}.
 
-ANTLR uses EBNF for its input grammar notation and uses an LL(*) parsing algorithm. This allows direct left recursion so that expressing our required syntax is easy and natural. 
+\emph{ANTLR} uses \emph{EBNF} for its input grammar notation and uses an \emph{LL(*)} parsing algorithm. This allows direct left recursion so that expressing our required syntax is easy and natural. 
 
 \subsection{Alternatives to ANTLR4}
 \label{sub:alternatives_to_antlr4}
 
-ANTLR4 provides many benefits over previous versions and alternatives. ANTLR4 uses a new variation of the LL(*) parsing algorithm that was used in ANTLR3. It uses an adaptive algorithm that is much stronger than the static grammar analysis algorithm used in ANTLR3. This means that ANTLR4 will accept much more natural looking grammars and provides a lot more flexibility than in previous versions. The ability to write much more natural expression rules increases the usability as in previous versions it was often a struggle to write a grammar that ANTLR would accept. ANTLR4 aimed to focus more on ease-of-use and chose simplicity over complexity where possible. This is a large reason for choosing this parser generator over the alternatives.
+\emph{ANTLR4} provides many benefits over previous versions and alternatives. \emph{ANTLR4} uses a new variation of the \emph{LL(*)} parsing algorithm that was used in \emph{ANTLR3}. It uses an adaptive algorithm that is much stronger than the static grammar analysis algorithm used in \emph{ANTLR3}. This means that \emph{ANTLR4} will accept much more natural looking grammars and provides a lot more flexibility than in previous versions. The ability to write much more natural expression rules increases the usability as in previous versions it was often a struggle to write a grammar that \emph{ANTLR} would accept. \emph{ANTLR4} aims to focus more on ease-of-use and chose simplicity over complexity where possible. This is a large reason for choosing this parser generator over the alternatives.
 
-Although there are a few other tools that can generate source code similar to ANTLR that you can load into a debugger and step through, none of them have adaptive LL(*) parsers as ANTLR4 does. Which means if we chose an alternative such as JavaCC we would need to configure our grammar to suit a weaker LL(k) parsing strategy. JavaCC is limited to the LL(k) class of grammars because it generates top-down parsers which means left recursion cannot be used. This would make generating the grammar more difficult and the result appear less natural.
+Although there are a few other tools that can generate source code similar to \emph{ANTLR} that you can load into a debugger and step through, none of them have adaptive \emph{LL(*)} parsers as \emph{ANTLR4} does. Which means if we chose an alternative such as \emph{JavaCC} we would need to configure our grammar to suit a weaker \emph{LL(k)} parsing strategy. \emph{JavaCC} is limited to the \emph{LL(k)} class of grammars because it generates top-down parsers which means left recursion cannot be used. This would make generating the grammar more difficult and the result appear less natural.
 
-Through our research we established that ANTLR4 provided the most sophisticated and easy-to-use parser generator for our project.
+\section{Parser Generation}
 
-\section{Grammar}
+\subsection{Grammar}
 
-\subsection{Propositional Logic}
-
-The grammar we use with ANTLR can be seen in Listing \ref{expr.g4}. We only use propositional atoms between `a' and `r' because we don't need a whole alphabet of variables available and extending it to the whole alphabet would cause confusion with the logical or (`$\lor$') symbol. 
+The grammar we use with \emph{ANTLR} can be seen in Listing \ref{expr.g4}. This grammar allows us to parse propositional and first order logic formulae.
 
 \begin{listing}[ht]
 \begin{minted}[mathescape, frame=lines]{antlr}
-grammar Expr;   
+grammar Expr; 
 
 prog: expr;
 
-expr: '(' expr ')'          #EXPR
-    | '¬' expr              #NOT
-    | expr BINOP expr       #BINOP_
-    | expr '→' expr         #IMPLIES
-    | expr '↔' expr         #IFF
-    | ATOM                  #ATOM_
-    |                       #ERROR
-    ;
+expr: '(' expr ')'                  #EXPR
+  | '¬' expr                        #NOT
+  | expr BINOP expr                 #BINOP_
+  | (QUANTIFIER ATOM)* '[' expr ']' #QUANTIFIER_
+  | expr '→' expr                   #IMPLIES
+  | expr '↔' expr                   #IFF
+  | TERM                            #TERM_
+  | ATOM                            #ATOM_
+  |                                 #ERROR
+  ;
 
+QUANTIFIER: ('∀' | '∃');
+PREDICATE: ('A'..'Z');
 BINOP: ('∧' | '∨');
-ATOM:  ('a'..'r' | '⊤' | '⊥');
-
+TERM:  (PREDICATE ATOM*);
+ATOM: ('a'..'z' | '┬' | '⊥');
 \end{minted}
-\caption{Expr.g4 grammar for Propositional Logic to be used by ANTLR}
+\caption{Expr.g4 grammar file for propositional and first order logic used by \emph{ANTLR}}
 \label{expr.g4}
 \end{listing}
 
-\subsection{Order of Precedence}
+Labels are used to recognise when a rule has been entered and exited. \emph{ANTLR} automatically generates enter and exit functions for each rule based by their label. Some labels are followed by an underscore to differentiate them from the rules with the same name. An element in the grammar followed by a star (*) means that zero-or-more of these are allowed.
 
-Precedence rules can be used as a way of reducing the number of necessary parentheses. We use these in our grammar to decide which connective is the main connective when parsing a non-atomic formula. The precedence of logical operators is defined in Table \ref{orderofprecendence}. The order of the grammar matches up with the order of precedence shown below, this is because ANTLR4 will choose the first rule that matches and this is how we maintain precedence.
+This grammar works for both propositional and first order logic formulae. This is because in propositional we will not allow the user to enter the first order symbols (quantifiers and terms) and in first order an error is returned if they try to use individual atoms without a predicate symbol.
+
+\subsubsection{Order of Precedence}
+
+Precedence rules can be used as a way of reducing the number of necessary parentheses. We use these in our grammar to decide which connective is the main connective when parsing a non-atomic formula. The precedence of propositional logical operators is defined in Table \ref{orderofprecendence}. The order of the grammar matches up with the order of precedence shown below, this is because \emph{ANTLR4} will choose the first rule that matches and this is how we maintain precedence.
 
 \begin{table}[h]
 \begin{center}
-\begin{tabular}{|| c | c ||}
+\begin{tabular}{| c | c |}
     \hline
     Operator & Precedence \\ \hline 
     $\lnot$  & 1 \\
@@ -366,23 +435,23 @@ Precedence rules can be used as a way of reducing the number of necessary parent
 \end{center}
 \end{table}
 
+In first order logic, quantifiers are evaluated after $\land$ and $\lor$ and before $\rightarrow$. Predicate symbols are evaluated at the same level as atoms.
+
 \subsection{Parser, Lexer and Walker}
 \label{sub:walker}
 
-ANTLR automatically generates a parser and lexer for the grammar. The lexer tokenises the input source (the logical formula) into a token stream which can then be passed to the parser. A parse tree is generated by the parser which can be walked through by a custom walker. 
+\emph{ANTLR} automatically generates a parser and lexer for the grammar. The lexer tokenises the input source (the logical formula) into a token stream which can then be passed to the parser. A parse tree is generated by the parser which can be walked through by a custom walker. 
 
-The custom walker extends the ANTLR generated listener to define methods for when the parser enters each rule defined in the grammar. For example, when the parser enters the {\tt NOT} rule, {\tt enterNOT()} is called. Equally, when that rule is exited, {\tt exitNOT()} is called. This allows us to walk through the parse tree and create our custom tree as we go.
+The custom walker extends the \emph{ANTLR} generated listener to override the methods for when the parser enters and exits each rule defined in the grammar. For example, when the parser enters the {\tt NOT} rule, {\tt enterNOT()} is called. Equally, when that rule is exited, {\tt exitNOT()} is called. This allows us to walk through the parse tree and create our custom tree as we go.
 
-An empty {\tt FormationTree} is passed through to the walker alongside the parse tree so the walker can build the tree up as the parse tree is walked through. Each time a grammar rule is entered the appropriate method in the walker is called to create that node in our tree. The structure of the tree is defined in more detail in Section \ref{sec:formation_tree}.
+An empty {\tt FormationTree} is passed through to the walker alongside the parse tree so the walker can build the tree up as the parse tree is walked through. Each time a grammar rule is entered the appropriate method (defined by the rule's label) in the walker is called to create that node in our tree. The structure of the tree is defined in more detail in Section \ref{sec:formation_tree}.
 
 \subsection{Error Handling}
 \label{sub:error_handling}
 
-ANTLR provides an {\tt ANTLRErrorStrategy} interface for implementing a custom error handler to deal with syntax errors encountered during a parse by ANTLR-generated parsers. However, this has limited documentation and is a complex feature. Therefore, we have opted to relax the grammar by defining an error case so we can treat incorrect syntax as a semantic error instead.
+\emph{ANTLR} provides an {\tt ANTLRErrorStrategy} interface for implementing a custom error handler to deal with syntax errors found during a parse by \emph{ANTLR}-generated parsers. However, this has limited documentation and is a complex feature. Therefore, we have opted to relax the grammar by defining an error case so we can treat incorrect syntax as a semantic error instead. As shown in Listing \ref{expr.g4} we define an {\tt ERROR} case which accepts any incorrect syntax. 
 
-As shown in Listing \ref{expr.g4} we define an {\tt ERROR} case which accepts any incorrect syntax. Once parsing is complete we walk over the tree using an {\tt ExprWalker} (described in Section \ref{sub:walker}) and when an error case is entered we can set an error flag in the tree. This enables us to manage the error later by displaying an error message to the user without the application throwing up errors.
-
-\subsection{Extension to First Order Logic}
+Once parsing is complete we walk over the tree using an {\tt ExprWalker} (Subsection \ref{sub:walker}) and when an error case is entered we can set an error flag in the tree. This enables us to manage the error later by displaying an error message to the user without the application throwing up errors.
 
 \chapter{Internal Tree Representation}
 \label{chap:internal_tree_representation}
@@ -409,88 +478,91 @@ public FormationTree compile(String expr) {
     return tree;
 }
 \end{minted}
-\caption{compile() function to convert a logical formula into a FormationTree}
+\caption{{\tt compile()} function to convert a logical formula into a FormationTree using the \emph{ANTLR} generated lexer, parser and walker. The method {\tt prog()} defines the  where to begin the parse tree from in the grammar, ({\tt prog} is the ``start symbol'' defined at the very top of the grammar).}
 \label{compile()}
 \end{listing}
 
 \section{Formation Tree}
 \label{sec:formation_tree}
 
-To build our internal representation of the logical formula we define a class {\tt FormationTree}. This is a slightly modified binary tree that stores the root node and an error flag as well as performing all of the tree operations required - such as adding a new node (detailed in Section \ref{sub:tree_operations}).
+To build our internal representation of the logical formula we define a class {\tt FormationTree}. This is a slightly modified binary tree that stores the root node and an error flag as well as performing all of the tree operations required - such as adding a new node (detailed in Subsection \ref{sub:tree_operations}).
 
 \subsection{Node Index}
 \label{sub:node_index}
 
-In the final application we will be manipulating individual nodes in the tree. If there are two nodes with the same values and subtrees we need to be sure we're applying a rule to the correct node. Therefore, it is essential that all nodes in the tree have a unique index.
-
-TODO: Add diagrams with/without indexes to show why we require them and what could happen without.
+In the final application we manipulate individual nodes in the tree. If there are two nodes with the same values and subtrees we need to be sure we're applying a rule to the correct node, otherwise you could end up applying a rule to the first occurrence of that subtree instead of to the correct subtree. Therefore, it is essential that all nodes in the tree have a unique index.
 
 \subsubsection{[Key, Depth] Pairs}
 
 We represent this index as a [key, depth] pair. We define this pair using the three following principles:
 
-\textbf{Principle 1:} A node's depth is defined as the level at which it is found in the tree. 
+\begin{enumerate}[leftmargin=*, align=left, label=\bfseries Principle \arabic*:]
+\item A node's depth is defined as the level at which it is found in the tree. 
 
-\textbf{Principle 2:} A node's key is defined by its horizontal position in its level with the leftmost node beginning at 0 and increasing incrementally.
+\item A node's key is defined by its horizontal position in its level with the leftmost node beginning at 0 and increasing incrementally.
 
-\textbf{Principle 3:} Index's are also applied to gaps in the tree - where nodes could be placed in the future. So the leftmost leaf will only have a key of 0 if it is the child of all the leftmost nodes in the tree.
+\item Incrementing the key also increments for any gaps in the tree where a node could be placed in the future. So the leftmost leaf will only have a key of 0 if it is the child of all the leftmost nodes in the tree.
+\end{enumerate}
 
-For example, a formula `a$\land$b' would only have three nodes - the `and' connective ($\land$) would have a key and depth of 0 and the atoms `a' and `b' would be at depth 1. As `a' is the leftmost node it will be assigned a key value of 0, and `b' will be assigned 1. The example's key and depths are shown in Figure \ref{keydepths}. 
-
-By Principle 3 the incrementation of keys includes all gaps where it is possible for future nodes to be placed - so in our example it were possible for the node `a' to not exist, b would still have the index [1, 1] and would not be upgraded to [0, 1] as there is still a gap for a left child to exist in.
+For example, a formula $a\land b$ would only have three nodes - the `and' connective ($\land$) would have a key and depth of 0 and the atoms $a$ and $b$ would be at depth 1. As $a$ is the leftmost node it will be assigned a key value of 0, and $b$ will be assigned 1. A larger example's ($(x\land\lnot y)\rightarrow((x\lor y)\land u)$) key and depths are shown in Figure \ref{keydepths}. 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.4\textwidth]{keydepths.png}
-    \caption{Tree representation of `a$\land$b' showing the key and depth at each node}
+    \includegraphics[width=0.7\textwidth]{keydepths.png}
+    \caption{Tree representation of $(x\land\lnot y)\rightarrow((x\lor y)\land u)$ showing the [key, depth] pair at each node and the binary representation of the index underneath.}
     \label{keydepths}
 \end{figure}
+
+By \textbf{Principle 3} the incrementation of keys includes all gaps where it is possible for future nodes to be placed. In our example, the node $y$ has the index [2, 3] instead of [0, 3] because if the left most $x$ node had children they would use that index and each index must be unique.
 
 \subsubsection{Binary Representation of Index}
 
 The index of a node can be represented in binary to enable us to navigate around the tree easily. The depth represents how many bits should be read and the key defines the binary number. The depth is required so that two nodes with the same key cannot be read as the same. 
 
-In the above example `$\land$' and `a' both have the same key, but their binary representations would be different. `$\land$' does not have a representation as it is the root (length of binary read is zero) and `a' would be 0. If `a' had a children the left child's index would be read as 00 and the right child's as 01. We go into more detail about navigating the tree using the binary representation of indexes in Section \ref{sub:tree_operations}.
+In the example in Figure \ref{keydepths} `$\rightarrow$' and its left child `$\land$' both have the same key of 0, but their binary representations are different. `$\rightarrow$' does not have a representation as it is the root (length of binary read is zero) and $\land$ would be 0. You can see that each time you move down a level you add a 0 if you move left and a 1 if you move right. We go into more detail about navigating the tree using the binary representation of indexes in Subsection \ref{sub:tree_operations}.
 
 \subsubsection{Determining Child and Parent Indexes}
 
-Using this implementation of indexing not only guarantees that no two nodes will have the same index, but also we can easily work out the index of any child node, given we have the parent's index. For example, if we have a subtree of `c$\to$d' and we know the parent's ($\to$) index is [3, 2] and we want to calculate the index of the child node `c' we perform the following actions:
+Using this implementation of indexing not only guarantees that no two nodes will have the same index, but also we can easily work out the index of any child node, given we have the parent's index. Using the example, we have a subtree of $x\lor z$ at index [2, 2]. If we wanted to calculate the index of the child node $x$ we perform the following actions:
 
 \begin{enumerate}
-    \item \textbf{Key:} We perform a logical left-shift on the parent key (3 << 1 = 6)
+    \item \textbf{Key:} We perform a logical left-shift on the parent key (2 << 1 = 4 shown in Figure \ref{leftshift})
     \item \textbf{Depth:} Increment the parent depth (2++ = 3)
 \end{enumerate}
 
-So the resulting index becomes [6, 3]. To calculate the right child `d' we can simply increment the key of the left child to become [7, 3].
+So the resulting index of $x$ is [4, 3]. To calculate the right child $z$'s index we can simply increment the key of the left child using \textbf{Principle 2} to become [5, 3].
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.3\textwidth]{leftshift.png}
+    \caption{Left shift of 2 << 1 to give 4. MSB: Most significant bit, LSB: Least significant bit.}
+    \label{leftshift}
+\end{figure}
 
 We can also find the parent node's index given a child node by performing the opposite operations. A logical right-shift finds the parent key and decrementing the depth finds the parent depth.
-
-TODO: Draw diagram of left-shift example
 
 \subsection{Tree Operations}
 \label{sub:tree_operations}
 
 \subsubsection{Finding a Node}
 
-Finding a node based on it's index is extremely straight forward using our node indexing scheme. We define a method {\tt findNode()} which simply steps through the tree using the binary representation of the index as a map.
+Finding a node based on its index is extremely straight forward using our node indexing scheme. We define a method {\tt findNode()} which simply steps through the tree using the binary representation of the index as a map.
 
-For each level in the tree starting at the root node we take the left most bit of the key and this tells us whether we should take the left or right child route. An unset bit and a set bit represent the left and right children respectively. After we have taken that path and moved to the next level we use a mask to remove the left most bit from the key so that it does not conflict with the next level's left most bit.
+For each level in the tree starting at the root node we take the left most bit of the key and this tells us whether we should take the left or right child route. An unset bit and a set bit represent the left and right children respectively. After we have taken that path and moved to the next level we use a mask to remove the left most bit from the key so that it does not conflict with the next level's left most bit. Once the required depth is reached the current node is returned.
 
-Once the required depth is reached the current node is returned.
-
-To find the node defined by index [1, 1] in Figure \ref{keydepths} we would begin at the root node and take the left most bit of the binary representation to determine our path. The binary representation of this node is 1. As the left most bit of this is 1 we take the right path putting us at the node `b'. This is at the required level so the tree walk completes and we return node `b'.
+To find the node $z$ defined by index [5, 3] in Figure \ref{keydepths} we would begin at the root node and take the left most bit of the binary representation to determine our path. The binary representation of this node is 101. As the left most bit of this is 1 we take the right path putting us at the right child node $\land$. The left most bit is then removed to leave 01, the next bit is 0 so we move left to $\lor$. Finally, the last bit is 1 so we move right giving us the node $z$. This is the at the required depth so the tree walk completes and returns the node. 
 
 \subsubsection{Adding a New Node}
 
 We define a method {\tt addNode()} to handle the addition of new nodes to the tree. The node passed in will already have its index set up so here we simply need to assign it to the correct position.
 
-If the root of the tree does not exist then the node becomes the new root. Otherwise, we calculate the parent node's index as described in Section \ref{sub:node_index} and use {\tt findNode()} to obtain the parent node that will already exist in the tree. We set this as the new node's parent.
+If the root of the tree does not exist then the node becomes the new root. Otherwise, we calculate the parent node's index as described in Subsection \ref{sub:node_index} and use {\tt findNode()} to obtain the parent node that will already exist in the tree. We set this as the new node's parent.
 
 Either the parent node is a unary operator and we set the child of that node to be our new node, or it is a binary operator and we must determine if the the new node is a left or right child. If the node's key is divisible by 2 then the node is a left child, else it's a right child. We then set parent's child respectively. 
 
 \section{Nodes}
 
-Due to the nature of logical formulae we need to be able to differentiate between unary operators such as $\lnot$, binary operators such as $\to$ and atoms. We define a class {\tt Node} which all of these will extend to define the core functionality required from every node.
+Due to the nature of logical formulae we need to be able to differentiate between unary operators, binary operators and atoms. We define a class {\tt Node} which all of these will extend to define the core functionality required from every node.
 
 Every node in the tree must contain a key, a depth, a value and a parent (unless it's the root in which case the parent is null).
 
@@ -499,16 +571,12 @@ We define {\tt BinaryOperator}, {\tt UnaryOperator} and {\tt Atom} separately so
 \chapter{Tree Manipulation}
 \label{chap:tree_manipulation}
 
-The application requires a few key features concerning tree manipulation: the ability to apply logical equivalence rules to a tree, compare the equivalence of two trees and randomly generate trees.
+The application requires a few key features concerning tree manipulation: the ability to apply logical equivalence rules to a tree, compare the equivalence of two trees and randomly generate trees. This section will explain how these features were implemented.
 
 \section{The Rule Engine}
 \label{sec:the_rule_engine}
 
-To handle the application of logical equivalences we define a series of rules that can be applied to individual nodes so long as they meet the required criteria for that rule. The {\tt RuleEngine} manages the application and selection of these rules employing a {\tt RuleApplicator} and {\tt RuleSelector} respectively.
-
-TODO: Add screenshots of just the tree in app to show a walk through of how rules are applied.
-
-TODO: Add Appendix with rules list
+To handle the application of logical equivalences we define a series of rules (Appendix \ref{chap:rules_list}) that can be applied to individual nodes so long as they meet the required criteria for that rule. The {\tt RuleEngine} manages the application and selection of these rules employing a {\tt RuleApplicator} and {\tt RuleSelector} respectively.
 
 \subsection{Rule Selection}
 \label{sub:rule_selection}
@@ -517,7 +585,7 @@ The {\tt RuleEngine} defines a method {\tt getApplicableRules()} to compute whic
 
 Most of the rules can be put into categories (by operator) so only a subset of the rules need to be tested for a particular node. An example category is the `and' connective ($\land$) - if the selected node is an `and' connective then only the test for these rules should be performed as we know no other rules outside of that category will apply.
 
-Within categories we define the tests for each rule individually. Some rules do not need any extra tests other than being assigned to a category. For instance the commutativity rule can be applied to any `and' or `or' operator node without any further tests being conducted. Whereas, the distributivity rule could be applied to an `and' operator only so long as one of its children was an `or' operator.
+Within categories we define the tests for each rule individually. Some rules do not need any extra tests other than being assigned to a category. For instance the commutativity rule ($a \land b \equiv b \land a$) can be applied to any `and' or `or' operator node without any further tests being conducted. Whereas, the distributivity rule ($p\land(q\lor r) \equiv (p\land q)\lor(p\land r)$) could be applied to an `and' operator only so long as one of its children was an `or' operator.
 
 The {\tt RuleSelector} defines methods of testing for the properties required by the rules such as testing for idempotence which proceeds by checking that both subtrees of the node are equivalent. Each rule that can be applied to the current node has its index set in the returned {\tt BitSet}.
 
@@ -526,7 +594,17 @@ The {\tt RuleSelector} defines methods of testing for the properties required by
 
 When the user selects an applicable rule the {\tt RuleApplicator} is used to apply that rule to the selected node. A function {\tt applyRuleFromBitSet()} is defined in the {\tt RuleEngine} to choose the correct manipulation to apply to the tree. It implements a large switch statement over the index of the rule to be applied with each case calling the necessary methods from the {\tt RuleApplicator}.
 
-Some rules can require user input, for example in `$\bot \equiv$ a$\land\bot$' we require some input to decide which variable to use in the place of `a'. The selected variable can be passed in when applying the rule from {\tt BitSet}.
+To apply a rule the function creates new operators and sets the children appropriately according the rule applied. For example, when the distributive rule ($(a \lor b) \land (a \lor c) \equiv a \lor (b \land c)$) is applied the following steps are taken:
+
+\begin{enumerate}
+\item A new `or' node is defined with its left child set arbitrarily to the left subtree at $a$ and the right child set to a new `and' node.
+\item The left child of `and' is set to the subtree at $b$ and the right child is set to the subtree at $c$.
+\item The parent of the selected node has the selected child set to the new `or' node and {\tt relabelNode()} is called to assign new indices to the moved nodes.
+\end{enumerate}
+
+In the case where this rule would be applied backwards and two copies of $a$ are required, we define a custom {\tt clone()} method to duplicate the subtree so no two nodes reference the same child.
+
+Some rules can require user input, for example in $\bot \equiv a \land\bot$ we require some input to decide which variable to use in the place of $a$. The selected variable can be passed in when applying the rule from {\tt BitSet}.
 
 \section{Generating Equivalent Formulae}
 \label{sec:generating_equivalent_formulae}
@@ -538,9 +616,9 @@ It is possible for a user to enter formulae manually, however, we also want to p
 
 When generating a logical formula we should be able to specify certain parameters such as how many variables and connectives are used. These parameters are used to generate different complexities of formulae for different difficulties.
 
-The {\tt Compiler} is used to generate a random formula. The function {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Section \ref{sub:variables}) and passed through to a function {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled.
+The {\tt Compiler} is used to generate a random formula. The function {\tt generateRandomEquivalence()} takes the number of variables we want to use and the maximum depth of the tree to be generated. A selection of variables that can be used is then chosen (Subsection \ref{sub:variables}) and passed through to a function {\tt generateSubEquivalence()}. This recursively generates subformulae until the end criteria are fulfilled and returns the string representation of the formula. The string representation is returned so that when the formula is compiled it will be assigned the correct indices.
 
-The end criteria are either the maximum depth or a random criterion has been reached. The random criterion adds an extra random factor so that we don't always get a balanced tree. This provides us with more interesting equivalences to work with. Currently the random criterion has a $\frac{1}{5}$ chance of succeeding because this produces nice looking results - trees which are generally not completely imbalanced but have a good level of variation to them. 
+The end criteria are either the maximum depth or a random criterion has been reached. At each level the random criterion decides whether or not each node should have children so that we don't always get a balanced tree. This provides us with more interesting equivalences to work with. Currently the random criterion has a $\frac{1}{5}$ chance of deciding to not generate children for a node because this produces nice looking results - trees which are generally not completely imbalanced but have a good level of variation to them. 
 
 During each recursion if the end criteria has been met then we can randomly choose an operator and variables to assign to it and set this as a final subformula. Else, instead of assigning variables we call the function again and assign the returned results to the operator.
 
@@ -549,7 +627,7 @@ Random operators and variables are selected using instances of {\tt Random} from
 \subsection{Variables}
 \label{sub:variables}
 
-Initially all the variables would appear in a generated formula with the same probability. However, this proved to be a poor approach because you often ended up with many truth values ($\top$ and $\bot$) in the formula. This made the equivalences very easy to solve as you could usually just reduce both to their equivalent truth value. Proving the formulae were equivalent this way doesn't promote the users learning experience as they will repeatedly only use a very small subset of basic equivalences such as `a$\lor\top \equiv \top$'.
+Initially all the variables would appear in a generated formula with the same probability. However, this proved to be a poor approach because you often ended up with many truth values ($\top$ and $\bot$) in the formula. This made the equivalences very easy to solve as you could usually just reduce both to their equivalent truth value. Proving the formulae were equivalent this way doesn't promote the users learning experience as they will repeatedly only use a very small subset of basic equivalences such as $a\lor\top \equiv \top$.
 
 The solution to this problem was to assign probabilities to the variables. We define an enum {\tt Variable} (see Listing \ref{variableenum}) where all the entries have a value and a weight. The weight is defined on a scale of 0 to 100 with the higher weights being more likely to be chosen.
 
@@ -581,24 +659,24 @@ There are two sections to the rule applications: choosing a random node and choo
 
 In our tree we define a method {\tt randomNode()} to randomly select a node. This method calculates the maximum depth of the tree by walking through the tree and returning the maximum depth found. A random level of the tree is chosen using an instance of {\tt Random} and the maximum depth before walking down the tree to that level - at each level the method arbitrarily picks a child to follow. When the selected random level is reached the current node is returned.
 
-Once a node has been selected to perform a rule on we call {\tt getApplicableRules()} (see Section \ref{sub:rule_selection}) to obtain the {\tt BitSet} of applicable rules. From this the number of applicable rules is used with another instance of {\tt Random} to select a rule to apply. Some of the rules require user input, so we define a special case for these rules to randomly select a variable to be passed through to {\tt applyRuleFromBitSet()} (see Section \ref{sub:rule_application}) when applying the rule. If no user input is required then we pass through null.
+Once a node has been selected to perform a rule on we call {\tt getApplicableRules()} (Subsection \ref{sub:rule_selection}) to obtain the {\tt BitSet} of applicable rules. From this the number of applicable rules is used with another instance of {\tt Random} to select a rule to apply. Some of the rules require user input, so we define a special case for these rules to randomly select a variable to be passed through to {\tt applyRuleFromBitSet()} (Subsection \ref{sub:rule_application}) when applying the rule. If no user input is required then we pass through null.
 
 \section{Truth Tables}
 \label{sec:generating_truth_tables}
 
-For a user to be able to complete a proof of their own custom equivalences we need to ensure that they are actually equivalent and the proof is completable before they begin. To do this we can use truth tables (defined in Section \ref{sec:truth_tables}).
+For a user to be able to complete a proof of their own custom equivalences we need to ensure that they are actually equivalent and the proof is completable before they begin. To do this we can use truth tables (Section \ref{sec:truth_tables}).
 
 \subsection{Generating Truth Tables}
 
-{\tt TruthTable} contains a {\tt SortedSet} of variables, a {\tt LinkedHashSet<ArrayList<Integer>>} table (each {\tt ArrayList} represents a row in the table) and a {\tt String} formula. They can be represented as shown in Table \ref{table:generated_truth_table}. 
+{\tt TruthTable} contains a {\tt SortedSet} of variables, a table with the type {\tt LinkedHashSet<ArrayList<Integer>>} (each {\tt ArrayList} represents a row in the table) and a string formula. They can be printed out as shown in Table \ref{table:generated_truth_table}, we will use this representation of our truth tables at explain each stage to help with the explanation. 
 
 To generate the truth table we need to generate the values for the atoms (the first two columns of the example shown in Table \ref{table:generated_truth_table}) then apply them to the formula to find the final column's truth values.
 
 \begin{table}[h]
   \begin{center}
-    \begin{tabular}{ || c | c || c || }
+    \begin{tabular}{ | c | c || c | }
       \hline
-      a & b & a$\land$b \\ \hline
+      $a$ & $b$ & $a \land b$ \\ \hline
       0 & 0 & 0 \\
       0 & 1 & 0 \\
       1 & 0 & 0 \\
@@ -606,7 +684,7 @@ To generate the truth table we need to generate the values for the atoms (the fi
       \hline
     \end{tabular}
   \end{center}
-  \caption{An example of a generated truth table}
+  \caption{A printed out example of a generated truth table}
   \label{table:generated_truth_table}
 \end{table}
 
@@ -614,13 +692,7 @@ We use a {\tt SortedSet} to store the variables in so that when comparing two tr
 
 \subsubsection{Creating Input Truth Values For Atoms}
 
-For creating the first two columns of the table shown in Table \ref{table:generated_truth_table} we define a function {\tt createAtomicTruthValues()}. This takes the number of variables present in the formula (in this case 2 - `a' and `b') and calculates the number of rows that will be present in the table:
-
-\begin{listing}[ht]
-\begin{minted}{java} 
-int rows = (int) Math.pow(2, numVars);
-\end{minted}
-\end{listing}
+For creating the first two columns of the table shown in Table \ref{table:generated_truth_table} we define a function {\tt createAtomicTruthValues()}. This takes the number of variables present in the formula (in this case the number of variables is 2 - $a$ and $b$) and calculates the number of rows that will be present in the table by squaring this number (giving us 4 rows).
 
 A new {\tt LinkedHashSet} table is created and for each row in the table and each variable we add a new entry as shown in Listing \ref{listing:create_truth_table}.
 
@@ -628,8 +700,10 @@ A new {\tt LinkedHashSet} table is created and for each row in the table and eac
 \begin{minted}{java} 
 for (int i = 0; i < rows; ++i) {
     ArrayList<Integer> row = new ArrayList<Integer>();
+
     for (int j = numVars - 1; j >= 0; --j)
         row.add((i / (int) Math.pow(2, j)) % 2);
+
     table.add(row);
 }
 \end{minted}
@@ -637,12 +711,13 @@ for (int i = 0; i < rows; ++i) {
 \label{listing:create_truth_table}
 \end{listing}
 
-This produces the table shown in Table \ref{table:generated_atomic_truth_values}. A similar result is produced for any number of variables.
+This produces a {\tt LinkedHashSet} which can be represented by the table shown in Table \ref{table:generated_atomic_truth_values}. A similar result is produced for any number of variables.
 
 \begin{table}[h]
   \begin{center}
-    \begin{tabular}{ || c | c || }
+    \begin{tabular}{ | c | c | }
       \hline
+      $a$ & $b$ \\ \hline
       0 & 0 \\
       0 & 1 \\
       1 & 0 \\
@@ -656,38 +731,21 @@ This produces the table shown in Table \ref{table:generated_atomic_truth_values}
 
 \subsubsection{Determining Truth Value For The Tree}
 
-TODO: Add diagram of tree example with truth values evaluated at each subequivalence
-
 Each row of the table is used to evaluate the truth values of the formula for the final column in the table. We define the function {\tt createTruthTable()} to create the final truth table for the tree of a logical formula. This calculates the number of variables by walking through the tree and passes this value to {\tt createAtomicTruthValues()} to generate the atomic truth values required as described above. 
 
-Looping through each row of the table allows us to compute the corresponding truth value for the formula. To compute the formula's truth value for that row a {\tt HashMap<String, Integer>} is created to map each variable to a truth value. The {\tt FormationTree} defines a method {\tt getTruthValue()} to calculate its truth value using this map.
+Looping through each row of the table allows us to compute the corresponding truth value for the formula. To compute the formula's truth value for that row a {\tt HashMap} of {\tt String} and {\tt Integer}s is created to map each variable to a truth value. The {\tt FormationTree} defines a method {\tt getTruthValue()} to calculate its truth value using this map.
 
-The tree determines its truth value by recursively calling {\tt getTruthValue()} on its nodes beginning at the root. Using the example shown in Table \ref{table:generated_truth_table} for `a$\land$b': the root node is `$\land$' so the result would be a logical and of the left and right children. When {\tt getTruthValue()} is called on an atomic value it either returns 0 or 1 if its a `$\bot$' or `$\top$' respectively, else it returns the value defined for that atom in the map.
+The tree determines its truth value by recursively calling {\tt getTruthValue()} on its nodes beginning at the root. Using the example shown in Table \ref{table:generated_truth_table} for $a \land b$: the root node is `$\land$' so the result would be a logical and of the left and right children. When {\tt getTruthValue()} is called on an atomic value it either returns 0 or 1 if the value is `$\bot$' or `$\top$' respectively, else it returns the value defined for that atom in the map.
 
-When evaluating the truth value for a formula the application uses shortcuts to reduce the amount of computation required. For example, when computing the truth value for the first row of our table [0, 0], where `a' and `b' both evaluate to 0 (or `$\bot$'), once the application knows the left child `a' is 0 there is no need to evaluate the right hand child because it's impossible for the overall truth value to be 1 (or `$\top$'). Therefore, the right hand evaluation is skipped.
+When evaluating the truth value for a formula the application uses shortcuts to reduce the amount of computation required. For example, when computing the truth value for the first row of our table [0, 0], where $a$ and $b$ both evaluate to 0 (or `$\bot$'), once the application knows the left child $a$ is 0 there is no need to evaluate the right hand child because it's impossible for the overall truth value to be 1 (or `$\top$'). Therefore, the right hand evaluation is skipped.
 
-The returned truth value is added to the end of its corresponding row in the table. Now the table looks as shown in Table \ref{table:final_generated_table} where the first two columns represents the truth values for the variables in our variables array and the final column represents the truth values for the whole formula.
-
-\begin{table}[h]
-  \begin{center}
-    \begin{tabular}{ || c | c || c || }
-      \hline
-      0 & 0 & 0 \\
-      0 & 1 & 0 \\
-      1 & 0 & 0 \\
-      1 & 1 & 1 \\
-      \hline
-    \end{tabular}
-  \end{center}
-  \caption{The result of {\tt createTruthTable()}}
-  \label{table:final_generated_table}
-\end{table}
+The returned truth value is added to the end of its corresponding row in the table. Now the table is complete and can be represented as shown in Table \ref{table:generated_truth_table}.
 
 The other operators use return their truth value using similar methods. The truth tables for all the used logical operators are defined in Table \ref{table:logical_operators}.
 
 \begin{table}[h]
   \begin{center}
-    \begin{tabular}{ || c | c || c | c | c | c | c || }
+    \begin{tabular}{ | c | c || c | c | c | c | c | }
       \hline
       a & b & a$\land$b & a$\lor$b & a$\to$b & a$\leftrightarrow$b & $\lnot$a \\ \hline
       1 & 1 & 1 & 1 & 1 & 1 & 0 \\
@@ -704,75 +762,65 @@ The other operators use return their truth value using similar methods. The trut
 \subsection{Testing Equivalence of Tables}
 \label{sub:testing_equivalence_of_tables}
 
-{\tt TruthTable} defines a method {\tt testEquivalence()} which compares its own truth table to another. There are four cases that could be possible when comparing truth tables:
+{\tt TruthTable} defines a method {\tt testEquivalence()} which compares its own truth table to another. There are three cases that could be possible when comparing truth tables:
 
-\textbf{Case 1: } Both formulae have the same variables and are equivalent.
+\begin{enumerate}[leftmargin=*, align=left, label=\bfseries Case \arabic*:]
+\item Both formulae have the same variables and can be proven equivalent;
 
-\textbf{Case 2: } Both formulae have different sets of variables and are equivalent.
+\item Both formulae have different sets of variables and can be proven equivalent;
 
-\textbf{Case 3: } The formulae are not equivalent.
+\item The formulae can not be proven not equivalent.
+\end{enumerate}
 
 \subsubsection{Checking Tables Are Equal}
 
-In the \textbf{Case 1} we could have two formulae such as `a$\land$b' and `b$\land$a'. These have contain identical sets of variables. They are equivalent if they contain the same set of variables and their truth tables are equal (Their truth tables are identical apart from the result formula).
+In the \textbf{Case 1} we could have two formulae such as $a \land b$ and $b \land a$. These have contain identical sets of variables. They are equivalent if they contain the same set of variables and their truth tables are equal - identical apart from the result formula.
 
-Tables are checked for equivalence using {\tt tablesEqual()}. If the two tables to be compared aren't the same size the method immediately returns false to reduce computation time. If they're equal it loops through each row in both tables and checks that they're equal. If all the rows are contained in each table the method returns true.
+Tables are checked for equivalence using {\tt tablesEqual()}. If the two tables to be compared aren't the same size the method immediately returns false to reduce computation time. If they're the same size it loops through each row in both tables and checks that they're equal. If all the rows are contained in each table the method returns true.
 
 \subsubsection{Different Variables and Differently Sized Tables}
 
-The variable sets need to be compared in the previous case because the tables can be equivalent even if they use different variables. In this case the proof may or may not be solvable. For example, `a$\land$b' has an equivalent table to `p$\land$q' but we do not define any rules for replacing one atom in the tree with another so you would not be able to complete the proof. Whereas, `a$\land\lnot$a' and `b$\land\lnot$b' have equivalent tables and can be proven equivalent because they both reduce to `$\top$'.
+The variable sets need to be compared in the previous case because the tables can be equivalent even if they use different variables. In this case the proof may or may not be solvable. For example, $a \land b$ has an equivalent table to $p \land q$ but we do not define any rules for replacing one atom in the tree with another so you would not be able to complete the proof. Whereas, $a \land \lnot a$ and $b \land \lnot b$ have equivalent tables and can be proven equivalent because they both reduce to `$\top$'.
 
 However, a basic check to ensure the two variable sets are equal does not always work as there are cases where the variable sets will be different as described above. 
 
-\textbf{Case 2} defines a case where both formulae are equivalent but have different variable sets. Another example of this would be `a$\land\top$' and `$\bot\lor$a' which both contain an atom not present in the other formula.
+\textbf{Case 2} defines a case where both formulae are equivalent but have different variable sets. Another example of this would be $a\land\top$ and $\bot\lor a$ which both contain an atom not present in the other formula.
 
 In this case we extend each table to include the missing variables (so both variable sets become equal) and then execute another comparison using {\tt testEquivalence()} where the tables will either fall into \textbf{Case 1} and be equivalent or \textbf{Case 3} and not be equivalent. 
 
-Due to the rules such as the absorption rule it is possible for formulae with differently sized variable sets to be equivalent too. These equivalences can also be shown to have equivalent truth tables by table extension.
+Due to the rules such as the absorption rule ($a \lor (a \land b) \equiv a$) it is possible for formulae with differently sized variable sets to be equivalent too. These equivalences can also be shown to have equivalent truth tables by table extension.
 
 \subsubsection{Table Extension}
 
-In this section we will be using `a$\land\lnot$a' and `b$\land\lnot$b' as our example formulae. The initial truth tables for each of these formula are shown in Table \ref{table:a_and_not_a}.
+In this section we will be using $a \land \lnot a$ and $b \land \lnot b$ as our example formulae. The initial truth tables for each of these formula are shown in Table \ref{table:a_and_not_a}.
 
 \begin{table}[h]
   \begin{center}
-\begin{tabular}{ || c || c || }
+\begin{tabular}{ | c || c | }
       \hline
-      a & a$\land\lnot$a \\ \hline
+      $a$ & $a \land \lnot a$ \\ \hline
       0 & 1 \\
       1 & 1 \\
       \hline
 \end{tabular}
 \hspace{15mm}
-\begin{tabular}{ || c || c || }
+\begin{tabular}{ | c || c | }
       \hline
-      b & b$\land\lnot$b \\ \hline
+      $b$ & $b \land \lnot b$ \\ \hline
       0 & 1 \\
       1 & 1 \\
       \hline
 \end{tabular}
   \end{center}
-  \caption{Truth tables for `a$\land\lnot$a' and `b$\land\lnot$b'}
+  \caption{Truth tables for $a \land \lnot a$ and $b \land \lnot b$}
   \label{table:a_and_not_a}
 \end{table}
 
-To be able to compare the truth tables of these formulae we need to extend them to include all the variables that appear in both formulae, the resulting tables should look as shown below in Table \ref{table:extended_a_and_not_a}.
+To be able to compare the truth tables of these formulae we need to extend them to include all the variables that appear in both formulae, the resulting tables should be able to be represented as shown in Table \ref{table:extended_a_and_not_a}.
 
 %As you can see the variables and the tables are now equal and can be compared as in \textbf{Case 1}. This table extension is performed in {\tt testEquivalence} if the formulae fail the test for \textbf{Case 1}. 
 
-First, a new variable set is created and the variables from both formulae are added to it as shown in Listing \ref{listing:create_new_variable_set}. In our example this set would become [a, b].
-
-\begin{listing}[ht]
-\begin{minted}{java} 
-SortedSet<String> all = new TreeSet<String>();
-all.addAll(variables);
-all.addAll(v2);
-\end{minted}
-\caption{Creating the new variable set}
-\label{listing:create_new_variable_set}
-\end{listing}
-
-Two new extended tables are created, the first initialised to the first original table and the second to the second original table. The function iterates through the new variable set and if a variable does not appear in one of the original sets it is added to its respective extended table using {\tt addVariable()} as shown in Listing \ref{listing:extending_tables}. 
+First, a new variable set is created and the variables from both formulae are added to it. In our example this set would become [$a$, $b$]. Two new extended tables are created, the first initialised to the first original table and the second to the second original table. The function iterates through the new variable set and if a variable does not appear in one of the original sets it is added to its respective extended table using {\tt addVariable()} as shown in Listing \ref{listing:extending_tables}. 
 
 Our example would need to extend both tables once until they had identical variable sets.
 
@@ -789,15 +837,15 @@ for (String var : all) {
 \label{listing:extending_tables}
 \end{listing}
 
-Adding a new variable to a table is done by duplicating each row and on each setting the value of the new variable to 0 and 1 respectively. The row [0, 1] in the formula `a$\land\lnot$a' would need a `b' variable added so would become two rows of [0, 0, 1] and [0, 1, 1] where the new variable has been inserted into the second column. The same would occur for the second row [1, 1].
+Adding a new variable to a table is done by duplicating each row and on each setting the value of the new variable to 0 and 1 respectively. The row [0, 1] in the formula $a\land\lnot a$ would need a $b$ variable added so would become two rows of [0, 0, 1] and [0, 1, 1] where the new variable has been inserted into the second column. The same would occur for the second row [1, 1].
 
-Once both tables have been extended (Table \ref{table:extended_a_and_not_a}) the function calls {\tt tablesEqual()} on them to confirm that they have the same truth values and are equivalent.
+Once both tables have been extended the function calls {\tt tablesEqual()} on them to confirm that they have the same truth values and are equivalent.
 
 \begin{table}[h]
   \begin{center}
-\begin{tabular}{ || c | c || c || }
+\begin{tabular}{ | c | c || c | }
       \hline
-      a & b & a$\land\lnot$a \\ \hline
+      $a$ & $b$ & $a\land\lnot a$ \\ \hline
       0 & 0 & 1 \\
       0 & 1 & 1 \\
       1 & 0 & 1 \\
@@ -805,9 +853,9 @@ Once both tables have been extended (Table \ref{table:extended_a_and_not_a}) the
       \hline
 \end{tabular}
 \hspace{15mm}
-\begin{tabular}{ || c | c || c || }
+\begin{tabular}{ | c | c || c | }
       \hline
-      a & b & b$\land\lnot$b \\ \hline
+      $a$ & $b$ & $b\land\lnot b$ \\ \hline
       0 & 0 & 1 \\
       0 & 1 & 1 \\
       1 & 0 & 1 \\
@@ -815,7 +863,7 @@ Once both tables have been extended (Table \ref{table:extended_a_and_not_a}) the
       \hline
 \end{tabular}
   \end{center}
-  \caption{Extended truth tables for `a$\land\lnot$a' and `b$\land\lnot$b'}
+  \caption{Extended truth tables for $a\land\lnot a$ and $b\land\lnot b$}
   \label{table:extended_a_and_not_a}
 \end{table}
 
@@ -826,35 +874,35 @@ If this check also fails then the formulae are \textbf{Case 3} where they are no
 
 \section{Which Platform?}
 
-In an ideal world it would have been very interesting and useful to have been able to build our application for multiple platforms - including for smartphones as well as tablets and the web. However, as we had a finite amount of time for this project it was initially obvious that focusing on one platform would provide us with a much more complete and robust final project.
+In an ideal world it would have been very interesting and useful to have been able to build our application for multiple platforms - including smartphones, tablets and the web. However, for this project it was obvious that focusing on one platform would provide us with a much more complete and robust final project.
 
-The options were narrowed down by the fact we wanted to display the formation tree of the current formula as this would require a fairly large amount of screen space. Therefore, we opted not to build the application for a smartphone. If this were to be an extension we could simply remove the formation tree functionality to make the application usable on the smaller screen. This left us with the option of building for a tablet or a website.
+The options were narrowed down by the fact we wanted to display the formation tree of the current formula as this would require a fairly large amount of screen space. Therefore, we opted not to target the application for a smartphone. If this were to be an extension we could simply remove the formation tree functionality to make the application usable on the smaller screen. This left us with the option of targeting a tablet or a website.
 
-Personal preference made the decision to choose an Android tablet as our tablet of choice because I had not had any experience programming with Android before and thought it would be a good skill to learn whereas I have programmed for iOS in the past. 
+If we chose to build an app for a tablet, personal preference would cause us to choose to develop for Android. This is because I had not had any experience programming with Android before and thought it would be a good skill to learn, whereas I have programmed for iOS in the past. However, we still needed to decide if we would develop for an Android tablet or the web.
 
 \subsection{Tablet Apps VS Web Apps}
 
 \subsubsection{User Interaction}
 
-The most obvious difference between an application on a tablet and on a computer is the difference in input methods. On a tablet a user uses gestures to interact with objects on the screen whereas on a computer a user can use the mouse to perform a variety of actions.
+The biggest difference between an application on a tablet and on a computer is the difference in input methods. On a tablet a user uses gestures to interact with objects on the screen whereas on a computer a user can use the mouse to perform a variety of actions.
 
-Obviously this is a key difference and would seriously affect the way the user would interact with the application. A tablet application would allow a more interactive application that would rely a lot more on user interaction such as using swiping gestures to move around the screen and selecting specific formula to undo back to that formula. This is because unlike on a computer a tablet does not have the ability to perform different types of clicks (left or right on the mouse) so the interaction would need to be well executed to be intuitive and easy-to-use. Therefore, choreographing the gestures and interaction on a tablet would be more difficult than on a webapp. 
+This difference seriously affects the way the user interacts with the application. A tablet application allows a more interactive application that would rely a lot more on user interaction such as using swiping gestures to move around the screen and selecting specific formula to undo back to that formula. This is because unlike on a computer a tablet does not have the ability to perform different types of clicks (left or right on the mouse) so the interaction needs to be well executed to be intuitive and easy-to-use. Therefore, choreographing the gestures and interaction on a tablet is more difficult than on a web app. 
 
 \subsubsection{Portability}
 
-A benefit of creating a tablet application is portability. As we are creating this application with the intention of it being a learning tool, the ability to use it easily and to be unintrusive and undisruptive in a lecture is a major bonus. A webapp could still be run on a laptop in this environment but they are generally considering to be more disruptive.
+Tablets are much easier to use discretely on the move or in lectures than a laptop. As we are creating this application with the intention of it being a learning tool, the ability to use it easily and to be unintrusive and undisruptive in a lecture is a major bonus. A web app could still be run on a laptop in this environment but they are generally considered to be more disruptive.
 
-While a web application could be used on a tablet the user experience is much richer with native applications. The graphics and user interface used for web apps are not as smooth as one would find on a native app. This is because the graphics for a native app are already installed and therefore download speed during use does not need to be considered while developing\cite{androidwebappdifferences}.
+While a web application could be used on a tablet the user experience is much richer with native applications. The graphics and user interface used for web apps are not as smooth as on a native app. This is because the graphics for a native app are already installed and therefore download speed during use does not need to be considered while developing\cite{androidwebappdifferences}.
 
-Building a native app means that the application can utilize all the build in hardware on the phone and access internal data. This functionality is not available through a web app.
+Building a native app means that the application can utilize all the built in hardware on the phone and access internal data. This functionality is not available through a web app.
 
 \subsubsection{Availability}
 
-There are currently no Android applications that provide the functionality we have detailed so far. This is shown in Section \ref{chap:related_work} describing related work. Whereas there are more complex options available on a computer such as Pandora \ref{sec:pandora} even though they completely functionally the same as our application they are quite useful logic applications. 
+There are currently no Android applications that provide the functionality we have detailed so far (Section \ref{sec:related_work}). Whereas there are more complex options available on a computer such as Pandora (Subsection \ref{sub:pandora}), and despite the fact they do not provide the same functionality as our application they are quite useful logic applications. 
 
 \subsubsection{Learning Experience}
 
-As I have not programmed any Android applications in the past I had a personal preference to creating an Android application. This would provide me with more to learn from the project unlike a web application which I have had a large amount of experience with.
+As I have not programmed any Android applications in the past I had a personal preference to create an Android application. This would provide me with more to learn from the project unlike a web application which I have had a large amount of experience with.
 
 \subsubsection{Decision}
 
@@ -862,15 +910,15 @@ In conclusion we decided to develop the application on an Android tablet device.
 
 \chapter{Android}
 
-Based on the Linux kernel Android is an operating system primarily designed for touchscreen mobile and tablet devices\cite{androidwiki}. The project responsible is the Android Open Source Project (AOSP) and is primarily lead by Google. The system provides a large user interface library and supports its graphics using the OpenGL-ES standard.
+Based on the Linux kernel Android is an operating system primarily designed for touchscreen mobile and tablet devices\cite{androidwiki}. The project responsible is the Android Open Source Project (AOSP) and is primarily lead by Google. The system provides a large user interface library and supports its graphics using the OpenGL-ES standard\cite{opengl}.
 
 \section{Technical Background}
 
 \subsection{Android Platform Components}
 
-The Android system can be divided into four main levels, applications, the application framework, libraries and runtime, and the Linux Kernel (listed from top to bottom).
+The Android system can be divided into four main levels (listed from top to bottom): applications, the application framework, libraries and runtime, and the Linux kernel.
 
-There are many default top level applications such as the Browser, Camera and Music. The application framework is an API allowing high-level interactions from applications to the Android system. Android libraries are used for many standard functions like web browsing and rendering graphics in the application framework and in the Dalvik runtime (Dalvik is the process virtual machine in Android). The Linux kernel acts as a communication layer for the underlying hardware.
+There are many default top level applications such as Browser, Camera and Music. The application framework is an API allowing high-level interactions from applications to the Android system. Android libraries are used for many standard functions like web browsing and rendering graphics in the application framework and in the Dalvik runtime (Dalvik is the process virtual machine in Android). The Linux kernel acts as a communication layer for the underlying hardware.
 
 When developing for Android a developer will only tend to work on the top two layers.
 
@@ -878,11 +926,11 @@ When developing for Android a developer will only tend to work on the top two la
 
 Applications extend the functionality of Android devices and are primarily developed in Java using the Android SDK. The SDK provides an extensive set of development tools and there is plenty of documentation available.
 
-Users of an Android device can download third party applications through an app store such as Google Play. There is a growing number of third party applications and the app stores allow a user to browse, download and update any applications published suitable for their device.
+Users of an Android device can download third party applications through an app store such as \emph{Google Play}. There is a growing number of third party applications and the app stores allow a user to browse, download and update any applications published suitable for their device.
 
 There were more than one million applications available for download from the Google Play Store as of July 2013\cite{appstoredownloads}. 
 
-\subsection{Memory Management}
+\subsection{Power Management}
 
 As with most mobile and tablet devices most Android devices are battery powered. Unlike desktop operating systems such as Windows, Android is designed to keep power consumption low. This is because desktop operating systems can make the assumption that they will be connected to unlimited mains electricity. 
 
@@ -890,20 +938,20 @@ To keep power consumption at a minimum Android will set apps to idle when they a
 
 \subsection{Market Share}
 
-Android's main competitor in the mobile platform market is Apple's iOS. In research conducted in the fourth quarter of 2012, Kantar Worldpanel Comtech showed sales of all Android smartphones worldwide outpacing the iPhone by a huge margin: 70 percent to 21 percent of the smartphone market\cite{androidstats}.
+Android's main competitor in the mobile platform market is Apple's iOS. In research conducted in the fourth quarter of 2012, \emph{Kantar Worldpanel Comtech} showed sales of all Android smartphones worldwide outpacing the iPhone by a huge margin: 70 percent to 21 percent of the smartphone market\cite{androidstats}.
 
-In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 percent to 42.7, which is lower than Android's smartphone market but steadily increasing.
+In the tablet market the iPad dominated Android's $7\verb+"+$ tablets with 53.8 percent to 42.7, which is lower than Android's smartphone market but steadily increasing\cite{marketshare}.
 
 \section{Features}
 
 \subsection{Graphics and Widget Library}
 \label{sub:graphics_and_widgets}
 
-Android does not use the Swing library or the Abstract Window Toolkit (AWT) used in most Java applications. Instead the graphical user interface for an Android app is built using a hierarchy of {\tt View} and {\tt ViewGroup} objects. The framework employed is similar to Swing but based around {\tt View} objects rather than {\tt JComponent} objects.
+Android does not use the Swing library or the Abstract Window Toolkit (AWT) UI libraries used in most Java applications. Instead the graphical user interface for an Android app is built using a hierarchy of {\tt View} and {\tt ViewGroup} objects. The framework employed is similar to Swing but based around {\tt View} objects rather than {\tt JComponent} objects.
 
 {\tt ViewGroup} objects are hidden containers used to define how the child views are positioned. Buttons and text fields are some examples of {\tt View} objects, they are UI widgets that manage what a user can see and do on the screen. {\tt View} and {\tt ViewGroup} components can either be defined in XML or programmatically.
 
-Widgets require the Android application's {\tt Context} to be provided at creation. The {\tt Context} of an application provides global information about its environment. As the name suggests, its provides the context of the current state of the application allowing newly created objects to understand what has occurred. It can be used to obtain information about another part of the program such as another {\tt Activity}.
+Widgets require the application's {\tt Context} to be provided at creation. The {\tt Context} of an application provides global information about its environment. As the name suggests, its provides the context of the current state of the application allowing newly created objects to understand what has occurred. It can be used to obtain information about another part of the program such as another {\tt Activity}.
 
 \subsection{Activities}
 \label{sub:activities}
@@ -912,24 +960,24 @@ An {\tt Activity} is the base for the user interface in Android, it represents t
 
 Often activities will be presented as a full-screen window but they can also be used as floating windows or embedded inside other activities (implementing {\tt ActivityGroup}). All {\tt Activity} classes must be declared in the Android manifest file. This is an XML file that holds all the essential information the application requires before it can run any code.
 
-When a new activity begins it is pushed onto the `back stack' and the previous activity is stopped. As the stack has the standard `last in, first out' structure when a user presses the back button the current activity will be popped off and the previous activity is resumed. 
+When a new {\tt Activity} begins it is pushed onto the ``back stack'' and the previous {\tt Activity} is stopped. As the stack has the standard ``last in, first out'' structure when a user presses the back button the current {\tt Activity} will be popped off and the previous {\tt Activity} is resumed. 
 
 \subsection{Fragments}
 \label{sub:fragments}
 
-A {\tt Fragment} is a piece of an application's UI that can be placed inside an activity. Each fragment defines its own lifecycle (with its own methods: {\tt onCreate()}, {\tt onPause()}, etc.). Although the lifecycle is reliant on its activity (if the activity is stopped then no fragments inside the activity may be started) a fragment is able to respond independently to events.
+A {\tt Fragment} is a piece of an application's UI that can be placed inside an {\tt Activity}. Each {\tt Fragment} defines its own lifecycle (each with its own methods: {\tt onCreate()}, {\tt onPause()}, etc.). Although the lifecycle is reliant on its {\tt Activity} (if the {\tt Activity} is stopped then no fragments inside the {\tt Activity} may be started) a {\tt Fragment} is able to respond independently to events.
 
-Fragments allow for modularisation of the layout code so that the user interface is more easily adjustable.
+{\tt Fragments} allow for modularisation of the layout code so that the user interface is more easily adjustable.
 
 \subsection{Intents}
 \label{sub:intents}
 
-Intents are used as a link between two activities for transferring data between them. Each {\tt Intent} is an asynchronous message suppling an action and data to the new activity. They are most often used for starting another activity and providing that activity with whatever information it requires from the previous. Intents are extremely useful as they allow the creation of a loose binding between two separate components.
+{\tt Intents} are used as a link between two activities for transferring data between them. Each {\tt Intent} is an asynchronous message suppling an action and data to the new {\tt Activity}. They are most often used for starting another {\tt Activity} and providing that {\tt Activity} with whatever information it requires from the previous. Intents are extremely useful as they allow the creation of a loose binding between two separate components.
 
 \subsection{Layouts}
 \label{sub:layouts}
 
-The layout is a view group which defines the visual structure in an activity or widget. A layout can be declared in an XML activity or fragment file or the layout elements can be instantiated at runtime. We can view a visual representation of the layout of an XML file in the graphical layout editor in Eclipse thanks to the ADT plugin. Declaring the layout in the XML file allows for better seperation of the presentation and behaviour of the app. Different XML layouts can be defined for different screen sizes or screen orientations. 
+The layout is a view group which defines the visual structure in an {\tt Activity} or widget. A layout can be declared in an XML {\tt Activity} or {\tt Fragment} file or the layout elements can be instantiated at runtime. We can view a visual representation of the layout of an XML file in the graphical layout editor in Eclipse thanks to the ADT plugin. Declaring the layout in the XML file allows for better seperation of the presentation and behaviour of the app. Different XML layouts can be defined for different screen sizes or screen orientations. 
 
 There are a few different types of layout that can be used including {\tt LinearLayout} and {\tt RelativeLayout}. {\tt LinearLayout} aligns all of its children either vertically or horizontally and {\tt RelativeLayout} displays its child views in their relative positions. There are other types of layout that will be described as they are used in the application.
 
@@ -938,7 +986,7 @@ Every layout requires layout parameters, these control how the layout will appea
 \subsection{Multi-Touch Gestures}
 \label{sub:gestures}
 
-The user interface is based around direct manipulation. This means using touch inputs that are intended to correspond to real-world actions, for example swiping, pinching and tapping to control on-screen events. The response to user actions is designed to be immediate and provides a fluid touch interface. It often provides haptic feedback (forces, vibrations or motions) to the user using the vibration capabilities.
+The user interface is based around direct manipulation. This means using touch inputs that are intended to correspond to real-world actions, for example swiping, pinching and tapping to control on-screen events. The response to user actions is designed to be immediate and provides a fluid touch interface. The device often provides haptic feedback (forces, vibrations or motions) to the user using the vibration capabilities.
 
 Android takes advantage of internal hardware such as accelerometers, gyroscopes and proximity sensors in some applications to respond to other user actions, such as re-orientating the screen from portrait to landscape.
 
@@ -948,69 +996,79 @@ During development of the application we encountered some difficulties specific 
 
 \subsection{Screen size and Scrolling}
 
-Tablets have a limited screen size compared to a computer screen. Although we have established that the screen size would be suitable for displaying the formation trees of the equivalences it does present the difficulty of moving around the application. Android provides a scrollable view that allows the view to scroll either horizontally or vertically, but not both. Nested scrollable views are not allowed as the application would not be able to understand which view you were trying to scroll through.
-
-This is problematic as it is possible for a large formation tree to be larger than the width of the screen. We could not set the scrollable view to scroll horizontally because we require vertical scrolling for long equivalence proofs. On a computer this would be an easy solution as nested scroll boxes are easy to implement.
-
-TODO: Add the solution
+Tablets have a limited screen size compared to a computer screen. Although we have established that the screen size would be suitable for displaying the formation trees of the equivalences it does present the difficulty of moving around the application. Android provides a scrollable view that allows the view to scroll either horizontally or vertically, but not both. Nested scrollable views are not allowed as the application would not be able to understand which view you were trying to scroll through. This is problematic as it is possible for a large formation tree to be larger than the width of the screen. We could not set the scrollable view to scroll horizontally because we require vertical scrolling for long equivalence proofs. On a web app this would be an easy solution as nested scroll boxes are easy to implement. To combat this problem we provided the user with buttons to move the tree left and right if it is larger than the size of the screen.
 
 \subsection{External Libraries}
+\label{sub:external_libraries}
 
 Using external libraries with Android proved to be much more of a challenge than expected. This was especially evident when looking for an external library used for drawing attractive trees. Most of the libraries available hooked straight into Java's Swing components and so huge amounts of the library would need to be rewritten for it to function on Android.
 
-This meant that any external libraries used needed to separate the core functionality from the actual rendering to be usable. Even then needed some tweaking was required to get them to function correctly. An example of this challenge is described in our formation tree representation in Section \ref{sub:abego_treelayout}.
+This meant that any external libraries used needed to separate the core functionality from the actual rendering to be usable. Even then some tweaking was required to get them to function correctly. When using Abego TreeLayout (Subsection \ref{sub:abego_treelayout}) we had trouble importing it into the project and even though it separated out the rendering and the functionality we needed to alter some of the underlying code. This is because it used features from Java's AWT and they had to be replaced by the Android equivalents. 
 
 \subsection{Custom Features}
 \label{sub:custom_features}
 
-Android provides the ability to generate your own custom features when the ones you want are not available. Such as the custom keyboard described in Section \ref{sec:custom_keyboard}. These features would not need to be implemented on a web app as the computer would already provide all of them. Implementing the custom keyboard was a difficult process as the {\tt KeyboardView} we needed to extend is not well known. Although there is documentation on the {\tt KeyboardView} there are not many examples and there are some issues in when to show the keyboard.
+Android provides the ability to generate your own custom features when the ones you want are not available. Such as the custom keyboard described in Section \ref{sec:custom_keyboard}. These features would not need to be implemented on a web app as the computer would already provide all of them. Implementing the custom keyboard was a difficult process as the {\tt KeyboardView} we needed to extend is not well known. Although there is documentation on the {\tt KeyboardView} there are not many examples and there are some issues with implementing it.
 
 Designing our own {\tt KeyboardView} has the downside that it is a {\tt View} and as such is a part of the layout in an Activity. This means the {\tt View} will obstruct all the layouts implementing it but we are in complete control of our application, keyboard included.
 
-For unknown reasons {\tt KeyboardView} is not part of any automatically found package (returning a {\tt java.lang.NoClassDefFoundError}) meaning the full path to the class is required. Therefore, the graphical layout editor (which shows a graphical representation of the XML file) cannot show a representation of the keyboard making the design process slightly more difficult.
+{\tt KeyboardView} is not part of any automatically found package meaning the full path to the class is required. Therefore, the graphical layout editor (which shows a graphical representation of the XML file) cannot show a representation of the keyboard making the design process slightly more difficult.
 
-One of the most complex issues was making the keyboard appear at the right time, and even more difficult was making the standard keyboard invisible at the same time. Android is very persistant in having the standard keyboard appear. The workaround was to set the input type of the text box as {\tt TYPE\_NULL} (telling Android we wouldn't be editting that text box), however this hides the cursor meaning we needed to add our own cursor keys to our keyboard. This is currently considered a bug.
-
-\subsection{Less Experience}
-
-Developing for Android proved to be a steep learning curve as I had never developed for it before. This definitely proved to be a hurdle in the progress of the application and development proceeded a lot more slowly compared to if we had developed a web application.
+One of the most complex issues was making the keyboard appear at the right time, and even more difficult was making the standard keyboard invisible at the same time. Android is very persistant in having the standard keyboard appear. The workaround was to set the input type of the text box as {\tt TYPE\_NULL} (telling Android we wouldn't be editting that text box), however this hides the cursor meaning we needed to add our own cursor keys to our keyboard. This is currently considered a bug by some users\cite{keyboardview}.
 
 \chapter{The App}
 \label{chap:the_app}
 
 \section{Activities}
 
-As defined in Section \ref{sub:activities}, activities can be used to represent each screen in the application. In this application there are three activities: {\tt MainActivity}, {\tt EnterEquivalenceActivity} and {\tt BeginEquivalenceActivity}.
+In this application there are three activities: 
+
+\begin{itemize}
+\item {\tt MainActivity}
+\item {\tt EnterEquivalenceActivity}
+\item {\tt BeginEquivalenceActivity}
+\end{itemize}
 
 \subsection{Main Activity}
 
-{\tt MainActivity} controls the first screen the user sees when they start up the app. This allows the user to change the settings and choose either propositional or first order logic, shown in Figure ...
+{\tt MainActivity} controls the first screen the user sees when they start up the app. This allows the user to change the settings (difficulty and probability of truth values) and choose either propositional or first order logic, shown in Figure \ref{mainactivity}.
 
-TODO: take screen shots of app
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{screenshots/MainActivity.png}
+    \caption{{\tt MainActivity} allows a user to change the settings and choose either propositional or first order logic.}
+    \label{mainactivity}
+\end{figure}
 
-The fragment (see Section \ref{sub:fragments}) XML file {\tt fragment\_main} contains the widgets you can see in Figure ... These are defined as {\tt TextView}, {\tt Button}, {\tt SeekBar} and {\tt Spinner} widgets. {\tt TextView} and {\tt Button} widgets are self-evident, the {\tt Spinner} is used to create the dropdown menu to select the difficulty and the {\tt SeekBar} is used for the slider that controls the probability of truth atoms appearing in the generated formula.
+The fragment (Subsection \ref{sub:fragments}) XML file {\tt fragment\_main} contains the widgets you can see in Figure ... These are defined as {\tt TextView}, {\tt Button}, {\tt SeekBar} and {\tt Spinner} widgets. {\tt TextView} and {\tt Button} widgets are self-evident, the {\tt Spinner} is used to create the dropdown menu to select the difficulty and the {\tt SeekBar} is used for the slider that controls the probability of truth atoms appearing in the generated formula.
 
-When the `Propositional Logic' button is clicked {\tt startPropositional()} is called. This creates an {\tt Intent} (see Section \ref{sub:intents}) to start a new {\tt EnterEquivalenceActivity}. The difficulty (Section \ref{sec:difficulty}) and selected probability (Section \ref{sub:variables}) of truth values are added to the intent and it starts the new activity.
-
-TODO: when `First Order Logic' is clicked
+When the ``Propositional Logic'' or ``First Order Logic'' button is clicked the function {\tt startPropositional()} or {\tt startFirstOrder()} is called respectively. Both of these functions call {\tt startLogic()} and simply pass in boolean parameter defining if the equivalences should be first order or not. This creates an {\tt Intent} (Subsection \ref{sub:intents}) to start a new {\tt EnterEquivalenceActivity}. The difficulty (Section \ref{sec:difficulty}) and selected probability (Subsection \ref{sub:variables}) of truth values are added to the intent and it starts the new activity.
 
 \subsection{Enter Equivalences Activity}
 
-{\tt EnterEquivalencesActivity} allows the user to either manually enter or randomly generate the formulae to prove equivalent. As shown in Figure ... the XML fragment {\tt fragment\_enter\_equivalences} defines two {\tt EditText} widgets to manually enter the formulae. These widgets use a custom keyboard for entering logical symbols and variables (Section \ref{sec:custom_keyboard}). Two `Randomise' buttons are defined to automatically generate equivalences (Section \ref{sec:app_generation_of_equivalences}).
+{\tt EnterEquivalencesActivity} allows the user to either manually enter or randomly generate the formulae to prove equivalent. As shown in Figure \ref{propositionalenterequivalences} the XML fragment {\tt fragment\_enter\_equivalences} defines two {\tt EditText} widgets to manually enter the formulae. These widgets use a custom keyboard for entering logical symbols and variables. Two ``Randomise'' buttons are defined to automatically generate equivalences.
 
-Upon the `Start' button being pressed the activity will check the two formulae are equivalent (Section \ref{sub:equal_equivalences}). If there is a problem with the formulae entered (either they are not equivalent or they have a syntax error) then the appropriate error message will be shown (Section \ref{sub:error_messages}). If the formulae are equivalent a new {\tt Intent} will be created to begin a new {\tt BeginEquivalenceActivity}. The intent will carry the two formulae to the new activity so that the user can begin the proof.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{screenshots/PropositionalEnterEquivalences.png}
+    \caption{On selecting propositional logic {\tt EnterEquivalencesActivity} allows a user to enter propositional formulae.}
+    \label{propositionalenterequivalences}
+\end{figure}
 
-TODO: more screenshots!
+Upon the ``Start'' button being pressed the activity will check the two formulae are equivalent. If there is a problem with the formulae entered (either they are not equivalent or they have a syntax error) then the appropriate error message will be shown. If both the formulae are equivalent a new {\tt Intent} will be generated to begin a new {\tt BeginEquivalenceActivity}. The intent will carry the two formulae to the new activity so that the user can begin the proof.
 
 \subsection{Begin Equivalence Activity}
 
-The XML file {\tt fragment\_being\_equivalence} employs a {\tt ScrollView} as its outer layout, this is a specific type of view group extending {\tt FrameLayout}. A {\tt FrameLayout} surrounds one child (usually another layout) containing its entire contents, {\tt ScrollView} then allows us to scroll through the content so the layout can be bigger than the physical display. 
+The XML file {\tt fragment\_begin\_equivalence} employs a {\tt ScrollView} as its outer layout, this is a specific type of view group extending {\tt FrameLayout}. A {\tt FrameLayout} surrounds one child (usually another layout) containing its entire contents, therefore {\tt ScrollView} allows us to scroll through the content so the layout can be bigger than the physical display. 
 
-A {\tt LinearLayout} (Section \ref{sub:layouts}) is used as the child of the {\tt ScrollView} which then contains all the widgets required for completing the proof. This layout consists of two main sections, one for each formula. The start formula is placed at the top of the layout working down and the end formula is placed at the bottom working up. Each end displays its current formation tree (Section \ref{sec:formation_tree_representation}) and allows the user to undo or redo rules (Section \ref{sec:undo_redo}). This display is shown in Figure ...
+A {\tt LinearLayout} (Section \ref{sub:layouts}) is used as the child of the {\tt ScrollView} which then contains all the widgets required for completing the proof. This layout consists of two main sections, one for each formula. The start formula is placed at the top of the layout working down and the end formula is placed at the bottom working up. Each end displays its current formation tree (Section \ref{sec:formation_tree_representation}) and allows the user to undo or redo rules (Section \ref{sec:undo_redo}). This display is shown in Figure \ref{beginequivalenceactivity}.
 
-TODO: An example of completing a proof shown somewhere.
-
-TODO: last screenshot
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{screenshots/Example1-2.png}
+    \caption{{\tt BeginEquivalenceActivity} shows the formation trees of the entered equivalences.}
+    \label{beginequivalenceactivity}
+\end{figure}
  
 \section{Difficulty}
 \label{sec:difficulty}
@@ -1023,59 +1081,57 @@ The user can choose a difficulty from either beginner, intermediate or hard in t
 
 \subsection{Parameters}
 
-The parameters used in generating equivalent formulae are the number of variables that can appear in the inital formula ({\tt numVars}), the maximum depth of the formula's tree ({\tt depth}) and the number of rules we will apply to the initial formula to generate two formulae equivalent to the original ({\tt numRules}).
+The parameters used in generating equivalent formulae are the number of variables that can appear in the inital formula ({\tt numVars}), the maximum depth of the formula's tree ({\tt depth}) and the number of rules we will apply to the initial formula to generate two formulae equivalent to the original ({\tt numRules}). These are shown in Table \ref{table:parameters}.
 
-\vspace{5mm}
+\begin{table}[ht!]
 \begin{center}
   \begin{tabular}{ | c | c | c | c | }
     \hline
     Difficulty & numVars & depth & numRules \\ \hline
-    Beginner & 3 & 0 & 3 \\
-    Intermediate & 5 & 1 & 4 \\
-    Hard & 10 & 2 & 5 \\
+    Beginner & 3 & 2 & 3 \\
+    Intermediate & 5 & 3 & 4 \\
+    Hard & 10 & 4 & 5 \\
     \hline
   \end{tabular}
 \end{center}
-\vspace{5mm}
-
-TODO: In this table a depth of 0 actually means a ??? - Explain!
-
-TODO: See \ref{sec:app_generation_of_equivalences} for screenshots of generated equivalences from difference difficulties
+\caption{Parameters used for each difficulty to generate the initial formula}
+\label{table:parameters}
+\end{table}
 
 \subsection{Probability of Truth Values}
 
 Initially the probability of the truth values was tied to the difficulty the user selected, however it was suggested that it could be beneficial to the user to have direct control over this parameter. 
 
-As described in Section \ref{sub:variables} the user has the ability to set the likelihood of the truth values being chosen (up to the same amount as other variables). The user can set this value using the {\tt SeekBar} in {\tt MainActivity}. The {\tt SeekBar} has a maximum value of 100 (so at maximum it will be equally likely to be chosen as other variables) and a default value of 50 (half as likely). This value is passed through with the other parameters when generating new formulae.
+As described in Subsection \ref{sub:variables} the user has the ability to set the likelihood of the truth values being chosen (up to the same amount as other variables). The user can set this value using the {\tt SeekBar} in {\tt MainActivity}. The {\tt SeekBar} has a maximum value of 100 (so at maximum it will be equally likely to be chosen as other variables) and a default value of 50 (half as likely). This value is passed through with the other parameters when generating new formulae.
 
 \section{Random Generation of Equivalences}
 \label{sec:app_generation_of_equivalences}
 
 {\tt EnterEquivalencesActivity} has a compiler (Section \ref{sec:compiler}) and a rule engine (Section \ref{sec:the_rule_engine}) which is used to generate formulae and apply rules.
 
-TODO: Add screenshot of EnterEquivalencesActivity or reference previous screenshot
-
-The top and bottom `Randomise' buttons call {\tt randomiseStart()} and {\tt randomiseEnd()} respectively. These functions simply call the {\tt randomise()} function and pass through which text box it is trying to generate a random formula for.
+The top and bottom ``Randomise'' buttons call the functions {\tt randomiseStart()} and {\tt randomiseEnd()} respectively. These functions simply call the {\tt randomise()} function and pass through which text box it is trying to generate a random formula for.
 
 There are three possible cases when one of these buttons have been clicked:
 
-\textbf{Case 1:} Neither text box contain formulae and one needs to be generated from scratch.
+\begin{enumerate}[leftmargin=*, align=left, label=\bfseries Case \arabic*:]
+\item Neither text box contain formulae and one needs to be generated from scratch.
 
-\textbf{Case 2:} The other text box contains a valid formula and an equivalent one needs to be generated.
+\item The other text box contains a valid formula and an equivalent one needs to be generated.
 
-\textbf{Case 3:} The other text box contains an invalid formula and an error will be thrown.
+\item The other text box contains an invalid formula and an error will be thrown.
+\end{enumerate}
 
 The {\tt randomise()} function takes both text boxes as parameters, the first being the text box we want to display the generated formula in and the second the other text box. It then determines if the other text box is empty and acts accordingly.
 
 \subsection{The Initial Formula}
 
-The {\tt Compiler} is used to generate a random formula when a `Randomise' button is clicked (Section \ref{sub:random_formula_generation}) using the user specified parameters.
+The {\tt Compiler} is used to generate a random formula when a ``Randomise'' button is clicked (Subsection \ref{sub:random_formula_generation}) using the user specified parameters.
 
 Previously, this generated formula would be set as the new formula in the text box corresponding to the button clicked. This gave an unfortunate side effect when a second equivalence was generated (\textbf{Case 2}), where it would usually be longer than the first - due to the fact that there are more rules which increase the size of a formula. 
 
 This is not a problem if the user begins the proof immediately, but if the user clicks the first randomise button again the app would generate a formula equivalent to the previously generated longer formula creating a longer again formula. Repeating this by alternating clicks on each button resulted in the formulas continuously increasing in length disregarding the difficulty set.
 
-The solution to this was to set the generated formula as an \textit{initial formula} to which rules would be applied to generate any required formulae.
+The solution to this was to set the generated formula as an initial formula to which rules would be applied to generate any required formulae.
 
 \subsection{Generating Equivalent Formulae}
 
@@ -1085,37 +1141,31 @@ In \textbf{Case 2} there are two sub cases. Either the other formula was generat
 
 The initial formula is then compiled into a tree and has random rules applied to it (as above in \textbf{Case 1}). This newly generated tree has its formula set to the textbox.
 
-TODO: Screenshots of generated formulae
-
 \textbf{Case 3} occurs when the initial formula has been set from a manually inputted formula with incorrect syntax. In this case the parsing of the formula will fail and an error flag will be set. When this flag is set an error message will be shown informing the user of their error and no equivalent formula will be generated.
-
-TODO: Screenshot of error message
 
 \section{Custom Keyboard}
 \label{sec:custom_keyboard}
 
 In the application we enter formulae in alpha numeric fields. Android provides context sensitive soft keyboards for entering text so different keyboard appear in different situations. However, it does not provide a keyboard for logic symbols meaning a different keyboard is required.
 
-Other than the standard keyboards provided by Android there are manufacturer keyboards and user installed keyboards. The manufacturer keyboards are a more simple reduced version of the Android keyboards also without logic symbols. User installed keyboards allow a developer to have complete control over the keyboard but end users of the application would have to also install the keyboard service. Installing a keyboard service would be an inconvenience for the user and also presents a security risk because everything that passes through the keyboard can be tracked by the application including passwords. 
+Other than the standard keyboards provided by Android there are manufacturer keyboards and user installed keyboards. The manufacturer keyboards are a more simple reduced version of the Android keyboards also without logic symbols. User installed keyboards allow a developer to have complete control over the keyboard but end users of the application would have to also install the keyboard service. Installing a keyboard service would be an inconvenience for the user and also presents a security risk because everything that passes through the keyboard can be tracked by the application, such as sensitive information. 
 
 \subsection{Keyboard View}
 
-Android has a {\tt KeyboardView} (difficulties with using this described in Section \ref{sub:custom_features}), this is a view that allows us to define the keys the keyboard displays. The keyboard is made up of rows of keys. Each key is associated with a label and a code. The label defines what is shown on the key button and the code is passed to the app when the key is pressed. 
+Android has a {\tt KeyboardView} (difficulties with using this described in Subsection \ref{sub:custom_features}), which is a view that allows us to define the keys the keyboard displays. The keyboard is made up of rows of keys. Each key is associated with a label and a code. The label defines what is shown on the key button and the code is passed to the app when the key is pressed. If a code is not defined it is generated from the unicode value of the label.
 
-The keys are defined in {\tt logickbd.xml} and when a key is pressed the key's code is passed to the {\tt CustomKeyboard} class. A key listener is used in {\tt CustomKeyboard} to detect when a key is pressed, finds the view in focus and ensures it's an {\tt EditText} (else it aborts) then executes an action based on the key's code.
+Two keyboards are defined, one for propositional logic and one with extra keys for first order logic (Figure \ref{firstorderkeyboard}). The keys are defined in XML files {\tt logickbd.xml} and {\tt firstorderkbd.xml}, each time a key is pressed the key's code is passed to the {\tt CustomKeyboard} class. A key listener is used in {\tt CustomKeyboard} to detect when a key is pressed, finds the view in focus and ensures it's an {\tt EditText} (else it aborts) then executes an action based on the key's code.
 
-TODO: Keyboard screenshot  
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/FirstOrderKeyboard.png}
+    \caption{First Order logic keyboard generated by {\tt firstorderkbd.xml}.}
+    \label{firstorderkeyboard}
+\end{figure}
 
 \subsection{Keys}
 
-If a variable or symbol key is pressed then the corresponding symbol is inserted into the text box. Undo deletes the last value and clear deletes everything in the text box. Hide is used to hide the keyboard and the arrow keys are used to move the cursor left and right.
-
-TODO: Why we need cursor keys 
-
-\subsection{Hiding The Keyboard}
-\label{sub:hiding_the_keyboard}
-
-TODO: Reference difficulties/don't repeat yourself
+If a variable or symbol key is pressed then the corresponding symbol is inserted into the text box. Undo deletes the last value and clear deletes everything in the text box. Hide is used to hide the keyboard and the arrow keys are used to move the cursor left and right. The problems with the cursor and hiding the keyboard are detailed in Subsection \ref{sub:custom_features}.
 
 \subsection{Registering Text Boxes}
 
@@ -1126,38 +1176,66 @@ First this function sets the text box's listeners to show the custom keyboard wh
 \section{Truth Tables}
 \label{sec:app_truth_tables}
 
-After two formulae are entered (either manually or generated) the user can click the `Start' button. This button is linked to {\tt startEquivalence()} which uses truth tables to check the formulae are equivalent and creates an intent to start a new activity.
+After two formulae are entered (either manually or generated) the user can click the ``Start'' button. This button is linked to {\tt startEquivalence()} which uses truth tables to check the formulae are equivalent and creates an intent to start a new activity.
 
 \subsection{Equal Formulae}
 \label{sub:equal_equivalences}
 
 The function {\tt startEquivalence()} finds the {\tt EditText} boxes holding the formulae by their ids defined in the XML file and retrieves the text within them. These two formulae are both compiled into their {\tt FormationTree} and a truth table (Section \ref{sec:truth_tables}) is generated for each tree. 
 
-If these truth tables are equivalent then a new intent is created to carry the equivalences to the new {\tt BeginEquivalenceActivity}. Before the formulae are added to the intent we set the equivalences to the {\tt String} representation of their respective trees. This is to deal with the case where no brackets have been used and have been implied by the parser. Setting the formulae to the {\tt String} representation of the tree adds in the brackets where they have been implied to avoid confusion later on. The two equivalences can then be added to the intent and the new activity is started.
+If these truth tables are equivalent then a new intent is created to carry the equivalences to the new {\tt BeginEquivalenceActivity}. Before the formulae are added to the intent we set the equivalences to the string representation of their respective trees. This is to deal with the case where no brackets have been used and have been implied by the parser. Setting the formulae to the string representation of the tree adds in the brackets where they have been implied to avoid confusion later on. The two equivalences can then be added to the intent and the new activity is started. This is shown in Figure \ref{nobrackets1} and Figure \ref{nobrackets2}.
 
-TODO: Add screenshot example of no brackets in formulae
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/No-Brackets-1.png}
+    \caption{Equivalences are manually entered without brackets.}
+    \label{nobrackets1}
+\end{figure}
 
-\subsection{Error Messages}
-\label{sub:error_messages}
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/No-Brackets-2.png}
+    \caption{Brackets have been implied and the tree is drawn accordingly.}
+    \label{nobrackets2}
+\end{figure}
 
-An error message is displayed to the user in certain cases. A function {\tt setErrorMessage()} is defined to set the error message to the passed in text and make the message visible.
+\section{Error Messages}
+\label{error_messages}
 
+A custom error message is displayed to the user under certain circumstances. A function {\tt setErrorMessage()} is defined to set the error message to the passed in text and make the message visible.
 
 \subsubsection{No formulae have been entered}
 
-If the start button is clicked and both formulae have nothing in them then an error message saying \textit{`Please enter two equivalent formulae'} is set.
+If the start button is clicked and both formulae have nothing in them then an error message saying \textit{`Please enter two equivalent formulae'} is set (Figure \ref{error1}).
 
-TODO: Add screenshot of error message
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/Error-1.png}
+    \caption{Two formulae have not been entered}
+    \label{error1}
+\end{figure}
 
 \subsubsection{Incorrect Syntax}
 
-Section \ref{sub:error_handling} describes how the parser handles syntax errors. When incorrect syntax is found it allows the incorrect formula to be parsed and sets a flag in the resulting tree. Before creating truth tables for each tree if either has its error flag set then the error message \textit{`Incorrect syntax'} is set.
+Subsection \ref{sub:error_handling} describes how the parser handles syntax errors. When incorrect syntax is found it allows the incorrect formula to be parsed and sets a flag in the resulting tree. Before creating truth tables for each tree if either has its error flag set then the error message \textit{`Incorrect syntax'} is set (Figure \ref{error3}).
 
-TODO: Considered highlighting which symbol is incorrect?
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/Error-3.png}
+    \caption{Incorrect syntax has been entered}
+    \label{error3}
+\end{figure}
 
 \subsubsection{Formulae are not equivalent}
 
-If the test for equivalent truth tables fails then the intent is not created and the error message \textit{`Not equivalent'} is set.
+If the test for equivalent truth tables fails then the intent is not created and the error message \textit{`Not equivalent'} is set (Figure \ref{error2}).
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{screenshots/Error-2.png}
+    \caption{The two formulae are not equivalent}
+    \label{error2}
+\end{figure}
 
 \section{Formation Tree Representation}
 \label{sec:formation_tree_representation}
@@ -1167,32 +1245,36 @@ If the test for equivalent truth tables fails then the intent is not created and
 Each logical connective in an formula can be written enclosed in parentheses. For example:
 
 \begin{center}
-(a$\to$b)$\land$$\neg$a \ can be written as \ ((a$\to$b)$\land$($\neg$a))
+$(a\to b)\land \neg a$ \ can be written as \ $((a\to b)\land (\neg a))$
 \end{center}
 
-Due to this property we can create a binary tree unique to each proposition; this is called a formation tree. Each connective and propositional atom is represented by a node and a leaf respectively. This provides a clear and attractive way of displaying the formula but is too expensive for every day use. In our application we wish to display the formation tree of the current equivalences.
+Due to this property we can create a binary tree unique to each proposition (its formation tree). Each connective and propositional atom is represented by a node and a leaf respectively. This provides a clear and attractive way of displaying the formula but is too expensive for every day use. In our application we wish to display the formation tree of the current equivalences.
 
 Displaying the formation trees allows a user to see an interactive representation of the equivalences where touching the nodes and leaves in the tree allows the user to apply rules to various parts of the tree.
 
 \subsection{The NP-Complete Problem}
 
-When planning to draw the formation trees to the app we assumed there would be a simple, classic algorithm for drawing neat, aesthetically pleasing trees. However, we discovered the problem was not that simple. Drawing an attractive Tree layout is an NP-complete problem\cite{npcompletetrees} and there are many tree-drawing algorithms attempting to solve the problem of drawing attractive trees. We reviewed many of these algorithms to find one suitable to use.
+When planning to draw the formation trees to the app we assumed there would be a simple, classic algorithm for drawing neat, aesthetically pleasing trees. However, we discovered the problem was not that simple. Drawing an attractive Tree layout is an NP-complete\footnote{A problem is NP-complete if a given solution can be verified in polynomial time but there is no known efficient way to find a solution. } problem\cite{npcompletetrees} and there are many tree-drawing algorithms attempting to solve the problem of drawing attractive trees. We reviewed many of these algorithms to find one suitable to use.
 
 \subsection{What Makes An Attractive Tree?}
 
 Although generating an attractive tree is a matter of taste, certain principles are widely agreed upon to be key to drawing an aesthetically pleasing tree. The first three are taken from Wetherell and Shannon's tree drawing algorithm for producing tidy drawings using the smallest width possible\cite{tidierdrawingsws}.
 
-\textbf{Aesthetic 1}: Nodes at the same level of the tree should lie along a straight line, and the straight lines defining the levels should be parallel. 
+\begin{enumerate}[leftmargin=*, align=left, label=\bfseries Aesthetic \arabic*:]
+\item Nodes at the same level of the tree should lie along a straight line, and the straight lines defining the levels should be parallel. 
 
-\textbf{Aesthetic 2}: A left son should be positioned to the left of its father and a right son to the right.
+\item A left son should be positioned to the left of its father and a right son to the right.
 
-\textbf{Aesthetic 3}: A father should be centered over its sons.
+\item A father should be centered over its sons.
+\end{enumerate}
 
-Although not mentioned in the original article, Aesthetic 1 was also meant to guarantee the edges in the tree do not intersect except at the nodes by requiring that the relative order of nodes over any level be the same as the level order traversal of the tree. Wetherall and Shannon's algorithm is fairly basic and has a deficiency that compromises the overall attractiveness of the resulting tree. It produces drawings that could be made narrower within the constraints of the aesthetics and are not entirely pleasing to the eye - nodes in certain subtrees are drawn too far apart due to the fact that their shape is influenced by the positioning of nodes outside that subtree. This leads to the asymmetry of the resulting tree. Therefore when Reingold and Tilford\cite{tidierdrawingsrt} set out to create a better tree drawing algorithm they introduced a fourth aesthetic:
+Although not mentioned in the original article, \textbf{Aesthetic 1} was also meant to guarantee the edges in the tree do not intersect except at the nodes. This was done by requiring that the relative order of nodes over any level be the same as the breadth-first traversal of the tree. Wetherall and Shannon's algorithm is fairly basic and has a deficiency that compromises the overall attractiveness of the resulting tree. It produces drawings that could be made narrower within the constraints of the aesthetics and are not entirely pleasing to the eye - nodes in certain subtrees are drawn too far apart due to the fact that their shape is influenced by the positioning of nodes outside that subtree. This leads to the asymmetry of the resulting tree. Therefore when Reingold and Tilford\cite{tidierdrawingsrt} set out to create a better tree drawing algorithm they introduced a fourth aesthetic:
 
-\textbf{Aesthetic 4}: A tree and its mirror image should produce drawings that are reflections of one another; moreover, a subtree should be drawn the same way regardless of where it occurs in the tree.
+\begin{enumerate}[leftmargin=*, align=left, label=\bfseries Aesthetic {4}:]
+\item A tree and its mirror image should produce drawings that are reflections of one another; moreover, a subtree should be drawn the same way regardless of where it occurs in the tree.
+\end{enumerate}
 
-Fulfilling this aesthetic requires us breaking Wetherell and Shannon's aim of minimum width so that all all isomorphic subtrees are drawn the same. This is considered a more important principle than using the minimum width as our main aim is to create an attractive tree. This is an acceptable drawback as Supowit and Reingold proved that determining the minimum width under these aesthetics is NP-hard\cite{complexityofdrawingtreesnicely}. Therefore, we can use Reingold and Tilford's algorithm to draw our formation tree to produce an attractive result. 
+Fulfilling this aesthetic requires us breaking Wetherell and Shannon's aim of minimum width so that all isomorphic subtrees (subtrees with a bijective/one-to-one mapping) are drawn the same. This is considered a more important principle than using the minimum width as our main aim is to create an attractive tree. This is an acceptable drawback as Supowit and Reingold proved that determining the minimum width under these aesthetics is NP-hard\cite{complexityofdrawingtreesnicely}. Therefore, we can use Reingold and Tilford's algorithm to draw our formation tree to produce an attractive result. 
 
 \subsection{Reingold and Tilford's Algorithm}
 
@@ -1200,31 +1282,29 @@ The proposed algorithm was based on the following heuristic:
 
 ``Two subtrees of a node should be formed independently, and then places as close together as possble''\cite{tidierdrawingsws}.
 
-This is applied during a postorder traversal of the tree by taking the two subtrees of a node and calculating the contours of those subtrees. The two subtrees are then positioned so they overlap at their roots before moving them apart until no two points are touching. This is done recursively at each level moving down the levels of the tree until the bottom of the shortest subtree is reached. Once the process is finished the position of the subtrees can be fixed relative to their parent node which is centered over them. Once the postorder traversal is complete a preorder traversal occurs to convert the relative positions to absolute coordinates.
+This is applied during a postorder traversal of the tree by taking the two subtrees of a node and calculating the contours (outlines) of those subtrees. The two subtrees are then positioned so they overlap at their roots before moving them apart until no two points are touching. This is done recursively at each level moving down the levels of the tree until the bottom of the shortest subtree is reached. Once the process is finished the position of the subtrees can be fixed relative to their parent node which is centered over them. Once the postorder traversal is complete a preorder traversal occurs to convert the relative positions of each subtree to their absolute coordinates in the completed tree.
 
 \subsection{Walker's Algorithm}
 
-Extending Reingold and Tilford's algorithm to to rooted ordered trees of unbounded degree as described in their paper produces layouts where some subtrees of the tree could have been dispersed better to create a more attractive layout. In 1990 Walker's algorithm solved this problem by spacing out subtrees whenever possible, however in the initial algorithm presented the runtime was quadratic. Walker's algorithm was improved upon by Christoph Buchheim, Michael J\"unger and Sebastian Leipert so it would run in linear time\cite{improvingwalkers}. This is the algorithm we use in our application. 
+Extending Reingold and Tilford's algorithm to to rooted ordered trees of unbounded degree as described in their paper produces layouts where some subtrees of the tree could have been dispersed better to create a more attractive layout. In 1990 Walker's algorithm solved this problem by spacing out subtrees whenever possible, however in the initial algorithm presented the runtime was quadratic. Walker's algorithm was improved upon by Christoph Buchheim, Michael J\"unger and Sebastian Leipert so it would run in linear time\cite{improvingwalkers}. This is the algorithm we use in our application.
 
 \subsection{Abego TreeLayout}
 \label{sub:abego_treelayout}
 
-TODO: Add challenge of using it on Android
-
-Abego TreeLayout is an external library which efficiently creates compact and highly cusomisable tree layouts. It is based on Walker's algorithm with the enhancements previously mentioned suggested by Buchheim, J\"unger, and Leipert\cite{treelayoutlineartime}. The software builds tree layouts in linear time so that even trees with many nodes are built quickly. TreeLayout separates the layout of the tree from the actual rendering, therefore it is suitable for drawing trees in an Android application because it is not limited to a specific output or format.
+Abego TreeLayout is an external library which efficiently creates compact and highly cusomisable tree layouts. It is based on Walker's algorithm with the enhancements previously mentioned suggested by Buchheim, J\"unger, and Leipert\cite{treelayoutlineartime}. The software builds tree layouts in linear time so that even trees with many nodes are built quickly. TreeLayout separates the layout of the tree from the actual rendering, therefore it is suitable for drawing trees in an Android application because it is not limited to a specific output or format. Some problems were encountered in using this library, there are described in Subsection \ref{sub:external_libraries}.
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{abegolineartime.png}
+    \includegraphics[width=0.9\textwidth]{abegolineartime.png}
     \caption{Illustrates the linear time behaviour of the Abego TreeLayout algorithm\cite{abegolineartime} and shows the applicability for large numbers of nodes. (Graph taken from the Abego TreeLayout documentation).}
     \label{abegolineartime}
 \end{figure}
 
 \subsection{Drawing the Formation Tree}
 
-We created a custom view DrawView to draw the trees to the screen in the application. This is created by simply extending the Android View class and overriding the {\tt onDraw()} function. To add a custom view to our user interface we also need to define custom attributes in a resource element as shown in Listing \ref{drawviewxml}.
+We created a custom view {\tt DrawView} to draw the trees to the screen in the application. This is created by simply extending the Android {\tt View} class and overriding the {\tt onDraw()} function. To add a custom view to our user interface we also need to define custom attributes in a resource element as shown in Listing \ref{drawviewxml}.
 
-\begin{listing}[ht]
+\begin{listing}[ht!]
 \begin{minted}{xml}
 <declare-styleable name='DrawView'>
     <attr name='showTree' format='boolean' />
@@ -1236,9 +1316,7 @@ We created a custom view DrawView to draw the trees to the screen in the applica
 
 In {\tt onDraw()} we determine whether we are drawing the top or bottom formation tree and call {\tt setUpTreeLayout()} (shown in Listing \ref{setuptreelayout}) which uses the Abego TreeLayout to manage the layout.
 
-To use TreeLayout we create a {\tt TreeLayout} instance with our tree (accessible through the {\tt TreeForTreeLayout} inferface), a {\tt FixedNodeExtentProvider} (defines a fixed size for each node) and a {\tt DefaultConfiguration} (configures the layout by defining parameters such as {\tt gapBetweenNodes} and {\tt gapBetweenLevels}).
-
-\begin{listing}[ht]
+\begin{listing}[ht!]
 \begin{minted}{java}
 public void setUpTreeLayout(Location location) {
     DefaultConfiguration<Node> configuration = new 
@@ -1253,23 +1331,25 @@ public void setUpTreeLayout(Location location) {
     ...
 }
 \end{minted}
-\caption{setUpTreeLayout() is called by onDraw() in DrawView}
+\caption{{\tt setUpTreeLayout()} is called by {\tt onDraw()} in {\tt DrawView}}
 \label{setuptreelayout}
 \end{listing}
 
-TreeLayout calculates the position of each node so we can then paint the nodes and edges to the screen using Android Canvas.
+To use Abego TreeLayout we create a {\tt TreeLayout} instance with our tree (accessible through the {\tt TreeForTreeLayout} inferface), a {\tt FixedNodeExtentProvider} (defines a fixed size for each node) and a {\tt DefaultConfiguration} (configures the layout by defining parameters such as {\tt gapBetweenNodes} and {\tt gapBetweenLevels}).
+
+{\tt TreeLayout} calculates the position of each node so we can then paint the nodes and edges to the screen using Android Canvas.
 
 \subsection{Responding to Touch Events}
 
-By overriding {\tt onTouchEvent()} in DrawView we can get the event action performed on the view. Using this we can check if the touched position is within the bounds of any of the nodes drawn to the screen. If the position is within the bounds of a node we display applicable rules for that node by calling {\tt setRules()} on the current activity ({\tt BeginEquivalenceActivity}). Selecting a node also forces a redraw so that we can highlight the selected node.
+By overriding {\tt onTouchEvent()} in {\tt DrawView} we can get the event action performed on the view. Using this we can check if the touched position is within the bounds of any of the nodes drawn to the screen. If the position is within the bounds of a node we display applicable rules for that node by calling {\tt setRules()} on the current activity ({\tt BeginEquivalenceActivity}). Selecting a node also forces a redraw so that we can highlight the selected node.
 
 \section{Rule Application}
 
 \subsection{Rule Display}
 
-The rules are displayed in a PopupMenu on screen either above or below the selected tree. The rules are generated by the {\tt RuleEngine} as described in Section \ref{sec:the_rule_engine}.
+The rules are displayed in a {\tt PopupMenu} on screen either above or below the selected tree. The rules are generated by the {\tt RuleEngine} as described in Section \ref{sec:the_rule_engine}.
 
-Calling {\tt setRules()} adds the generated rules iteratively to the PopupMenu. If the rule requires user input (eg. $\top := \bot \to a$) a SubMenu is created with the variables that can be applied as shown in Listing \ref{rulessetup}. Each entry in the PopupMenu contains the String representing the rule and the rule key. The key is required so we know which rule to apply on touch events.
+Calling {\tt setRules()} adds the generated rules iteratively to the {\tt PopupMenu}. If the rule requires user input (eg. $\top := \bot \to a$) a SubMenu is created with the variables that can be applied as shown in Listing \ref{rulessetup}. Each entry in the {\tt PopupMenu} contains the string representing the rule and the rule key. The key is required so we know which rule to apply on touch events.
 
 \begin{listing}[ht]
 \begin{minted}{java}
@@ -1299,33 +1379,38 @@ public void setRules(SparseArray<String> rules, Node
     rulesList.show();
 }
 \end{minted}
-\caption{Rules being added to the rulesList PopupMenu in setRules}
+\caption{Rules being added to the {\tt rulesList} {\tt PopupMenu}}
 \label{rulessetup}
 \end{listing}
 
 \subsection{Responding to PopupMenu Touch Events}
 \label{sub:responding_to_popupmenu_touch_events}
 
-Overriding {\tt onMenuItemClick()} in {\tt BeginEquivalenceActivity} allows us to determine which item was selected from the PopupMenu and and apply that rule to the selected node. We can determine which rule should be applied by taking the key of selected item and applying that rule from our {\tt BitSet} of rules using the {\tt RuleEngine} (Section \ref{sec:the_rule_engine}).
+Overriding {\tt onMenuItemClick()} in {\tt BeginEquivalenceActivity} allows us to determine which item was selected from the {\tt PopupMenu} and and apply that rule to the selected node. We can determine which rule should be applied by taking the key of selected item and applying that rule from our {\tt BitSet} of rules using the {\tt RuleEngine} (Section \ref{sec:the_rule_engine}).
 
-Applying a rule to the selected node adds a new {\tt TextView} to the respective list of equivalences (either top or bottom). Once the rule has been applied the application will check for completion and cycles (Section \ref{sub:detecting_cycles}). If either are found a {\tt Toast} (a simple popup for displaying feedback) will be displayed alerting the user.
+Applying a rule to the selected node adds a new {\tt TextView} to the respective list of equivalences (either top or bottom). Once the rule has been applied the application will check for completion and cycles (Subsection \ref{sub:detecting_cycles}). If either are found a {\tt Toast} (a simple popup for displaying feedback) will be displayed alerting the user.
 
-We also override {\tt onDimiss()} so that when a user dismisses the PopupMenu without selecting a rule we can also redraw the formation tree to deselect the selected node.
+We also override {\tt onDimiss()} so that when a user dismisses the {\tt PopupMenu} without selecting a rule we can also redraw the formation tree to deselect the selected node.
 
 \section{Undo/Redo}
 \label{sec:undo_redo}
 
-A main feature of the application is intuitive undo and redo functionality. Selecting a previous equivalence in the list (from either end) should display the formation tree for that equivalence and grey out the undone equivalences below as shown in Figure ...
+A main feature of the application is intuitive undo and redo functionality. Selecting a previous equivalence in the list (from either end) should display the formation tree for that equivalence and grey out the undone equivalences below as shown in Figure \ref{undoredo}.
 
-TODO: Screen shots
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{screenshots/Undo-Redo.png}
+    \caption{The user realises they have made a mistake and clicks the bottom formula on the left. This undoes the last two equivalences and sets them as undone in the center. Performing a new rule then removes the undone equivalences and adds the new rule to the bottom list.}
+    \label{undoredo}
+\end{figure}
 
 \subsection{Adding A New Formula}
 
 When a new formula is added it is either added to the top or bottom layout depending on where the call has come from. Throughout this section we will refer to the top layout, however the bottom layout functions in a similar way with layout inverted.
 
-To add the new formula the top layout {\tt addTextViewToTop()} is called. This sets up the text view by setting its layout parameters and customises how the view will look on screen. Its id is set to the number of equivalences in the layout so far - which is used for ordering the equivalences when they are undone and redone.
+To add the new formula the top layout {\tt addTextViewToTop()} is called. This sets up the text view by setting its layout parameters and customises how the view will look on screen. Its ID is set to the number of equivalences in the layout so far - which is used for ordering the equivalences when they are undone and redone.
 
-Each text view has an {\tt OnClickListener} set, the function of this will depend on where the text view is in the layout. If the text view displays the current formula then clicking it will simply hide/show the current formation tree. If the text view is a previous equivalence before the current formula then on click the application will undo up till this equivalence. If the text view is below the current formula then it's been previously undone and clicking it again will redo up to and including this equivalence.
+Each text view has an {\tt OnClickListener} set, the function of this will depend on where the text view is in the layout. If the text view displays the current formula then clicking it will simply hide or show the current formation tree. If the text view is a previous equivalence before the current formula then on click the application will undo up till this equivalence. If the text view is below the current formula then it has been previously undone and clicking it again will redo up to and including this equivalence.
 
 After the {\tt OnClickListener} is set up the text view will be added to the top layout, a line will be drawn below it and it will be pushed onto the top stack.
 
@@ -1333,13 +1418,13 @@ After the {\tt OnClickListener} is set up the text view will be added to the top
 
 \subsubsection{Undo}
 
-When a previous equivalence is clicked the application finds its id (representing its position in the layout) and removes each equivalence from the current equivalence (found by the current size of the stack) until the clicked equivalences position. 
+When a previous equivalence is clicked the application finds its ID (representing its position in the layout) and removes each equivalence from the current equivalence (found by the current size of the stack) until the clicked equivalence's position. 
 
 Each of these removed equivalences are then set up below the formation tree with another {\tt OnClickListener} ready to be redone if required.
 
 \subsubsection{Redo}
 
-Clicking an undone equivalence will cause the application to loop through the undone equivalences from the least recent up to and including the selected one. This removes them from this view and adds them back to the top layout above the formation tree. 
+Clicking an undone equivalence will cause the application to loop through the undone equivalences from the first (least recent) up to and including the selected one. This removes them from this view and adds them back to the top layout above the formation tree. 
 
 \subsubsection{Formation Tree}
 
@@ -1356,76 +1441,13 @@ We considered the option of not allowing the user to make a mistake (for example
 
 Detecting when the user has completed a cycle is simple with our implementation because we maintain stacks of all the previous equivalences. Therefore, whenever a new rule is applied the application can loop through the stack and compare the new equivalence to all the previous equivalences. If any are the same then a cycle has been found and a {\tt Toast} is displayed alerting the user to this fact.
 
-We considered highlighting the equivalences in question to the user but decided this would make the process too easy for the user. The current equivalence will always be one end of the cycle so it is not too difficult for a user to look through their previous equivalences and spot the duplicate. By not highlighting the error immediately we allow the user to search through their previous turns and hopefully spot where they've gone wrong by themselves.
+We considered highlighting the equivalences in question to the user but decided this would make the process too easy for the user. The current equivalence will always be one end of the cycle so it is not too difficult for a user to look through their previous equivalences and spot the duplicate. By not highlighting the error immediately we allow the user to search through their previous equivalences and hopefully spot where they've gone wrong by themselves.
 
-Once a cycle has been spotted by the user they can either choose to undo back to that point or simply undo the last turn and apply a different rule that will not result in a cycle if they believed they were on the right track.
-
-\begin{comment}
-\chapter{Project Plan}
-
-\section{Progress}
-
-\begin{enumerate}
-\item Grammar and parser generator - We have created a grammar written in ANTLR4 to define the parser generator. This can take an input formula, parse it, and convert it into a tree structure that we can manipulate.
-\end{enumerate}
-
-\section{Future Plan}
-
-Targets for March 28th (End of second term):
-
-\begin{enumerate}
-\item Tree Constructor - We need to convert the tree generated by the parser into a more useful data structure. This will be a tree where the nodes and leaves are operators and propositional atoms respectively.
-\item Tree Processing - Once we have a useful data structure, we can begin manipulating it with logical rules. This will make up the internal functionality of the application. For this we will need to design some specific algorithms, for example:
-
-\begin{itemize}
-\item Rule calculator - Calculate which rules are applicable to each operator
-\item Subtree manipulator - Replace subtrees based on the rule that is applied to the operator
-\end{itemize}
-
-\item Basic android interface - We will create a basic interactive interface to allow the user to enter an equivalence, display the current equivalence and apply the tree manipulation algorithms we have created. This will not display the formulae as trees yet, as we anticipate the layout will be fairly complex to design to be aesthetically pleasing.
-\end{enumerate}
-
-The goal of the rule generator is not only to generate rules to apply to the current formula but to also determine the optimal number of rules to complete the equivalence. This will be used in for generating equivalences, helping the user and spotting mistakes.
-
-Targets for 3rd term:
-
-\begin{enumerate}
-\item Android Tree Layout - We need to design a layout algorithm (or adapt an existing one) to display the current formula as a tree so that the whole tree will be visible on the tablet as well as allowing for space for the lines of other equivalences.
-\item Formula Generator - The user should be able to generate equivalences on demand to practice with as well as inputting them manually. This will function by generating an initial equation, then randomly applying a number of valid rules to the equation. This should check for cycles so that the second formula is not too similar to the first.
-\item Extensions:
-
-\begin{itemize}
-\item Undo Functionality - We want the user to have the ability to undo previous rules and view the tree of a previous equivalence. When the user selects a previous equivalence they should be able to redo any steps until they decide to apply a new rule, in which case the undone history will be lost. This will be implemented by maintaining a stack for each of undo and redo.
-\item Help - We want to create a help tool that uses the rule calculator to determine the optimal path from one equivalence to another. This will be used to:
-
-\begin{itemize}
-\item On request tell the user what the next optimal step is. It should generate the optimal path from their \textit{current} formula so the calculation can either be run whenever the user requests help or every step depending on how computationally expensive it is.
-\item Calculate how far from the optimal path they are once they have completed the equivalence.
-\item Detect if the user has made a mistake such as completing a cycle or heading towards a dead-end and prompt them.
-\end{itemize}
-  
-\item Difficulty Settings - We want to set difficulty in a variety of ways, these include:
-
-\begin{itemize}
-\item When generating equivalences, the start formula length can be varied and rules can be applied more or fewer times depending on difficulty.
-\item No help functionality for higher difficulties.
-\item There is also the possibility of recommending a difficulty for the user based on how many previous equivalences they have completed, or how close their solutions have been to the optimum.
-\end{itemize}
-
-\item Extra operators - New operators could be added to the grammar such as XOR and NAND. These could be implemented as a separate grammar and they are likely to be used separately from the standard set of operators.
-\end{itemize}
-
-\end{enumerate}
-
-\end{comment}
+Once a cycle has been spotted by the user they can either choose to undo back to that point or simply undo the last turn and apply a different rule that will not result in a cycle if they believed they were on the right track. Detecting cycles in first order logic is slightly harder to handle because variables can be renamed, however we are only allowing the user to use each variable once (so there are no nested quantifiers with the same variable name) which helps solve this problem.
 
 \chapter{Evaluation}
 
-The application aims to help and encourage students to learn about logical equivalences so it is key that the application of the rules is completely correct. Therefore, we evaluated the accuracy of the each main component of the application using JUnit tests. This enabled us to ensure each component was functioning without error before moving onto the next section.
-
-We tested our application on a Samsung Galaxy Nexus 7 when we asked a variety of users to evaluate the application.
-
-TODO: Survey overview?
+To evaluate the application we created a large set of tests to check the correctness of the logic in the application and we obtained feedback about the UI and features from the Undergraduate Project Fair.
 
 \section{Testing}
 
@@ -1438,14 +1460,14 @@ The compiler utilises the parser and the walker to convert a string input into i
 We defined a string representation of the internal tree structure so we could compare these properties with an expected result. Each node in the tree is represented by its index followed by its value and any children as shown below:
 
 \begin{center}
-a$\land$b $\equiv$ 0-0: $\land$ (0-1: a, 0-2: b)
+$a\land b \equiv 0-0: \land (0-1: a, 0-2: b)$
 \end{center}
 
 The index is displayed as a key-depth pair and any children are surrounded by brackets and separated with a comma.
 
 \subsubsection{Indexes}
 
-We defined a set of tests for each operator to ensure the indexes were being correctly labeled and placed correctly in the tree. Each operator has a test with the operator as the root, the left child and the right child. For example, the `and' operator ($\land$) has tests shown in Listing \ref{listing:and_tests}.
+We defined a set of tests for each operator to ensure the indexes were being correctly labeled and placed correctly in the tree. Each operator has a test with the operator as the root, the left child and the right child. For example, the `and' operator has tests shown in Listing \ref{listing:and_tests}.
 
 \begin{listing}[ht]
 \begin{minted}{java}
@@ -1476,7 +1498,7 @@ public void testAndRight() {
 
 \subsubsection{Order of Precedence}
 
-The order of precedence for operators is defined in the grammar file we pass in to ANTLR. We defined tests to check the parser parses the operators in the correct order. These tests are combinations of different operators written without brackets (unlike the tests defined above) to see what priority the parser gives to each operator. The test for the `and' and `implies' operators is shown in Listing \ref{listing:and_implies_test}.
+The order of precedence for operators is defined in the grammar file we pass in to \emph{ANTLR}. We defined tests to check the parser parses the operators in the correct order. These tests are combinations of different operators written without brackets (unlike the tests defined above) to see what priority the parser gives to each operator. The test for the `and' and `implies' operators is shown in Listing \ref{listing:and_implies_test}.
 
 \begin{listing}[ht]
 \begin{minted}{java}
@@ -1495,7 +1517,7 @@ public void testAndImplies() {
 
 It is important to ensure that only the correct applicable rules are displayed to the user when a node is selected as well as making sure that no applicable rules are missed. If an inapplicable rule was returned by the rule selector and a user selected it, not only would this cause the user confusion, it would throw an error and most likely crash the app.
 
-Tests are defined to check the bitset returned by the rule selector are accurate. We defined a variety tests so that each of the rules will be applicable in at least one test. In each test we create a bitset and set the expected values, then use the rule selector to return its bitset and compare the two bitsets for equivalence.
+Tests are defined to check the bitset returned by the rule selector is accurate. We defined a variety of tests so that each of the rules will be applicable in at least one test. In each test we create a bitset and set the expected values, then use the rule selector to return its bitset and compare the two bitsets for equivalence.
 
 \subsection{Rule Application}
 
@@ -1507,7 +1529,7 @@ For most rules we define two tests (some rules can use the same test because the
 
 \begin{listing}[ht]
 \begin{minted}{java}
-// 0.  a^b      |-  b^a             -- Commutativity
+// 0.  a^b |- b^a -- Commutativity
 @Test
 public void testAndCommutativity() {
     FormationTree tree = compiler.compile("q^p");
@@ -1531,11 +1553,11 @@ public void testAndCommutativityComplex() {
 
 \subsubsection{Complex Rules}
 
-For rules where the selected node is being replaced by one of its children (such as absorption) we need to take extra care that the parent and children are set correctly. We define extra tests for these rules to test the methods are correct when they are applied to the children of a unary node and either side of a binary node. We use these to check the indexes are replaced correctly and the correct child replaces the parent node.
+For rules where the selected node is being replaced by one of its children (such as absorption: $a \lor (a \land b) \equiv a$) we need to take extra care that the parent and children are set correctly. We define extra tests for these rules to test the methods are correct when they are applied to the children of a unary node and either side of a binary node. We use these to check the indexes are replaced correctly and the correct child replaces the parent node.
 
 \subsection{Truth Tables}
 
-Truth tables are used to confirm formulae are equivalent so that a user can begin a proof. If there are any errors in these tables or in how they are checked for equivalence a user could end up trying to prove that two nonequivalent formulae are equivalent. This would prove very frustrating and a hindrance to a user trying to learn about logic.
+Truth tables are used to confirm formulae are equivalent so that a user can begin a proof. If there are any errors in these tables or in how they are checked for equivalence a user could end up trying to prove that two nonequivalent formulae are equivalent.
 
 \subsubsection{Correct truth tables}
 
@@ -1547,11 +1569,11 @@ Similar tests were also run using truth values (`$\top$', `$\bot$') instead of r
 
 Tests were created for each defined rule to ensure that both side of the rule were equivalent. This not only tested that our testing for equivalence was correct but also that the rules we defined were accurate.
 
-These tests checked all the cases described in Section \ref{sub:testing_equivalence_of_tables} as they included tests for rules where each side has a differently sized table (such as the absorption rule).
+These tests checked all the cases described in Subsection \ref{sub:testing_equivalence_of_tables} as they included tests for rules where each side has a differently sized table (such as the absorption rule).
 
-We also defined some tests to ensure that checks for equivalence would fail in a variety of situations. If all the variables used in the formulae are different they should fail the equivalence check. However, there are some edge cases which are exempt from this rule. If the formulae can be proved equivalent by our rules they should succeed. 
+We also defined some tests to ensure that checks for equivalence would fail in a variety of situations. If all the variables used in two propositional formulae are different they should fail the equivalence check. However, there are some edge cases which are exempt from this rule. If the formulae can be proved equivalent by our rules they should succeed. 
 
-An example of this case is `a$\land\lnot$a' and `b$\land\lnot$b'. These formulae use totally different variables but both reduce to `$\bot$' so are solvable. The test for this case is defined in Listing \ref{listing:a_and_not_a_test}.
+An example of this case is $a\land\lnot a$ and $b\land\lnot b$. These formulae use totally different variables but both reduce to `$\bot$' so are solvable. The test for this case is defined in Listing \ref{listing:a_and_not_a_test}.
 
 \begin{listing}[ht]
 \begin{minted}{java}
@@ -1582,11 +1604,11 @@ All of these tests were run after each section was completed to ensure the corre
 
 \section{Undergraduate Project Fair}
 
-An undergraduate project fair was held so that 3rd and 4th year student could showcase their individual projects. I attended this to obtain feedback on the application, gain some insight into what features people found most useful and what could be improved. The fair was mainly attended by 3rd and 4th year students so it was a perfect opportunity to ask people who had already taken a logic course what they thought of the app.
+An undergraduate project fair was held so that 3rd and 4th year student could showcase their individual projects. I attended this to obtain feedback on the application, gain some insight into what features people found most useful and what could be improved. The fair was mainly attended by 3rd and 4th year students so it was a perfect opportunity to ask people who had already taken a logic course what they thought of the app. We tested our application on a Samsung Galaxy Nexus 7.
 
 \subsection{Feedback}
 
-The feedback from the fair was mostly positive and addressed a few key points: designing the application for Android, the UI design and propositional vs first order logic.
+The feedback from the fair was mostly positive and addressed a few key points: designing the application for Android; the UI design and propositional vs first order logic.
 
 \subsubsection{Using Android}
 
@@ -1598,27 +1620,15 @@ We have aimed to create a functional logic application and it's fair to say that
 
 Some users suggested adding a `pinch and zoom' gesture to allow easier movement around the tree. Others preferred the idea of a static layout believing that manipulating a tree too much would make it more difficult to compare with the other formation tree. We understand the need to be able to manipulate the tree in some capacity so that very wide trees can be displayed in their entirety. 
 
-Currently we simply allow the user to move the tree left and right using the buttons provided. Although implementing a `pinch and zoom' gesture to manipulate the tree would be more intuitive for some users we decided to stick with the simple approach.
+Currently we simply allow the user to move the tree left and right using the buttons provided when the tree is too large for the screen. Although implementing a `pinch and zoom' gesture to manipulate the tree would be more intuitive for some users we decided to stick with the simple approach.
 
 Other comments included simple adjustments to the design such as centering the rule popup menu and providing some simple instructions on each screen to help the user know what to do at each stage. The idea to center the rule popup menu was discarded because it resulted in blocking much of the other formation tree which we believe is useful to see while applying rules. The other ideas were added into the design where possible and using them we believe the design is now more intuitive and easier to understand.
-
-%Push bottom tree down below popup menu also ignored
-
-TODO: Actually add these things!
 
 \subsubsection{Propositional vs First Order Logic}
 
 At the time of the undergraduate fair the application only supported propositional logic. We wanted to incorporate first order logic into the application so decided to find out which logic people would have found most useful when they were first learning logical equivalences.
 
-Understandably, users agreed that first order logic was more difficult to learn. Therefore, a tool helping them understand first order would have been more appreciated and useful than an application only supporting propositional logic. For this reason we are aiming to complete support for first order logic by the end of the project.
-
-TODO: What was the result of implementing first order logic?
-
-TODO: Students new to logic?
-
-%Once the application has been built we will need to find a way to test that it has met the objectives we set out to achieve. The main objective is to create an intuitive Android application that helps students improve in solving equivalences; as such, we will survey a wide range of test subjects. These tests will be split into two groups: people who understand logic and equivalences well and people who are new to propositional logic.
-
-%We need to ask people who understand logic (e.g. lecturers) so we can confirm that it works as a teaching tool. People who are new to logic (e.g. first year students) are necessary so we can evaluate how effective it is as a learning tool. This can be carried out through asking the target groups to use the application and provide feedback.
+Understandably, users agreed that first order logic was more difficult to learn. Therefore, a tool helping them understand first order would have been more appreciated and useful than an application only supporting propositional logic. For this reason we have completed support for first order logic and allow the user to choose which logic they want to solve an equivalence for on the first screen of the app.
 
 \chapter{Conclusion}
 
@@ -1628,13 +1638,13 @@ Throughout the report we have demonstrated an Android application which can be u
 
 \subsubsection{ANTLR4}
 
-Using ANTLR4 allowed the grammar used to be much more natural and easy to implement. ANTLR4 is a very powerful tool which allowed us to generate the internal tree representation of a formula effectively. In the future it would be useful to learn more about error handling in ANTLR and to implement this feature correctly. However, our workaround is functional and took significantly less time than creating a custom error handler.
+Using \emph{ANTLR4} allowed the grammar used to be much more natural and easy to implement. \emph{ANTLR4} is a very powerful tool which allowed us to generate the internal tree representation of a formula effectively.
 
 \subsubsection{Formation Tree}
 
 We wanted to display an attractive formation tree of the formulae in use by the application. We have shown that Walker's algorithm is extremely suitable for building aesthetically pleasing tree layouts. The trees are interactive to apply equivalence rules to the formula and we have proven these rules are correct through extensive testing. 
 
-To allow trees larger than the screen size to be displayed, buttons were added to allow simple navigation around the trees. This was a difficulty we had not anticipated at the beginning of the project, but the solution is clear and effective.
+To allow trees larger than the screen size to be displayed, buttons were added to allow simple navigation around the trees. This was a difficulty we had not anticipated at the beginning of the project, but the solution is effective.
 
 \subsubsection{Undo/Redo}
 
@@ -1648,104 +1658,117 @@ The resulting generated equivalences are widely varied and are representative of
 
 \subsubsection{Help and Completion}
 
-The user receives a toast (notification popup) when a cycle is detected or the equivalence proof is complete. These features are not as comprehensive as hoped for at the beginning of the project. Initially, we wanted to give the user a breakdown of how successful their proof was by determining the optimal proof (using the fewest moves) for the equivalences. This proved to be a complex task and unfortunately could not be completed. However, we believe it is sufficient to provide help (in the form of allowing them to select difficulties and detect cycles) to the user and allow them to minimise their proofs by learning and understanding the rules more intuitively through repeated use of the application.
+The user receives a notification popup when a cycle is detected or the equivalence proof is complete. These features are not as comprehensive as hoped for at the beginning of the project. Initially, we wanted to give the user a breakdown of how successful their proof was by determining the optimal proof (using the fewest moves) for the equivalences. This proved to be a complex task and unfortunately could not be completed. However, by providing help (in the form of allowing them to select difficulties and detect cycles) to the user we allow them to minimise their proofs by learning and understanding the rules more intuitively through repeated use of the application.
 
 \subsubsection{First Order Logic}
 
-TODO: Complete
+Our final extension was to support first order logic equivalences. We extended the \emph{ANTLR} grammar and the custom walker to handle the extra symbols and added in extra rules to handle first order equivalences. A user can choose either propositional or first order logic and will be presented with an appropriate custom keyboard to enter those equivalences with. Equivalences can be generated for first order logic using the same parameters as for propositional. This is recommended over entering custom equivalences because we cannot check first order formulae for equivalence using truth tables. The equivalences formation trees are shown in a similar fashion, with the difference that the nodes can be different sizes due to quantifiers ($\forall x$) and predicate symbols ($Pxyz$) needing to be displayed in individual nodes.
 
-%\section{Comparisons to related work}
-
-\chapter{Future Work}
+\section{Future Work}
 
 There is a large amount of scope for future improvements to our current implementation to make it more accessible and to improve the user learning experience.
 
-\section{Device Support}
+\subsection{Device Support}
 
 One complaint from user testers was that they did not own an Android tablet so would not have been able to use the app. A simple solution to this is obviously to increase the number of devices supported by the application. 
 
 As the underlying functionality is separated from the Android implementation it would be fairly straight forward to create a web application utilising these features. 
 
-We could also create a simple version of the app to use on Android smartphones that did not display the formation tree - this would consume far too much screen space and make the application unusable. Instead each individual element in the current formula would be clickable to bring up the list of applicable rules. 
+We could also create a simple version of the app to use on Android smartphones that did not display the formation tree since this would consume far too much screen space and make the application unusable. Instead each individual element in the current formula would be clickable to bring up the list of applicable rules. 
 
-\section{More Complex Help}
+\subsection{Custom Error Handler}
+
+In the future it would be useful to learn more about error handling in \emph{ANTLR4} and to implement a custom error handler correctly. Although our workaround is functional and took significantly less time than creating a custom error handler. This would allow us to handle errors found by the parser as it walked through the formula instead of waiting until a tree is completely built to detect them. 
+
+\subsection{More Complex Help}
 
 Increasing the help available to the user would be beneficial to new users struggling with the basic concepts of logical equivalences. More experienced users would have the option to turn help features off.
 
-\subsection{Calculating The Optimal Route}
+\subsubsection{Calculating The Optimal Route}
 
 To help the user see where they could improve we would have liked to be able to display the shortest number of moves possible to complete the proof. We could compare this to the number of moves the user took and allow them to either try again or view an optimal solution.
 
 Finding a general solution for generated equivalences would be fairly simple because they are generated by the repeated application of rules. Although this may not provide the optimal solution due to cycles and the possibility of a more direct route.
 
-By repeated random application of rules the application could find a solution by brute force. For shorter equivalences this could be used to generate an optimal solution as there would not be too many permutations. However, as the equivalences got larger and the solutions required more rules, this may not be feasible and we would have to settle for just finding any solution and allowing the user to see if they could beat it.
+By repeated random application of rules the application could find a solution by brute force. For shorter equivalences this could be used to generate an optimal solution as there would not be too many permutations. However, as the equivalences got larger and the solutions required more rules, this may not be feasible and we would have to settle for just finding any solution and allowing the user to see if they could find a better one.
 
-\subsection{Suggested Next Move}
+\subsubsection{Suggested Next Move}
 
 When the user is unsure of what to do we could suggest the next move based on the solution calculated from the current equivalence. If an optimal solution had been generated from the initial formula and the user had detoured from the ideal route, the suggested move would be an undo back to when they were on track.
 
-However this could result in users not learning anything and just using the application to solve their equivalences for them. To prevent this we would put a limit on the number of times this help feature could be used so that it was only used when they really needed it.
+However this could result in users not learning anything and just using the application to solve their equivalences for them. To prevent this we could put a limit on the number of times this help feature could be used so that it was only used when they really needed it.
 
-\subsection{Future Dead End Detection}
+\subsubsection{Future Cycle Detection}
 
 Using the repeated application of rules we could determine if a user was heading towards an inevitable cycle and warn them of this. The application could search a limited number of moves ahead and apply all the permutations of the rules in search of cycles. If every move resulted in a cycle the user has probably made a mistake and would be made aware of this.
 
-\section{Displaying Truth Tables}
+\subsection{Displaying Truth Tables}
 
-\section{UI Design}
-\subsection{Pinch and Zoom Gestures}
-
-\section{First Order Logic}
-\subsection{Extend grammar}
-\subsection{Add and handle new rules}
+Since we create truth tables to evaluate propositional equivalences we could easily extend this to allow the user to see the truth table of a specific formula. We could add this as a separate section to either propositional or first order logic, allow a user to enter one or more formulae and display their truth tables. This would be a useful feature to help new users understand why certain equivalences were equivalent.
 
 \begin{thebibliography}{9}
 
 \bibitem{propositionalwiki}
   Wikipedia,
   \emph{Propositional Logic}.
-  http://en.wikipedia.org/wiki/Propositional\_calculus
+  \url{http://en.wikipedia.org/wiki/Propositional_calculus}
 
 \bibitem{propositionaliep}
   IEP,
   \emph{Propositional Logic}.
-  http://www.iep.utm.edu/prop-log
+  \url{http://www.iep.utm.edu/prop-log}
 
 \bibitem{androidwiki}
   Wikipedia,
   \emph{Android (Operating System)}.
-  http://en.wikipedia.org/wiki/\\Android\_(operating\_system)
+  \url{http://en.wikipedia.org/wiki/Android_(operating_system)}
+
+\bibitem{opengl}
+  Android Developer Guide,
+  \emph{OpenGL ES}.
+  \url{http://developer.android.com/guide/topics/graphics/opengl.html}
+
+\bibitem{marketshare}
+  Natasha Lomas,
+  \emph{Android Still Growing Market Share By Winning First Time Smartphone Users}.
+  \url{http://techcrunch.com/2014/05/06/android-still-growing-market-share-by-winning-first-time-}
+  \url{smartphone-users/}
 
 \bibitem{androidstats}
   Harry McCracken,
   \emph{Who’s Winning, iOS or Android?}.
-  http://techland.time\\.com/2013/04/16/ios-vs-android
+  \url{http://techland.time.com/2013/04/16/ios-vs-android}
+
+\bibitem{keyboardview}
+  Maarten Pennings,
+  \emph{Android development: Custom keyboard}.
+  \url{http://www.fampennings.nl/maarten/android/09keyboard/index.htm}
 
 \bibitem{logicdaemon}
   Colin Allen, Chris Menzel,
   \emph{Logic Daemon}.
-  http://logic.tamu.edu
+  \url{http://logic.tamu.edu}
 
 \bibitem{pandora}
   Imperial College London,
   \emph{Pandora}.
-  http://www.doc.ic.ac.uk/pandora/newpandora/\\index.html
+  \url{http://www.doc.ic.ac.uk/pandora/newpandora/index.html}
 
 \bibitem{logiccalc}
   Enrico Franconi,
   \emph{Propositional Logic Calculator}.
-  http://www.inf.unibz.it/\\\textasciitilde franconi/teaching/propcalc
+  \url{http://www.inf.unibz.it/~franconi/teaching/propcalc}
 
 \bibitem{appstoredownloads}
   BBC News,
   \emph{BBC Google activations and downloads update May 2013}. 
-  http://www.bbc.co.uk/news/technology-22542725,
+  \url{http://www.bbc.co.uk/news/technology-22542725},
   May 15, 2013.
 
 \bibitem{androidwebappdifferences}
   Armour Technology Solutions,
   \emph{5 Main Differences Between Web Apps and Native Apps}.
-  http://www.armourts.com/5-main-differences-between-web-apps-and-native-apps/
+  \url{http://www.armourts.com/5-main-differences-between-web-apps-and-native-apps/}
 
 \bibitem{tidierdrawingsws}
   C. Wetherell and A. Shannon,
@@ -1772,12 +1795,12 @@ Using the repeated application of rules we could determine if a user was heading
   \emph{NP-Completeness of Minimal Width Unordered Tree Layout}, 
   Journal of Graph Algorithms and Applications, 
   vol. 8, no. 3, pp. 295-312 (2004).
-  http://www.emis.de/journals/JGAA/accepted/2004/MarriottStuckey2004.8.3.pdf
+  \url{http://www.emis.de/journals/JGAA/accepted/2004/MarriottStuckey2004.8.3.pdf}
 
 \bibitem{presentabletrees}
   Bill Mill,
   \emph{Drawing Presentable Trees}.
-  http://billmill.org/pymag-trees
+  \url{http://billmill.org/pymag-trees}
 
 \bibitem{improvingwalkers}
   Buchheim C, J\"unger M, Leipert S. 
@@ -1792,12 +1815,167 @@ Using the repeated application of rules we could determine if a user was heading
 
 \bibitem{abegolineartime}
   \emph{Abego TreeLayout}
-  https://code.google.com/p/treelayout/
+  \url{https://code.google.com/p/treelayout/}
 
 \end{thebibliography}
 
-% Put in appendix
-\chapter{User Guide}
-\section{How to use the app}
+\begin{appendices}
+\chapter{Rules List}
+\label{chap:rules_list}
+
+\begin{listing}[ht]
+\begin{minted}{java}
+Equivalences involving ∧
+0.  a∧b          |-  b∧a
+1.  a∧a          |-  a
+2.  a∧┬          |-  a
+3.  ┬∧a          |-  a
+4.  ⊥∧a          |-  ⊥
+5.  a∧⊥          |-  ⊥
+6.  a∧¬a         |-  ⊥
+7.  ¬a∧a         |-  ⊥       
+8.  a∧(b∧c)      |-  (a∧b)∧c     -- Associativity
+9.  (a∧b)∧c      |-  a∧(b∧c)     -- Associativity
+10. a∧¬b         |-  ¬(a→b)
+11. (a→b)∧(b→a)  |-  a↔b
+12. ¬a∧¬b        |-  ¬(avb)      -- De Morgan laws
+13. a∧(bvc)      |-  (a∧b)v(a∧c) -- Distributitivity
+14. (avb)∧c      |-  (a∧c)v(b∧c) -- Distributitivity
+15. (avb)∧(avc)  |-  av(b∧c)     -- Distributitivity
+16. (avc)∧(bvc)  |-  (a∧b)vc     -- Distributitivity
+17. a∧(avb)      |-  a           -- Absoption
+18. (avb)∧a      |-  a           -- Absoption
+
+Equivalences involving v
+19. avb            |-  bva       -- Commutativity
+20. ava            |-  a         -- Idempotence
+21. ┬va            |-  ┬
+22. av┬            |-  ┬
+23. av¬a           |-  ┬
+24. ¬ava           |-  ┬
+25. av⊥            |-  a
+26. ⊥va            |-  a
+27. av(bvc)        |-  (avb)vc   -- Associativity
+28. (avb)vc        |-  av(bvc)   -- Associativity
+\end{minted}
+\end{listing}
+
+\begin{listing}[ht]
+\begin{minted}{java}
+29. (a∧b)v(¬a∧¬b)  |-  a↔b
+30. (a∧¬b)v(¬a∧b)  |-  ¬(a↔b)
+31. ¬av¬b          |-  ¬(a∧b)      -- De Morgan laws
+32. av(b∧c)        |-  (avb)∧(avc) -- Distributitivity
+33. (a∧b)vc        |-  (avc)∧(bvc) -- Distributitivity
+34. (a∧b)v(a∧c)    |-  a∧(bvc)     -- Distributitivity
+35. (a∧c)v(b∧c)    |-  (avb)∧c     -- Distributitivity
+36. av(a∧b)        |-  a           -- Absoption
+37. (a∧b)va        |-  a           -- Absoption
+38. ¬avb           |-  a→b
+
+Equivalences involving ¬
+39. ¬┬      |-  ⊥
+40. ¬⊥      |-  ┬
+41. ¬¬a     |-  a
+42. ¬a      |-  a→⊥
+43. ¬(a→b)  |-  a∧¬b
+44. ¬(av¬b) |-  a→b
+45. ¬(a↔b)  |-  a↔¬b
+46. ¬(a↔b)  |-  ¬a↔b
+47. ¬(a↔b)  |-  (a∧¬b)v(¬a∧b) -- Exclusive or of a and b
+48. ¬(a∧b)  |-  ¬av¬b     -- De Morgan laws
+49. ¬(avb)  |-  ¬a∧¬b     -- De Morgan laws
+
+Equivalences involving →
+50. a→a    |-  ┬
+51. ┬→a    |-  a
+52. a→┬    |-  ┬
+53. ⊥→a    |-  ┬
+54. a→⊥    |-  ¬a
+55. a→b    |-  ¬avb
+56. a→b    |-  ¬(av¬b)
+
+Equivalences involving ↔
+57. a↔b    |-  (a→b)∧(b→a)
+58. a↔b    |-  (a∧b)v(¬a∧¬b)
+59. a↔¬b   |-  ¬(a↔b)
+60. ¬a↔b   |-  ¬(a↔b)
+\end{minted}
+\end{listing}
+
+\begin{listing}[ht]
+\begin{minted}{java}
+Equivalences involving atoms
+61. a     |-  a∧a
+62. a     |-  a∧┬
+63. a     |-  ava
+64. a     |-  av⊥
+65. a     |-  ¬¬a
+66. a     |-  ┬→a
+67. ⊥     |-  ¬┬
+68. ┬     |-  ¬⊥
+
+Equivalences involving user input
+69. ⊥      |-  a∧⊥
+70. ⊥      |-  a∧¬a
+71. ┬      |-  av┬
+72. ┬      |-  av¬a
+73. ┬      |-  a→a 
+74. ┬      |-  a→┬
+75. ┬      |-  ⊥→a
+76. a      |-  av(a∧b)
+77. a      |-  a∧(avb)
+ 
+First order - e and f represent any wff, t represents 
+              a wff with no free occurrences of x 
+
+Equivalences involving ∀
+78. ∀x[¬e]   |-  ¬∃x[e] 
+79. ∀x∀y[e]  |-  ∀y∀x[e]
+80. ∀x[e∧f]  |-  ∀x[e]∧∀x[f]
+81. ∀x[e∨t]  |-  ∀x[e]∨t
+82. ∀x[e→t]  |-  ∃x[e]→t
+83. ∀x[t→e]  |-  t→∀x[e]
+84: ∀x[t]    |-  t
+
+Equivalences involving ∃
+86: ∃x[¬e]   |-  ¬∀x[e]
+87: ∃x∃y[e]  |-  ∃y∃x[e]
+88: ∃x[e∨f]  |-  ∃x[e]∨∃x[f]
+89: ∃x[e∧t]  |-  ∃x[e]∧t
+90: ∃x[e→t]  |-  ∃x[e]→t
+91: ∃x[t→e]  |-  t→∃x[e]
+92: ∃x[t]    |-  t
+
+Equivalences involving ¬
+93: ¬∀x[e] |-  ∃x[¬e]
+94: ¬∃x[e] |-  ∀x[¬e]
+\end{minted}
+\end{listing}
+
+\begin{listing}[ht]
+\begin{minted}{java}
+Equivalences involving ∧
+95: ∀x[e]∧∀x[f]  |-  ∀x[e∧f]
+96: ∃x[e]∧t      |-  ∃x[e∧t]
+
+Equivalences involving ∨
+97: ∀x[e]∨t      |-  ∀x[e∨t]
+98: ∃x[e]∨∃x[f]  |-  ∃x[e∨f]
+
+Equivalences involving →
+99: ∃x[e]→t  |-  ∀x[e→t]
+100: t→∀x[e] |-  ∀x[t→e]
+101: ∃x[e]→t |-  ∃x[e→t]
+
+Equivalences involving user input
+102: ∀x[e] |-  ∀y[e{x->y}]
+103: ∃x[e] |-  ∃y[e{x->y}]
+104: t     |-  ∀x[t]
+105: t     |-  ∃x[t]
+\end{minted}
+\end{listing}
+
+\end{appendices}
 
 \end{document}

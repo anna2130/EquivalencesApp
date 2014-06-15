@@ -43,6 +43,19 @@ public class ExprBaseListener implements ExprListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
+	@Override public void enterTERM_(@NotNull ExprParser.TERM_Context ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitTERM_(@NotNull ExprParser.TERM_Context ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
 	@Override public void enterEXPR(@NotNull ExprParser.EXPRContext ctx) { }
 	/**
 	 * {@inheritDoc}

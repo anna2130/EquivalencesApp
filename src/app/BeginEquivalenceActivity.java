@@ -7,6 +7,7 @@ import java.util.Stack;
 import treeBuilder.Compiler;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
+import treeBuilder.Variable;
 import treeManipulation.RuleEngine;
 import android.app.Activity;
 import android.content.Context;
@@ -61,7 +62,9 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	private DrawView topFormationTree;
 	private DrawView bottomFormationTree;
 
-	public static int min_user_input_required;
+	private static int min_user_input_required;
+	private static int first_order_rules;
+	private static int fo_min_user_input_required;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		bottomTree = compiler.compile(end);
 
 		min_user_input_required = re.getMinUserInputRequired();
+		first_order_rules = re.getMinFirstOrderRules();
+		fo_min_user_input_required = re.getMinFOUserInputRequired();
 
 		topFormationTree = (DrawView) findViewById(R.id.top_formation_tree);
 		topFormationTree.setTree(topTree);
@@ -316,16 +321,28 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		for (int i = 0; i < rules.size(); ++i) {
 			key = rules.keyAt(i);
 
-			// is user input required for new atom
-			if (key < min_user_input_required) {
+			System.out.println(key);
+			// User input not required
+			if (key < min_user_input_required || (key >= first_order_rules && key < fo_min_user_input_required)) {
+				System.out.println("User input not required for " + key + " " + rules.get(key));
 				rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
 			} else {
+				System.out.println("User input required for " + key + " " + rules.get(key));
 				SubMenu sub = rulesList.getMenu().addSubMenu(Menu.NONE, key, Menu.NONE, rules.get(key));
 				SortedSet<String> vars = topTree.getVariables();
 				vars.addAll(bottomTree.getVariables());
 
-				for (String v : vars) {
-					sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + v);
+				if (key >= fo_min_user_input_required) {
+					System.out.println("First order user input required for " + key + " " + rules.get(key));
+					Variable[] variables = Variable.values();
+					for (Variable v : variables) {
+						String s = v.getValue();
+						if (s != "┬" && s != "⊥")
+							sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + s);
+					}
+				} else {
+					for (String v : vars)
+						sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + v);
 				}
 			}
 		}
@@ -336,13 +353,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	public boolean onMenuItemClick(MenuItem item) {
 		int id = item.getItemId();
 
-		if (isTopTree(selectedTree)) {
-			System.out.println("Top tree rule clicked");
-		} else {
-			System.out.println("Bottom tree rule clicked");
-		}
-		
-		if (id < min_user_input_required) {
+		// User input not required
+		if (id < min_user_input_required || (id >= first_order_rules && id < fo_min_user_input_required)) {
 			re.applyRuleFromBitSet(id, selectedTree, selected, null);
 			itemClicked();
 		} else {

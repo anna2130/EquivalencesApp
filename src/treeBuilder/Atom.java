@@ -24,7 +24,19 @@ public class Atom extends Node {
 	}
 	
 	public String toTreeString() {
-		return getKey() + "-" + getDepth() + ": " + getValue();
+		StringBuilder sb = new StringBuilder();
+		sb.append(getKey());
+		sb.append("-");
+		sb.append(getDepth());
+		sb.append(": ");
+		sb.append(getValue());
+
+		LinkedList<String> vars = getVars();
+		if (vars != null)
+			for (String var : vars)
+				sb.append(var);
+		
+		return sb.toString();
 	}
 
 	@Override
@@ -69,7 +81,7 @@ public class Atom extends Node {
 	// if x occurs in φ. Moreover, there are no bound variables in any atomic formula.
 	@Override
 	public boolean hasFree(String variable) {
-		return getVars().contains(variable);
+		return getVars().contains(variable) || getValue().equals(variable);
 	}
 
 	@Override
@@ -80,9 +92,11 @@ public class Atom extends Node {
 	@Override
 	public void replaceVariable(String oldVar, String newVar) {
 		LinkedList<String> vars = getVars();
-		if (isAll() || isExists() && vars.contains(oldVar) && !vars.contains(newVar)) {
+		if (vars.contains(oldVar) && !vars.contains(newVar)) {
 			vars.remove(oldVar);
 			vars.add(newVar);
+		} else if (oldVar.equals(getValue())) {
+			setValue(newVar);
 		}
 	}
 }

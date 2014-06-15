@@ -59,11 +59,24 @@ public class EnterEquivalencesActivity extends Activity {
 		}
 		
 		initialFormula = "";
+
+		TextView exampleRule1 = (TextView) findViewById(R.id.formula1);
+		TextView exampleRule2 = (TextView) findViewById(R.id.formula2);
+		TextView exampleRule3 = (TextView) findViewById(R.id.formula3);
 		
-		if (firstOrder)
+		// ∀ | ∃ | ∧ | ∨ | ┬ | ⊥ | ¬ | → | ↔
+		
+		if (firstOrder) {
 			mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.firstorderkbd );
-		else		
+			exampleRule1.setText("∀x∃y[Px→Qxy]");
+			exampleRule2.setText("∀x∀y[¬(Px∨Ryz)→Qy]");
+			exampleRule3.setText("∃y∀x[Px↔Qyz]");
+		} else {		
 			mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
+			exampleRule1.setText("z→(y∧x)");
+			exampleRule2.setText("(x∨┬)→┬");
+			exampleRule3.setText("x∧¬(y∨z)");
+		}
 		
 		mCustomKeyboard.registerEditText(R.id.start_equivalence);
 		mCustomKeyboard.registerEditText(R.id.end_equivalence);

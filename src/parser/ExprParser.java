@@ -16,10 +16,10 @@ public class ExprParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__6=1, T__5=2, T__4=3, T__3=4, T__2=5, T__1=6, T__0=7, QUANTIFIER=8, 
-		PREDICATE=9, BINOP=10, ATOM=11;
+		PREDICATE=9, BINOP=10, TERM=11, ATOM=12;
 	public static final String[] tokenNames = {
 		"<INVALID>", "']'", "')'", "'['", "'('", "'→'", "'↔'", "'¬'", "QUANTIFIER", 
-		"PREDICATE", "BINOP", "ATOM"
+		"PREDICATE", "BINOP", "TERM", "ATOM"
 	};
 	public static final int
 		RULE_prog = 0, RULE_expr = 1;
@@ -111,6 +111,18 @@ public class ExprParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitIFF(this);
+		}
+	}
+	public static class TERM_Context extends ExprContext {
+		public TerminalNode TERM() { return getToken(ExprParser.TERM, 0); }
+		public TERM_Context(ExprContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).enterTERM_(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ExprListener ) ((ExprListener)listener).exitTERM_(this);
 		}
 	}
 	public static class EXPRContext extends ExprContext {
@@ -234,7 +246,7 @@ public class ExprParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(26);
+			setState(27);
 			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				{
@@ -243,7 +255,7 @@ public class ExprParser extends Parser {
 				_prevctx = _localctx;
 
 				setState(7); match(7);
-				setState(8); expr(7);
+				setState(8); expr(8);
 				}
 				break;
 
@@ -285,14 +297,23 @@ public class ExprParser extends Parser {
 
 			case 4:
 				{
-				_localctx = new ATOM_Context(_localctx);
+				_localctx = new TERM_Context(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(24); match(ATOM);
+				setState(24); match(TERM);
 				}
 				break;
 
 			case 5:
+				{
+				_localctx = new ATOM_Context(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(25); match(ATOM);
+				}
+				break;
+
+			case 6:
 				{
 				_localctx = new ERRORContext(_localctx);
 				_ctx = _localctx;
@@ -301,7 +322,7 @@ public class ExprParser extends Parser {
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(39);
+			setState(40);
 			_errHandler.sync(this);
 			_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			while ( _alt!=2 && _alt!=-1 ) {
@@ -309,16 +330,16 @@ public class ExprParser extends Parser {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(37);
+					setState(38);
 					switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
 					case 1:
 						{
 						_localctx = new BINOP_Context(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(28);
-						if (!(6 >= _localctx._p)) throw new FailedPredicateException(this, "6 >= $_p");
-						setState(29); match(BINOP);
-						setState(30); expr(7);
+						setState(29);
+						if (!(7 >= _localctx._p)) throw new FailedPredicateException(this, "7 >= $_p");
+						setState(30); match(BINOP);
+						setState(31); expr(8);
 						}
 						break;
 
@@ -326,10 +347,10 @@ public class ExprParser extends Parser {
 						{
 						_localctx = new IMPLIESContext(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(31);
-						if (!(4 >= _localctx._p)) throw new FailedPredicateException(this, "4 >= $_p");
-						setState(32); match(5);
-						setState(33); expr(5);
+						setState(32);
+						if (!(5 >= _localctx._p)) throw new FailedPredicateException(this, "5 >= $_p");
+						setState(33); match(5);
+						setState(34); expr(6);
 						}
 						break;
 
@@ -337,16 +358,16 @@ public class ExprParser extends Parser {
 						{
 						_localctx = new IFFContext(new ExprContext(_parentctx, _parentState, _p));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
-						setState(34);
-						if (!(3 >= _localctx._p)) throw new FailedPredicateException(this, "3 >= $_p");
-						setState(35); match(6);
-						setState(36); expr(4);
+						setState(35);
+						if (!(4 >= _localctx._p)) throw new FailedPredicateException(this, "4 >= $_p");
+						setState(36); match(6);
+						setState(37); expr(5);
 						}
 						break;
 					}
 					} 
 				}
-				setState(41);
+				setState(42);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 			}
@@ -371,29 +392,29 @@ public class ExprParser extends Parser {
 	}
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return 6 >= _localctx._p;
+		case 0: return 7 >= _localctx._p;
 
-		case 1: return 4 >= _localctx._p;
+		case 1: return 5 >= _localctx._p;
 
-		case 2: return 3 >= _localctx._p;
+		case 2: return 4 >= _localctx._p;
 		}
 		return true;
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\r-\4\2\t\2\4\3\t"+
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\16.\4\2\t\2\4\3\t"+
 		"\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7\3\22\n\3\f\3\16\3\25"+
-		"\13\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\35\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\3\3\3\7\3(\n\3\f\3\16\3+\13\3\3\3\2\4\2\4\2\2\62\2\6\3\2\2\2\4\34\3\2"+
-		"\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\t\2\2\n\35\5\4\3\2\13\f"+
-		"\7\6\2\2\f\r\5\4\3\2\r\16\7\4\2\2\16\35\3\2\2\2\17\20\7\n\2\2\20\22\7"+
-		"\r\2\2\21\17\3\2\2\2\22\25\3\2\2\2\23\21\3\2\2\2\23\24\3\2\2\2\24\26\3"+
-		"\2\2\2\25\23\3\2\2\2\26\27\7\5\2\2\27\30\5\4\3\2\30\31\7\3\2\2\31\35\3"+
-		"\2\2\2\32\35\7\r\2\2\33\35\3\2\2\2\34\b\3\2\2\2\34\13\3\2\2\2\34\23\3"+
-		"\2\2\2\34\32\3\2\2\2\34\33\3\2\2\2\35)\3\2\2\2\36\37\6\3\2\3\37 \7\f\2"+
-		"\2 (\5\4\3\2!\"\6\3\3\3\"#\7\7\2\2#(\5\4\3\2$%\6\3\4\3%&\7\b\2\2&(\5\4"+
-		"\3\2\'\36\3\2\2\2\'!\3\2\2\2\'$\3\2\2\2(+\3\2\2\2)\'\3\2\2\2)*\3\2\2\2"+
-		"*\5\3\2\2\2+)\3\2\2\2\6\23\34\')";
+		"\13\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\36\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\7\3)\n\3\f\3\16\3,\13\3\3\3\2\4\2\4\2\2\64\2\6\3\2\2\2\4\35"+
+		"\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\b\3\1\2\t\n\7\t\2\2\n\36\5\4\3\2"+
+		"\13\f\7\6\2\2\f\r\5\4\3\2\r\16\7\4\2\2\16\36\3\2\2\2\17\20\7\n\2\2\20"+
+		"\22\7\16\2\2\21\17\3\2\2\2\22\25\3\2\2\2\23\21\3\2\2\2\23\24\3\2\2\2\24"+
+		"\26\3\2\2\2\25\23\3\2\2\2\26\27\7\5\2\2\27\30\5\4\3\2\30\31\7\3\2\2\31"+
+		"\36\3\2\2\2\32\36\7\r\2\2\33\36\7\16\2\2\34\36\3\2\2\2\35\b\3\2\2\2\35"+
+		"\13\3\2\2\2\35\23\3\2\2\2\35\32\3\2\2\2\35\33\3\2\2\2\35\34\3\2\2\2\36"+
+		"*\3\2\2\2\37 \6\3\2\3 !\7\f\2\2!)\5\4\3\2\"#\6\3\3\3#$\7\7\2\2$)\5\4\3"+
+		"\2%&\6\3\4\3&\'\7\b\2\2\')\5\4\3\2(\37\3\2\2\2(\"\3\2\2\2(%\3\2\2\2),"+
+		"\3\2\2\2*(\3\2\2\2*+\3\2\2\2+\5\3\2\2\2,*\3\2\2\2\6\23\35(*";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

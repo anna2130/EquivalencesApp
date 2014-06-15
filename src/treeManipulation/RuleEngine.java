@@ -21,8 +21,10 @@ public class RuleEngine {
 	int noRules;
 	int probability;
 	HashSet<Integer> rulesWithTruths;
-	
+
 	private static int min_user_input_required = 69;
+	private static int first_order_rules = 78;
+	private static int fo_user_input_required = 102;
 
 	public RuleEngine() {
 		ra = new RuleApplicator();
@@ -337,10 +339,6 @@ public class RuleEngine {
 			} else if (node.isTop()) {
 				bs.set(68);
 				bs.set(71, 76);
-			} else if (node.isAll()) {
-				bs.set(102);
-			} else if (node.isExists()) {
-				bs.set(103);
 			}
 			bs.set(104, 106);
 		}
@@ -351,7 +349,7 @@ public class RuleEngine {
 			Node child = unary.getChild();
 			String variable = unary.getVars().peek();
 			
-			bs.set(78);
+			bs.set(78, child.isNot());
 			bs.set(79, child.isAll());
 			bs.set(80, child.isAnd());
 			if (child.isOr()) {
@@ -365,6 +363,7 @@ public class RuleEngine {
 				bs.set(83, !leftGrandChild.hasFree(variable));
 			}
 			bs.set(84, !child.hasFree(variable));
+			bs.set(102);
 		}
 		
 		// Equivalences involving ∃
@@ -387,8 +386,10 @@ public class RuleEngine {
 				bs.set(91, !leftGrandChild.hasFree(variable));
 			}
 			bs.set(92, !child.hasFree(variable));
+			bs.set(103);
 		}
 
+		System.out.println("BitSet: " + bs);
 		return bs;
 	}
 
@@ -668,5 +669,13 @@ public class RuleEngine {
 
 	public void setTruthValueProbability(int probability) {
 		this.probability = probability;
+	}
+
+	public int getMinFirstOrderRules() {
+		return first_order_rules;
+	}
+	
+	public int getMinFOUserInputRequired() {
+		return fo_user_input_required;
 	}
 }

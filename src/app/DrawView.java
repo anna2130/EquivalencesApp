@@ -2,6 +2,7 @@ package app;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
@@ -111,28 +112,6 @@ public class DrawView extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-//		int eventaction = event.getAction();
-//
-//		switch (eventaction) {
-//		case MotionEvent.ACTION_DOWN:
-//			x1 = event.getX();
-//			return true;
-//		case MotionEvent.ACTION_UP:
-//			x2 = event.getX();
-//
-//			//if left to right sweep event on screen
-//			if (x2 - x1 > 20) {
-//				xOffset += 250;
-//				this.invalidate();
-//				return true;
-//			// if right to left sweep event on screen
-//			} else if (x1 - x2 > 20) {
-//				xOffset -= 250;
-//				this.invalidate();
-//				return true;
-//			}
-//		}
-
 		float x = event.getX();
 		float y = event.getY();
 		for (RectF bound : boundsMap.keySet()) {
@@ -177,19 +156,21 @@ public class DrawView extends View {
 		RectF newBounds = new RectF(bounds.left + centerShift - leeway, bounds.top 
 				+ yOffset + leeway, bounds.right + centerShift + leeway, bounds.bottom + yOffset - leeway);
 
-		//		float xBound = bounds.centerX() + centerShift;
-		//		if (xBound < radius || xBound > getMeasuredWidth() - radius) {
-		//			System.out.println("Out of bounds node: " + node);
-		//		}
-
 		if (node == selected)
 			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, highlightPaint);
 		else
 			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, backgroundPaint);
 
 		canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);
-		canvas.drawText(node.getValue(), xpos + centerShift, ypos + yOffset, fontPaint);
-
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(node.getValue());
+		LinkedList<String> vars = node.getVars();
+		if (vars != null)
+			for (String v : vars)
+				sb.append(v);
+		
+		canvas.drawText(sb.toString(), xpos + centerShift, ypos + yOffset, fontPaint);
 		boundsMap.put(newBounds, node);
 	}
 	

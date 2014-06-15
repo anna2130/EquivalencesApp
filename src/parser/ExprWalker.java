@@ -129,8 +129,25 @@ public class ExprWalker extends ExprBaseListener {
     	remove();
     }
     
+	@Override public void enterTERM_(@NotNull ExprParser.TERM_Context ctx) {
+        addUnary();
+    	TerminalNode e = ctx.TERM();
+    	String text = e.getText();
+    	String value = text.charAt(0) + "";
+    	
+    	LinkedList<String> vars = new LinkedList<String>();
+    	for (int i = 1; i < text.length(); ++i)
+    		vars.add(text.charAt(i) + "");
+    	
+        tree.addNode(new Atom(key, depth(), value, vars));
+	}
+
+	@Override public void exitTERM_(@NotNull ExprParser.TERM_Context ctx) {
+		remove();
+	}
+    
     @Override 
-    public void enterATOM_(ExprParser.ATOM_Context ctx) { 
+    public void enterATOM_(ExprParser.ATOM_Context ctx) {
         addUnary();
     	TerminalNode e = ctx.ATOM();
     	String text = e.getText();

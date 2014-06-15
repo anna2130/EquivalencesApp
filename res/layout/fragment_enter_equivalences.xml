@@ -46,16 +46,6 @@
         android:visibility="invisible" />
         
     <requestFocus />
-    
-    <Button
-        android:id="@+id/start_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_below="@+id/error_message"
-        android:layout_centerHorizontal="true"
-        android:text="@string/start_button" 
-        android:onClick="startEquivalence" />
 
     <Button
         android:id="@+id/randomise_start_button"
@@ -75,5 +65,52 @@
         android:layout_marginRight="25dp"
         android:onClick="randomiseEnd"
         android:text="@string/randomise" />
+
+    <TextView
+        android:id="@+id/example_formulae"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/start_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/examples"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/example_formulae"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula1"
+        android:layout_marginTop="15dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula2"
+        android:layout_marginTop="15dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/error_message"
+        android:layout_marginTop="12dp"
+        android:layout_centerHorizontal="true"
+        android:onClick="startEquivalence"
+        android:text="@string/start_button" />
 	
 </RelativeLayout>

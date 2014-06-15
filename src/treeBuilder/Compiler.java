@@ -33,13 +33,15 @@ public class Compiler {
 	public static void main(String args[]) {
 		Compiler compiler = new Compiler();
 
-//		String s = "∀x∀y[Px→¬(Px→∃z[Qxyz])]";
-		String s = "∃x[e]";
+		//∀ | ∃ | ∧ | ∨ | ┬ | ⊥ | ¬ | → | ↔
+		String s = "∀x∀y[Px→¬(Px→∃z[Qxyz])]";
+//		String s = "∀x∀y[Px]";
+//		String s = "(x∧¬y)→((x∨y)∧u)";
 		FormationTree tree = compiler.compile(s);
 		System.out.println(tree.toTreeString());
 		
-		RuleEngine re = new RuleEngine();
-		re.applyRuleFromBitSet(103, tree, tree.findNode(0, 0), "y");
+//		RuleEngine re = new RuleEngine();
+//		re.applyRuleFromBitSet(103, tree, tree.findNode(0, 0), "y");
 		
 		System.out.println("Done: " + tree.toTreeString());
 		System.out.println(tree);

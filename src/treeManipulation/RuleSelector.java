@@ -178,9 +178,62 @@ public class RuleSelector {
 							break;
 				case 77:	rules.put(77, "p  			|-	p∧(p∨q)");
 							break;
+				case 78:	rules.put(78, "∀p[¬φ]   |- 	¬∃p[φ]");
+							break;
+				case 79:	rules.put(79, "∀p∀q[φ]	|-	∀q∀p[φ]");
+							break;
+				case 80:	rules.put(80, "∀p[φ∧ψ] 	|- 	∀p[φ]∧∀p[ψ]");
+							break;
+				case 81:	rules.put(81, "∀p[φ∨θ] 	|- 	∀p[φ]∨θ");
+							break;
+				case 82:	rules.put(82, "∀p[φ→θ]  |-  ∃p[φ]→θ");
+							break;
+				case 83:	rules.put(83, "∀p[θ→φ]	|-  θ→∀p[φ]");
+							break;
+				case 84:	rules.put(84, "∀p[θ]	|-  θ");
+							break;
+				case 86:	rules.put(86, "∃p[¬φ]  	|-	¬∀p[φ]");
+							break;
+				case 87:	rules.put(87, "∃p∃q[φ] 	|-  ∃q∃p[φ]");
+							break;
+				case 88:	rules.put(88, "∃p[φ∨ψ]	|-  ∃p[φ]∨∃p[ψ]");
+							break;
+				case 89:	rules.put(89, "∃p[φ∧θ]	|-  ∃p[φ]∧θ");
+							break;
+				case 90:	rules.put(90, "∃p[φ→θ]  |-  ∃p[φ]→θ");
+							break;
+				case 91:	rules.put(91, "∃p[θ→φ]  |-  θ→∃p[φ]");
+							break;
+				case 92:	rules.put(92, "∃p[θ]	|-  θ");
+							break;
+				case 93:	rules.put(93, "¬∀p[φ]	|- 	∃p[¬φ]");
+							break;
+				case 94:	rules.put(94, "¬∃p[φ]	|-	∀p[¬φ]");
+							break;
+				case 95:	rules.put(95, "∀p[φ]∧∀p[ψ] 	|-	∀p[φ∧ψ]");
+							break;
+				case 96:	rules.put(96, "∃p[φ]∧θ		|-  ∃p[φ∧θ]");
+							break;
+				case 97:	rules.put(97, "∀p[φ]∨θ		|- 	∀p[φ∨θ]");
+							break;
+				case 98:	rules.put(98, "∃p[φ]∨∃p[ψ]	|- 	∃p[φ∨ψ]");
+							break;
+				case 99:	rules.put(99, "∃p[φ]→θ 	|- 	∀p[φ→θ]");
+							break;
+				case 100:	rules.put(100, "θ→∀p[φ]	|- 	∀p[θ→φ]");
+							break;
+				case 101:	rules.put(101, "∃p[φ]→θ |- 	∃p[φ→θ]");
+							break;
+				case 102:	rules.put(102, "∀p[φ]	|-  ∀q[φ{p->q}]");
+							break;
+				case 103:	rules.put(103, "∃p[φ]	|-  ∃q[φ{p->q}]");
+							break;
+				case 104:	rules.put(104, "θ				|- 	∀p[θ]");
+							break;
+				case 105:	rules.put(105, "θ				|- 	∃p[θ]");
+							break;
 		     }
 		 }
-		
 		return rules;
 	}
 	

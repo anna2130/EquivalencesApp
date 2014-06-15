@@ -579,6 +579,7 @@ public class RuleApplicator {
 	// 78. ∀x[¬e]   |- 	¬∃x[e]
 	public void applyAllComplementation(FormationTree tree,
 			UnaryOperator node) {
+		System.out.println("Applying");
 		UnaryOperator not = (UnaryOperator) node.getChild();
 		Node child = not.getChild();
 		replaceNode(tree, node, createNewNot(createNewExists(child, node.getVars())));
