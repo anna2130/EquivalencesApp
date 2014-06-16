@@ -34,7 +34,7 @@ public class Compiler {
 		Compiler compiler = new Compiler();
 
 		//∀ | ∃ | ∧ | ∨ | ┬ | ⊥ | ¬ | → | ↔
-		String s = "∀x∀y[Px→¬(Px→∃z[Qxyz])]";
+		String s = "∀x∀y[PxV→¬(Px→∃z[Qxyz])]";
 //		String s = "∀x∀y[Px]";
 //		String s = "(x∧¬y)→((x∨y)∧u)";
 		FormationTree tree = compiler.compile(s);
