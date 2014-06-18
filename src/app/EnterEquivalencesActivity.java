@@ -81,8 +81,8 @@ public class EnterEquivalencesActivity extends Activity {
 		mCustomKeyboard.registerEditText(R.id.start_equivalence);
 		mCustomKeyboard.registerEditText(R.id.end_equivalence);
 
-		c = new Compiler();
-		re = new RuleEngine();
+		c = new Compiler(firstOrder);
+		re = new RuleEngine(firstOrder);
 	}
 
 	@Override 
@@ -117,6 +117,7 @@ public class EnterEquivalencesActivity extends Activity {
 					if (firstOrder) {
 						intent.putExtra(START_EQUIVALENCE, startEquivalence);
 						intent.putExtra(END_EQUIVALENCE, endEquivalence);
+						intent.putExtra(MainActivity.FIRSTORDER, firstOrder);
 						startActivity(intent);
 					} else {
 						TruthTable tt1 = new TruthTable(t1);
@@ -128,6 +129,7 @@ public class EnterEquivalencesActivity extends Activity {
 							
 							intent.putExtra(START_EQUIVALENCE, startEquivalence);
 							intent.putExtra(END_EQUIVALENCE, endEquivalence);
+							intent.putExtra(MainActivity.FIRSTORDER, firstOrder);
 							startActivity(intent);
 						} else {
 							setErrorMessage("Not equivalent");

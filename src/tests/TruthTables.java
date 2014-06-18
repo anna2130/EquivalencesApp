@@ -18,7 +18,7 @@ public class TruthTables {
 	
 	@Before 
 	public void method() {
-		compiler = new Compiler();
+		compiler = new Compiler(false);
 	}
 
 	// Test commonly used logical operators
@@ -819,7 +819,7 @@ public class TruthTables {
 	@Test
 	public void atom14() {
 		String s1 = "a";
-		String s2 = "av(a∧b)";
+		String s2 = "a∨(a∧b)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);
@@ -909,8 +909,8 @@ public class TruthTables {
 	
 	@Test
 	public void testDistributivityAndRightEquality() {
-		String s1 = "(pvq)∧r";
-		String s2 = "(p∧r)v(q∧r)";
+		String s1 = "(p∨q)∧r";
+		String s2 = "(p∧r)∨(q∧r)";
 		FormationTree tree1 = compiler.compile(s1);
 		FormationTree tree2 = compiler.compile(s2);
 		TruthTable tt1 = new TruthTable(tree1);

@@ -14,7 +14,7 @@ public class Parser {
 	
 	@Before 
 	public void method() {
-		compiler = new Compiler();
+		compiler = new Compiler(false);
 	}
 	
 	// Test operators and indexes

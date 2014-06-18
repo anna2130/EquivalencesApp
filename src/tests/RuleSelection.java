@@ -21,8 +21,8 @@ public class RuleSelection {
 	
 	@Before 
 	public void method() {
-		compiler = new Compiler();
-		re = new RuleEngine();
+		compiler = new Compiler(false);
+		re = new RuleEngine(false);
 		rs = re.getRuleSelector();
 		noRules = rs.getNoRules();
 	}

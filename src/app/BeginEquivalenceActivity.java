@@ -33,6 +33,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	private Context context;
 	private RuleEngine re;
 	private Compiler compiler;
+	private boolean firstOrder;
 
 	private FormationTree topTree;
 	private FormationTree bottomTree;
@@ -76,6 +77,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		Intent intent = getIntent();
 		start = intent.getStringExtra(EnterEquivalencesActivity.START_EQUIVALENCE);
 		end = intent.getStringExtra(EnterEquivalencesActivity.END_EQUIVALENCE);
+		firstOrder = intent.getBooleanExtra(MainActivity.FIRSTORDER, false);
 
 		topStack = new Stack<TextView>();
 		bottomStack = new Stack<TextView>();
@@ -85,8 +87,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		topTreeStack = new Stack<FormationTree>();
 		bottomTreeStack = new Stack<FormationTree>();
 
-		re = new RuleEngine();
-		compiler = new Compiler();
+		re = new RuleEngine(firstOrder);
+		compiler = new Compiler(firstOrder);
 		topTree = compiler.compile(start);
 		bottomTree = compiler.compile(end);
 
@@ -95,8 +97,10 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		fo_min_user_input_required = re.getMinFOUserInputRequired();
 
 		topFormationTree = (DrawView) findViewById(R.id.top_formation_tree);
+		topFormationTree.setFirstOrder(firstOrder);
 		topFormationTree.setTree(topTree);
 		bottomFormationTree = (DrawView) findViewById(R.id.bottom_formation_tree);
+		bottomFormationTree.setFirstOrder(firstOrder);
 		bottomFormationTree.setTree(bottomTree);
 
 		topLinearLayout = (LinearLayout) findViewById(R.id.top_linear_layout);

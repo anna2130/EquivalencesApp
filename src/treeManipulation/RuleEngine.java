@@ -21,21 +21,23 @@ public class RuleEngine {
 	int noRules;
 	int probability;
 	HashSet<Integer> rulesWithTruths;
+	boolean firstOrder;
 
 	private static int min_user_input_required = 69;
 	private static int first_order_rules = 78;
 	private static int fo_user_input_required = 102;
 
-	public RuleEngine() {
+	public RuleEngine(boolean firstOrder) {
 		ra = new RuleApplicator();
 		rs = new RuleSelector();
 		noRules = rs.getNoRules();
 		probability = 50;
-		
+		this.firstOrder = firstOrder;
+
 		Integer[] rules = new Integer[] {4,5,6,7,21,22,23,24,39,40,42,50,52,53,62,64,66,67,68,69,71,74,75};
 		rulesWithTruths = new HashSet<Integer>(Arrays.asList(rules));
 	}
-	
+
 	public int getMinUserInputRequired() {
 		return min_user_input_required;
 	}
@@ -223,7 +225,7 @@ public class RuleEngine {
 					&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1]));
 			bs.set(17, rightChild.isOr() && tree.equalSubTrees(leftChild, rightGChildren[0]));
 			bs.set(18, leftChild.isOr() && tree.equalSubTrees(leftGChildren[0], rightChild));
-			if (leftChild.isAll()) {
+			if (firstOrder && leftChild.isAll()) {
 				String variable = leftChild.getVars().peek();
 				bs.set(97, !rightChild.hasFree(variable));
 			}
@@ -266,10 +268,12 @@ public class RuleEngine {
 			bs.set(36, rightChild.isAnd() && tree.equalSubTrees(leftChild, rightGChildren[0]));
 			bs.set(37, leftChild.isAnd() && tree.equalSubTrees(leftGChildren[0], rightChild));
 			bs.set(38, leftChild.isNot());
-			bs.set(95, leftChild.isAll() && rightChild.isAll());
-			if (leftChild.isExists()) {
-				String variable = leftChild.getVars().peek();
-				bs.set(96, !rightChild.hasFree(variable));
+			if (firstOrder) {
+				bs.set(95, leftChild.isAll() && rightChild.isAll());
+				if (leftChild.isExists()) {
+					String variable = leftChild.getVars().peek();
+					bs.set(96, !rightChild.hasFree(variable));
+				}
 			}
 		}
 
@@ -289,8 +293,10 @@ public class RuleEngine {
 			bs.set(47, child.isIff());
 			bs.set(48, child.isAnd());
 			bs.set(49, child.isOr());
-			bs.set(93, child.isAll());
-			bs.set(94, child.isExists());
+			if (firstOrder) {
+				bs.set(93, child.isAll());
+				bs.set(94, child.isExists());
+			}
 		}
 
 		// Equivalences involving →
@@ -306,13 +312,15 @@ public class RuleEngine {
 			bs.set(54, rightChild.isBottom());
 			bs.set(55);
 			bs.set(56);
-			if (leftChild.isExists()) {
-				String variable = leftChild.getVars().peek();
-				bs.set(99, !rightChild.hasFree(variable));
-				bs.set(101, !rightChild.hasFree(variable));
-			} else if (rightChild.isAll()) {
-				String variable = rightChild.getVars().peek();
-				bs.set(100, !leftChild.hasFree(variable));
+			if (firstOrder) {
+				if (leftChild.isExists()) {
+					String variable = leftChild.getVars().peek();
+					bs.set(99, !rightChild.hasFree(variable));
+					bs.set(101, !rightChild.hasFree(variable));
+				} else if (rightChild.isAll()) {
+					String variable = rightChild.getVars().peek();
+					bs.set(100, !leftChild.hasFree(variable));
+				}
 			}
 		}
 
@@ -340,15 +348,16 @@ public class RuleEngine {
 				bs.set(68);
 				bs.set(71, 76);
 			}
-			bs.set(104, 106);
+			if (firstOrder)
+				bs.set(104, 106);
 		}
 
 		// Equivalences involving ∀
-		else if (node.isAll()) {
+		else if (firstOrder && node.isAll()) {
 			UnaryOperator unary = (UnaryOperator) node;
 			Node child = unary.getChild();
 			String variable = unary.getVars().peek();
-			
+
 			bs.set(78, child.isNot());
 			bs.set(79, child.isAll());
 			bs.set(80, child.isAnd());
@@ -365,13 +374,13 @@ public class RuleEngine {
 			bs.set(84, !child.hasFree(variable));
 			bs.set(102);
 		}
-		
+
 		// Equivalences involving ∃
-		else if (node.isExists()) {
+		else if (firstOrder && node.isExists()) {
 			UnaryOperator unary = (UnaryOperator) node;
 			Node child = unary.getChild();
 			String variable = unary.getVars().peek();
-			
+
 			bs.set(86, child.isNot());
 			bs.set(87, child.isExists());
 			bs.set(88, child.isOr());
@@ -381,7 +390,7 @@ public class RuleEngine {
 			} else if (child.isImplies()) {
 				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
 				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
-				
+
 				bs.set(90, !rightGrandChild.hasFree(variable));
 				bs.set(91, !leftGrandChild.hasFree(variable));
 			}
@@ -389,7 +398,6 @@ public class RuleEngine {
 			bs.set(103);
 		}
 
-		System.out.println("BitSet: " + bs);
 		return bs;
 	}
 
@@ -612,12 +620,15 @@ public class RuleEngine {
 		case 105:	ra.applyAddOr(tree, node, input);
 		break;
 		}
-		
+
 	}
 
 	public void applyRandomRules(FormationTree tree, int n) {
-		for (int i = 0; i < n; ++i)
+		for (int i = 0; i < n; ++i) {
 			applyRuleToRandomNode(tree);
+			System.out.println(tree);
+		}
+		System.out.println("");
 	}
 
 	public void applyRuleToRandomNode(FormationTree tree) {
@@ -638,32 +649,49 @@ public class RuleEngine {
 
 		// user input is chosen randomly
 		String var = null;
-		if (nextSetBit >= min_user_input_required) {
-			SortedSet<String> vars = tree.getVariables();
-			rand = new Random();
-			int randomVar = rand.nextInt(vars.size());
+		boolean notFirstOrderRule = nextSetBit < first_order_rules;
+		if (nextSetBit >= min_user_input_required && notFirstOrderRule || nextSetBit >= fo_user_input_required) {
+			SortedSet<String> vars;
+			
+			if (notFirstOrderRule)
+				vars = tree.getAtoms();
+			else
+				vars = tree.getVariables();
 
-			Iterator<String> it = vars.iterator();
-			for (int i = 0; i <= randomVar && it.hasNext(); ++i)
-				var = it.next();
+			rand = new Random();
+
+			if (vars.size() != 0) {
+				int randomVar = rand.nextInt(vars.size());
+
+				Iterator<String> it = vars.iterator();
+				for (int i = 0; i <= randomVar && it.hasNext(); ++i)
+					var = it.next();
+			} else {
+				if (notFirstOrderRule && firstOrder) {
+					var = "Px";
+				} else {
+					var = "x";
+				}
+			}
 		}
-		
+
 		// rule to be applied creates truth values
 		if (rulesWithTruths.contains(nextSetBit)) {
 			rand = new Random();
 			int randProbability = rand.nextInt(100);
-			
+
 			if (randProbability >= probability) {
 				// Truth rule probably only option so don't apply any rule
 				if (attempts > 10)
 					return;
-				
+
 				applyRandomRule(bs, tree, node, ++attempts);
 				return;
 			}
-			
+
 		}
-		
+
+		System.out.println("Rule: " + nextSetBit);
 		applyRuleFromBitSet(nextSetBit, tree, node, var);
 	}
 
@@ -674,8 +702,12 @@ public class RuleEngine {
 	public int getMinFirstOrderRules() {
 		return first_order_rules;
 	}
-	
+
 	public int getMinFOUserInputRequired() {
 		return fo_user_input_required;
+	}
+
+	public void setFirstOrder(boolean firstOrder) {
+		this.firstOrder = firstOrder;
 	}
 }

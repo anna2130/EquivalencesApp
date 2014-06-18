@@ -3,6 +3,7 @@ package treeBuilder;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class UnaryOperator extends Node {
 	
@@ -105,6 +106,13 @@ public class UnaryOperator extends Node {
 		SortedSet<String> variables = new java.util.TreeSet<String>();
 		variables.addAll(child.getVariables());
 		return variables;
+	}
+	
+	@Override
+	public SortedSet<String> getAtoms() {
+		SortedSet<String> atoms = new TreeSet<String>();
+		atoms.addAll(child.getAtoms());
+		return atoms;
 	}
 
 	@Override

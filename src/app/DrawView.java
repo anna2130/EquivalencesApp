@@ -9,7 +9,7 @@ import treeBuilder.Node;
 import treeManipulation.RuleEngine;
 import abego.Configuration.Location;
 import abego.DefaultConfiguration;
-import abego.FixedNodeExtentProvider;
+import abego.FirstOrderNodeExtentProvider;
 import abego.TreeLayout;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -44,6 +44,7 @@ public class DrawView extends View {
 	private HashMap<RectF, Node> boundsMap;
 
 	private RuleEngine re;
+	private boolean firstOrder;
 
 	float x1,x2;
 	float y1, y2;
@@ -88,7 +89,7 @@ public class DrawView extends View {
 		highlightPaint.setStrokeWidth(10);
 
 		boundsMap = new HashMap<RectF, Node>();
-		re = new RuleEngine();
+		re = new RuleEngine(false);
 	}
 
 	@Override
@@ -117,10 +118,8 @@ public class DrawView extends View {
 		for (RectF bound : boundsMap.keySet()) {
 			if (x > bound.left && x < bound.right && y > bound.bottom && y < bound.top) {
 				selected = boundsMap.get(bound);
-				System.out.println("Tree selected: " + tree);
 				BitSet bs = re.getApplicableRules(tree, selected);
 				BeginEquivalenceActivity activity = (BeginEquivalenceActivity) this.getContext();
-
 				activity.setRules(re.rulesToStringMap(bs, tree, selected), selected, tree);
 
 				// forces redraw
@@ -156,12 +155,24 @@ public class DrawView extends View {
 		RectF newBounds = new RectF(bounds.left + centerShift - leeway, bounds.top 
 				+ yOffset + leeway, bounds.right + centerShift + leeway, bounds.bottom + yOffset - leeway);
 
+		Paint paint;
 		if (node == selected)
-			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, highlightPaint);
+			paint = highlightPaint;
 		else
-			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, backgroundPaint);
-
-		canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);
+			paint = backgroundPaint;
+		
+		if (firstOrder) {
+			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, paint);
+			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);
+//			canvas.drawRoundRect(bounds, paint);
+//			canvas.drawRoundRect(bounds.left + centerShift, bounds.top + yOffset, bounds.right + centerShift, bounds.bottom + yOffset, 6, 6, paint);
+//			canvas.drawRoundRect(newBounds, 6, 6, paint);
+//			System.out.println(bounds.centerX() + " " + bounds.centerY() + " -- " + newBounds.left + " " + newBounds.top + " " + newBounds.right + " " + newBounds.bottom);
+//			canvas.drawRect(newBounds, linePaint);
+		} else {
+			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, paint);
+			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);
+		}
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append(node.getValue());
@@ -189,7 +200,7 @@ public class DrawView extends View {
 				gapBetweenLevels, gapBetweenNodes, location);
 
 		// create the NodeExtentProvider for TextInBox nodes
-		FixedNodeExtentProvider<Node> nodeExtentProvider = new FixedNodeExtentProvider<>(20, 20);
+		FirstOrderNodeExtentProvider nodeExtentProvider = new FirstOrderNodeExtentProvider();
 
 		// create the layout
 		treeLayout = new TreeLayout<Node>(tree,
@@ -207,6 +218,11 @@ public class DrawView extends View {
 
 	public void setTree(FormationTree tree) {
 		this.tree = tree;
+	}
+
+	public void setFirstOrder(boolean firstOrder) {
+		this.firstOrder = firstOrder;
+		re.setFirstOrder(firstOrder);
 	}
 
 }

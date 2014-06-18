@@ -3,6 +3,7 @@ package treeBuilder;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Atom extends Node {
 	
@@ -57,9 +58,24 @@ public class Atom extends Node {
 
 	@Override
 	public SortedSet<String> getVariables() {
-		SortedSet<String> variables = new java.util.TreeSet<String>(); 
-		variables.add(getValue());
+		SortedSet<String> variables = new TreeSet<String>();
+		LinkedList<String> vars = getVars();
+		
+		if (vars != null)
+			variables.addAll(vars);
+ 
+		Character val = getValue().charAt(0);
+		if (val >= 'a' && val <= 'z' || isTop() || isBottom())
+			variables.add(getValue());
+		
 		return variables;
+	}
+	
+	@Override
+	public SortedSet<String> getAtoms() {
+		SortedSet<String> atomSet = new TreeSet<String>();
+		atomSet.add(this.toString());
+		return atomSet;
 	}
 
 	@Override

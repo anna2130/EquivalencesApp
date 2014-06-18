@@ -1,7 +1,6 @@
 package treeBuilder;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.SortedSet;
 
@@ -138,6 +137,8 @@ public abstract class Node {
 	public abstract boolean getTruthValue(HashMap<String, Integer> values);
 	
 	public abstract SortedSet<String> getVariables();
+
+	public abstract SortedSet<String> getAtoms();
 	
 	@Override
 	public abstract String toString();
@@ -171,4 +172,18 @@ public abstract class Node {
 	public abstract boolean hasFree(String variable);
 	
 	public abstract boolean isBound(String variable);
+	
+	public double getWidth() {
+		double width = 20;
+		
+		if (vars != null)
+			for (int i = 0; i < vars.size(); ++i)
+				width += 15;
+		
+		return width;
+	}
+	
+	public double getHeight() {
+		return 20;
+	}
 }

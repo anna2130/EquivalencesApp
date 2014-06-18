@@ -132,6 +132,10 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 	public SortedSet<String> getVariables() {
 		return root.getVariables();
 	}
+
+	public SortedSet<String> getAtoms() {
+		return root.getAtoms();
+	}
 	
 	public boolean getTruthValue(HashMap<String, Integer> values) {
 		return root.getTruthValue(values);

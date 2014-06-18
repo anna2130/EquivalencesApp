@@ -21,8 +21,8 @@ public class RuleApplication {
 	
 	@Before 
 	public void method() {
-		compiler = new Compiler();
-		re = new RuleEngine();
+		compiler = new Compiler(false);
+		re = new RuleEngine(false);
 		ra = re.getRuleApplicator();
 	}
 
@@ -941,28 +941,29 @@ public class RuleApplication {
 	// 23. Av(A∧B)	v-  A
 	@Test
 	public void testLeftAbsorptionAndRoot() {
-		FormationTree tree = compiler.compile("a∧(bva)");
+		FormationTree tree = compiler.compile("a∧(b∨a)");
+		System.out.println(tree.toTreeString());
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: a");
 	}
 
 	@Test
 	public void testLeftAbsorptionAndUnary() {
-		FormationTree tree = compiler.compile("¬(a∧(bva))");
+		FormationTree tree = compiler.compile("¬(a∧(b∨a))");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
 		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: a)");
 	}
 	
 	@Test
 	public void testLeftAbsorptionAndBinaryLeft() {
-		FormationTree tree = compiler.compile("(a∧(bva))∧a");
+		FormationTree tree = compiler.compile("(a∧(b∨a))∧a");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
 		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
 	
 	@Test
 	public void testLeftAbsorptionAndBinaryRight() {
-		FormationTree tree = compiler.compile("a∧(a∧(bva))");
+		FormationTree tree = compiler.compile("a∧(a∧(b∨a))");
 		ra.applyLeftAbsorption(tree, (BinaryOperator) tree.findNode(1, 1));
 		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
@@ -972,28 +973,28 @@ public class RuleApplication {
 	// 25. (A∧B)vA	v-  A
 	@Test
 	public void testRightAbsorptionAndRoot() {
-		FormationTree tree = compiler.compile("(avb)∧a");
+		FormationTree tree = compiler.compile("(a∨b)∧a");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 0));
 		assertEquals("a∧(bvc)", tree.toTreeString(), "0-0: a");
 	}
 
 	@Test
 	public void testRightAbsorptionAndUnary() {
-		FormationTree tree = compiler.compile("¬((avb)∧a)");
+		FormationTree tree = compiler.compile("¬((a∨b)∧a)");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
 		assertEquals("¬a∧(bvc)", tree.toTreeString(), "0-0: ¬ (0-1: a)");
 	}
 	
 	@Test
 	public void testRightAbsorptionAndBinaryLeft() {
-		FormationTree tree = compiler.compile("((avb)∧a)∧a");
+		FormationTree tree = compiler.compile("((a∨b)∧a)∧a");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(0, 1));
 		assertEquals("(a∧(bvc))∧a", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
 	
 	@Test
 	public void testRightAbsorptionAndBinaryRight() {
-		FormationTree tree = compiler.compile("a∧((avb)∧a)");
+		FormationTree tree = compiler.compile("a∧((a∨b)∧a)");
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(1, 1));
 		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}

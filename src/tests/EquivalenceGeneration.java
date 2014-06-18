@@ -22,7 +22,7 @@ public class EquivalenceGeneration {
 
 	@Before 
 	public void method() {
-		compiler = new Compiler();
+		compiler = new Compiler(false);
 		n = 100;
 
 		variables = new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "┬", "⊥"));
