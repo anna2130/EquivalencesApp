@@ -15,6 +15,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import parser.ExprLexer;
 import parser.ExprParser;
 import parser.ExprWalker;
+import treeManipulation.RuleEngine;
 
 public class Compiler {
 
@@ -22,6 +23,7 @@ public class Compiler {
 	private ArrayList<String> unaryOps;
 	private ArrayList<String> firstOrderOps;
 	private ArrayList<String> predicateSymbols;
+	private ArrayList<String> truthValues;
 	private boolean firstOrder;
 
 	public Compiler(boolean firstOrder) {
@@ -29,27 +31,29 @@ public class Compiler {
 		binaryOps = new ArrayList<String>(Arrays.asList("∧", "∨", "→", "↔"));
 		unaryOps = new ArrayList<String>(Arrays.asList("¬"));
 		firstOrderOps = new ArrayList<String>(Arrays.asList("∀", "∃"));
+		truthValues = new ArrayList<String>(Arrays.asList("┬", "⊥"));
 		this.firstOrder = firstOrder;
 	}
 
 	public static void main(String args[]) {
-		boolean firstOrder = true;
+		boolean firstOrder = false;
 		Compiler compiler = new Compiler(firstOrder);
 
 		//∀ | ∃ | ∧ | ∨ | ┬ | ⊥ | ¬ | → | ↔
 		//		String s = "∀x∀y[Px→¬(Qx→∃z[Qxyz])]";
-		//		String s = "∀x∀y[Px]";
+				String s = "x→y";
 		//		String s = "(x∧¬y)→((x∨y)∧u)";
 
-		String s = compiler.generateRandomEquivalence(3, 0, 0);
+//		String s = compiler.generateRandomEquivalence(3, 0, 0);
 		System.out.println(s);
 		FormationTree tree = compiler.compile(s);
 		System.out.println(tree.toTreeString());
 		System.out.println();
 
-		//		RuleEngine re = new RuleEngine(firstOrder);
-		//		re.applyRandomRules(tree, 3);
-		//		re.applyRuleFromBitSet(103, tree, tree.findNode(0, 0), "y");
+		RuleEngine re = new RuleEngine(firstOrder);
+//		re.applyRandomRules(tree, 3);
+		re.getRuleApplicator().applyAbsorptionAndBackwards(tree, tree.findNode(0, 1), "z");
+//		System.out.println(re.getApplicableRules(tree, tree.findNode(0, 0)));
 
 		System.out.println("Done: " + tree.toTreeString());
 		System.out.println(tree);
@@ -74,25 +78,24 @@ public class Compiler {
 		ArrayList<String> vars = new ArrayList<String>();
 
 		for (int i = 0; i < numVars; ++i) {
-			String var = Variable.randomVariable(probability).getValue();
+			String var = Variable.randomVariable(probability, firstOrder).getValue();
 
 			while (vars.contains(var))
-				var = Variable.randomVariable(probability).getValue();
+				var = Variable.randomVariable(probability, firstOrder).getValue();
 
 			vars.add(var);
 		}
 
 		String equiv;
-
 		if (firstOrder)
-			equiv = generateFOSubEquivalence(vars, depth, true, new HashSet<String>(), new HashMap<String, Integer>());
+			equiv = generateFOSubEquivalence(vars, depth, probability, true, new HashSet<String>(), new HashMap<String, Integer>());
 		else
 			equiv = generateSubEquivalence(vars, depth);
 
 		return equiv.substring(1, equiv.length() - 1);
 	}
 
-	private String generateQuantifiers(ArrayList<String> vars, HashSet<String> usedVars) {
+	public String generateQuantifiers(ArrayList<String> vars, HashSet<String> usedVars) {
 		StringBuilder sb = new StringBuilder();
 		Random rand = new Random();
 
@@ -104,7 +107,7 @@ public class Compiler {
 		String s = vars.get(var);
 
 		while (usedVars.contains(s)) {
-			System.out.println("Contains " + s);
+			rand = new Random();
 			var = rand.nextInt(vars.size());
 			s = vars.get(var);
 		}
@@ -115,45 +118,54 @@ public class Compiler {
 		return sb.toString();
 	}
 
-	private String getPredicateVariable(ArrayList<String> vars, HashMap<String, Integer> usedPredicates) {
+	public String getPredicateVariable(ArrayList<String> vars, int probability, 
+			HashMap<String, Integer> usedPredicates) {
 		StringBuilder sb = new StringBuilder();
 
 		Random rand = new Random();
-		int predicateIndex = rand.nextInt(predicateSymbols.size());
-		String predicate = predicateSymbols.get(predicateIndex);
-		sb.append(predicate);
+		int numPredicates = predicateSymbols.size();
+		int predicateIndex = rand.nextInt(numPredicates * 100 + truthValues.size() * probability);
+		predicateIndex /= 100;
 
-		if (usedPredicates.containsKey(predicate)) {
-			int numVars = usedPredicates.get(predicate);
-
-			for (int i = 0; i < numVars; ++i) {
-				rand = new Random();
-				int j = rand.nextInt(vars.size());
-				String var = vars.get(j);
-				sb.append(var);
-			}
+		if (predicateIndex >= numPredicates) {
+			sb.append(truthValues.get(predicateIndex - numPredicates));
+			return sb.toString();
 		} else {
-			rand = new Random();
-			int numVars = rand.nextInt(vars.size()) + 1;
-//			HashSet<String> used = new HashSet<>();
+			String predicate = predicateSymbols.get(predicateIndex);
+			sb.append(predicate);
 
-			for (int i = 0; i < numVars; ++i) {
+			if (usedPredicates.containsKey(predicate)) {
+				int numVars = usedPredicates.get(predicate);
+
+				for (int i = 0; i < numVars; ++i) {
+					rand = new Random();
+					int j = rand.nextInt(vars.size());
+					String var = vars.get(j);
+					sb.append(var);
+				}
+			} else {
 				rand = new Random();
-				int j = rand.nextInt(vars.size());
-				String var = vars.get(j);
-//				used.add(var);
-				sb.append(var);
+				int numVars = rand.nextInt(vars.size()) + 1;
+				//			HashSet<String> used = new HashSet<>();
+
+				for (int i = 0; i < numVars; ++i) {
+					rand = new Random();
+					int j = rand.nextInt(vars.size());
+					String var = vars.get(j);
+					//				used.add(var);
+					sb.append(var);
+				}
+				usedPredicates.put(predicate, numVars);
 			}
-			usedPredicates.put(predicate, numVars);
+			return sb.toString();
 		}
-		System.out.println("Predicate generated: " + sb.toString());
-		return sb.toString();
 	}
 
-	private String generateFOSubEquivalence(ArrayList<String> vars, int depth, boolean outer, HashSet<String> usedVars, HashMap<String, Integer> usedPredicates) {
+	private String generateFOSubEquivalence(ArrayList<String> vars, int depth, 
+			int probability, boolean outer, HashSet<String> usedVars, 
+			HashMap<String, Integer> usedPredicates) {
 		StringBuilder sb = new StringBuilder();
 		Random rand = new Random();
-		System.out.println(vars);
 
 		sb.append("(");
 
@@ -161,7 +173,6 @@ public class Compiler {
 			sb.append(generateQuantifiers(vars, usedVars));
 			sb.append("[");
 		}
-		System.out.println("Used Vars: " + usedVars);
 
 		int op = rand.nextInt(binaryOps.size() + unaryOps.size());
 
@@ -169,11 +180,11 @@ public class Compiler {
 		String sub2;
 
 		if (depth == 0 || op < 1) {
-			sub1 = getPredicateVariable(vars, usedPredicates);
-			sub2 = getPredicateVariable(vars, usedPredicates);
+			sub1 = getPredicateVariable(vars, probability, usedPredicates);
+			sub2 = getPredicateVariable(vars, probability, usedPredicates);
 		} else {
-			sub1 = generateFOSubEquivalence(vars, depth - 1, false, usedVars, usedPredicates);
-			sub2 = generateFOSubEquivalence(vars, depth - 1, false, usedVars, usedPredicates);
+			sub1 = generateFOSubEquivalence(vars, depth - 1, probability, false, usedVars, usedPredicates);
+			sub2 = generateFOSubEquivalence(vars, depth - 1, probability, false, usedVars, usedPredicates);
 		}
 
 		// Create binary
@@ -242,7 +253,6 @@ public class Compiler {
 	public String getRandomVariable(ArrayList<String> vars) {
 		Random rand = new Random();
 		int j = rand.nextInt(vars.size());
-		System.out.println("Var generated: " + vars.get(j));
 		return vars.get(j);
 	}
 

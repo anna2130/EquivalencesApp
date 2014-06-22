@@ -167,7 +167,7 @@ public abstract class Node {
 		this.vars = vars;
 	}
 	
-	public void replaceVariable(String oldVar, String newVar) {}
+	public abstract void replaceVariable(String oldVar, String newVar);
 
 	public abstract boolean hasFree(String variable);
 	
@@ -178,12 +178,16 @@ public abstract class Node {
 		
 		if (vars != null)
 			for (int i = 0; i < vars.size(); ++i)
-				width += 15;
+				width += 18;
 		
 		return width;
 	}
 	
 	public double getHeight() {
 		return 20;
+	}
+
+	public LinkedList<String> getUsedQuantifiedVars() {
+		return new LinkedList<String>();
 	}
 }

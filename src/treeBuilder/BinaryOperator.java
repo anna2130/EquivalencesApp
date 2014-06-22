@@ -157,5 +157,19 @@ public class BinaryOperator extends Node {
 	public boolean isBound(String variable) {
 		return leftChild.isBound(variable) || rightChild.isBound(variable);
 	}
+	
+	@Override
+	public LinkedList<String> getUsedQuantifiedVars() {
+		LinkedList<String> usedVars = new LinkedList<String>();
+		usedVars.addAll(leftChild.getUsedQuantifiedVars());
+		usedVars.addAll(rightChild.getUsedQuantifiedVars());
+		return usedVars;
+	}
+
+	@Override
+	public void replaceVariable(String oldVar, String newVar) {
+		leftChild.replaceVariable(oldVar, newVar);
+		rightChild.replaceVariable(oldVar, newVar);
+	}
 
 }

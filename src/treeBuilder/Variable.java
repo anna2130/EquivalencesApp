@@ -39,8 +39,11 @@ public enum Variable {
 		return sum;
 	}
 
-	public static Variable randomVariable(int probability)  {
+	public static Variable randomVariable(int probability, boolean firstOrder)  {
 		truthProbability = probability;
+		
+		if (firstOrder)
+			truthProbability = 0;
 		
 		int size = sumWeights();
 		Random rand = new Random();

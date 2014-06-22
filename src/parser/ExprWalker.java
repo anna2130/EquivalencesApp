@@ -1,6 +1,5 @@
 package parser;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -19,14 +18,18 @@ public class ExprWalker extends ExprBaseListener {
 	private int key;
 	private boolean increment;
 	private boolean firstOrder;
-	private HashSet<String> variables;
+	private Stack<String> variables;
+	
+	static private String END_QUANTIFIER;
 
 	public ExprWalker(FormationTree tree, boolean firstOrder) {
 		this.tree = tree;
 		key = 0;
 		binary = new Stack<Boolean>();
 		this.firstOrder = firstOrder;
-		variables = new HashSet<String>();
+		variables = new Stack<String>();
+		
+		END_QUANTIFIER = "_";
 	}
 
 	public void remove() {
@@ -67,7 +70,7 @@ public class ExprWalker extends ExprBaseListener {
 	@Override 
 	public void enterIFF(ExprParser.IFFContext ctx) {
 		addBinary();
-		tree.addNode(new BinaryOperator(key, depth(), "↔", null));
+		tree.addNode(new BinaryOperator(key, depth(), "↔", new LinkedList<String>()));
 	}
 
 	@Override 
@@ -78,7 +81,7 @@ public class ExprWalker extends ExprBaseListener {
 	@Override 
 	public void enterIMPLIES(ExprParser.IMPLIESContext ctx) {
 		addBinary();
-		tree.addNode(new BinaryOperator(key, depth(), "→", null));
+		tree.addNode(new BinaryOperator(key, depth(), "→", new LinkedList<String>()));
 	}
 
 	@Override 
@@ -90,18 +93,20 @@ public class ExprWalker extends ExprBaseListener {
 		int i = 0;
 		String quantifier = ctx.getChild(i).getText();
 		String variable = ctx.getChild(i+1).getText();
+
+		variables.push(END_QUANTIFIER);
 		
 		while (!quantifier.equals("[")) {
 			if (variables.contains(variable)) {
 				System.out.println("Error! Contains " + variable);
 				tree.setErrorFlag(true);
 			}
-			
+
 			addUnary();
 
 			LinkedList<String> vars = new LinkedList<String>();
 			vars.add(variable);
-			variables.add(variable);
+			variables.push(variable);
 			tree.addNode(new UnaryOperator(key, depth(), quantifier, vars));
 
 			i = i + 2;
@@ -112,12 +117,17 @@ public class ExprWalker extends ExprBaseListener {
 
 	@Override public void exitQUANTIFIER_(@NotNull ExprParser.QUANTIFIER_Context ctx) {
 		remove();
+		
+		while (!variables.peek().equals(END_QUANTIFIER))
+			variables.pop();
+		
+		variables.pop();
 	}
 
 	@Override 
 	public void enterNOT(ExprParser.NOTContext ctx) { 
 		addUnary();
-		tree.addNode(new UnaryOperator(key, depth(), "¬", null));
+		tree.addNode(new UnaryOperator(key, depth(), "¬", new LinkedList<String>()));
 	}
 
 	@Override public void exitNOT(ExprParser.NOTContext ctx) {
@@ -132,7 +142,7 @@ public class ExprWalker extends ExprBaseListener {
 		int i = ctx.getText().indexOf(ctx.getChild(1).getText());
 		String c = ctx.getText().charAt(i) + "";
 
-		tree.addNode(new BinaryOperator(key, depth(), c, null));
+		tree.addNode(new BinaryOperator(key, depth(), c, new LinkedList<String>()));
 	}
 
 	@Override 
@@ -159,20 +169,17 @@ public class ExprWalker extends ExprBaseListener {
 
 	@Override 
 	public void enterATOM_(ExprParser.ATOM_Context ctx) {
-		if (firstOrder) {
+		TerminalNode e = ctx.ATOM();
+		String text = e.getText();
+		String value = text.charAt(0) + "";
+
+		if (firstOrder && !(value.equals("⊥") || value.equals("┬"))) {
+			addUnary();
 			tree.setErrorFlag(true);
 			System.out.println("Error!!!");
 		} else {
 			addUnary();
-			TerminalNode e = ctx.ATOM();
-			String text = e.getText();
-			String value = text.charAt(0) + "";
-
-			LinkedList<String> vars = new LinkedList<String>();
-			for (int i = 1; i < text.length(); ++i)
-				vars.add(text.charAt(i) + "");
-
-			tree.addNode(new Atom(key, depth(), value, vars));
+			tree.addNode(new Atom(key, depth(), value, new LinkedList<String>()));
 		}
 	}
 

@@ -998,5 +998,35 @@ public class RuleApplication {
 		ra.applyRightAbsorption(tree, (BinaryOperator) tree.findNode(1, 1));
 		assertEquals("a∧(a∧(bvc))", tree.toTreeString(), "0-0: ∧ (0-1: a, 1-1: a)");
 	}
+
+	/* 106. ¬a∧b 		|-	¬(a→b)
+	 * 107. (¬a∧¬b)v(a∧b)	|-	a↔b
+	 * 108. (¬a∧b)v(a∧¬b) 	|-  ¬(a↔b)
+	 * 109. ∀x[t∨e] 	|- 	t∨∀x[e]
+	 * 110: ∃x[t∧e]		|-  t∧∃x[e]
+	 * 111: t∧∃x[e]		|-  ∃x[t∧e]
+	 * 112: t∨∀x[e]		|- 	∀x[t∨e]
+	 */
+	
+	@Test
+	public void testCommutativity1() {
+		FormationTree tree = compiler.compile("¬a∧b");
+		re.applyRuleFromBitSet(106, tree, tree.findNode(0, 0), null);
+		assertEquals(tree.toString(), "¬(b→a)");
+	}
+	
+	@Test
+	public void testCommutativity2() {
+		FormationTree tree = compiler.compile("(¬a∧¬b)∨(a∧b)");
+		re.applyRuleFromBitSet(107, tree, tree.findNode(0, 0), null);
+		assertEquals(tree.toString(), "a↔b");
+	}
+	
+	@Test
+	public void testCommutativity3() {
+		FormationTree tree = compiler.compile("(¬a∧b)∨(a∧¬b)");
+		re.applyRuleFromBitSet(108, tree, tree.findNode(0, 0), null);
+		assertEquals(tree.toString(), "¬(a↔b)");
+	}
 	
 }

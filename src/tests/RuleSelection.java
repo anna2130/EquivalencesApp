@@ -432,7 +432,47 @@ public class RuleSelection {
 		assertEquals("", bs, expected);
 	}
 	
+	/* 106. ¬a∧b 		|-	¬(a→b)
+	 * 107. (¬a∧¬b)v(a∧b)	|-	a↔b
+	 * 108. (¬a∧b)v(a∧¬b) 	|-  ¬(a↔b)
+	 * 109. ∀x[t∨e] 	|- 	t∨∀x[e]
+	 * 110: ∃x[t∧e]		|-  t∧∃x[e]
+	 * 111: t∧∃x[e]		|-  ∃x[t∧e]
+	 * 112: t∨∀x[e]		|- 	∀x[t∨e]
+	 */
 
-	
+	@Test
+	public void testCommuativity1() {
+		FormationTree tree = compiler.compile("¬a∧b");
+		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
+		BitSet expected = new BitSet(noRules);
+		expected.set(0);
+		expected.set(106);
+		assertEquals("", bs, expected);
+	}
+
+	@Test
+	public void testCommuativity2() {
+		FormationTree tree = compiler.compile("(¬a∧¬b)∨(a∧b)");
+		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
+		BitSet expected = new BitSet(noRules);
+		expected.set(19);
+		expected.set(32);
+		expected.set(33);
+		expected.set(107);
+		assertEquals("", bs, expected);
+	}
+
+	@Test
+	public void testCommuativity3() {
+		FormationTree tree = compiler.compile("(¬a∧b)∨(a∧¬b)");
+		BitSet bs = re.getApplicableRules(tree, tree.findNode(0, 0));
+		BitSet expected = new BitSet(noRules);
+		expected.set(19);
+		expected.set(32);
+		expected.set(33);
+		expected.set(108);
+		assertEquals("", bs, expected);
+	}
 	
 }

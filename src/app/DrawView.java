@@ -162,13 +162,8 @@ public class DrawView extends View {
 			paint = backgroundPaint;
 		
 		if (firstOrder) {
-			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, paint);
-			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);
-//			canvas.drawRoundRect(bounds, paint);
-//			canvas.drawRoundRect(bounds.left + centerShift, bounds.top + yOffset, bounds.right + centerShift, bounds.bottom + yOffset, 6, 6, paint);
-//			canvas.drawRoundRect(newBounds, 6, 6, paint);
-//			System.out.println(bounds.centerX() + " " + bounds.centerY() + " -- " + newBounds.left + " " + newBounds.top + " " + newBounds.right + " " + newBounds.bottom);
-//			canvas.drawRect(newBounds, linePaint);
+			canvas.drawRect(newBounds.left, newBounds.bottom, newBounds.right, newBounds.top, paint);
+			canvas.drawRect(newBounds.left, newBounds.bottom, newBounds.right, newBounds.top, linePaint);
 		} else {
 			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, paint);
 			canvas.drawCircle(bounds.centerX() + centerShift, bounds.centerY() + yOffset, radius, linePaint);

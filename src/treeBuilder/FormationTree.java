@@ -2,12 +2,13 @@ package treeBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 
-import abego.AbstractTreeForTreeLayout;
 import treeManipulation.TruthTable;
+import abego.AbstractTreeForTreeLayout;
 
 public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 
@@ -192,5 +193,9 @@ public class FormationTree extends AbstractTreeForTreeLayout<Node> {
 	
 	public FormationTree clone() {
 		return new FormationTree(root.clone());
+	}
+
+	public LinkedList<String> getUsedQuantifiedVars() {
+		return root.getUsedQuantifiedVars();
 	}
 }

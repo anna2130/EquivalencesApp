@@ -110,6 +110,8 @@ public class EquivalenceGeneration {
 		for (int i = 0; i < n; ++i) {
 			String s = compiler.generateRandomEquivalence(2, 0, 0);
 			System.out.println(s);
+			if ((s.contains("┬") || s.contains("⊥")))
+				System.out.println("HERE");
 			b = b && (!(s.contains("┬") || s.contains("⊥")));
 		}
 		assertTrue(b);

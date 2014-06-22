@@ -153,6 +153,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	}
 
 	public void setUpUndoneTextView(TextView undone, View line, Stack<TextView> stack) {
+		System.out.println("Undo");
+		System.out.println("Text: " + undone.getText());
 		int id = stack.size();
 		undone.setId(id);
 		line.setTag(id);
@@ -179,15 +181,12 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	}
 
 	public void setUpTree(FormationTree tree, Stack<FormationTree> treeStack, DrawView formationTree) {
-		tree = treeStack.peek();
+//		tree = treeStack.peek();
 		formationTree.setTree(tree);
 	}
 	
-	public void setTree(FormationTree tree, Stack<FormationTree> treeStack) {
-		tree = treeStack.peek();
-	}
-
 	public void addTextViewToTop(TextView textView, String text) {
+		System.out.println("Initial: " + topTreeStack);
 		int id = topStack.size();
 		setUpTextView(textView, id, text);
 
@@ -205,6 +204,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 						View line = topLinearLayout.findViewWithTag(i);
 						setUpUndoneTextView(undone, line, topRedoStack);
 
+						// Redo
 						undone.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
@@ -215,6 +215,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 									View line = topRedoLinearLayout.findViewWithTag(j);
 									redo(textView, topRedoLinearLayout, topRedoStack, line);
 									addTextViewToTop(new TextView(context), textView.getText().toString());
+									topTree = topTreeStack.peek();
 									setUpTree(topTree, topTreeStack, topFormationTree);
 
 									if (j == 0)
@@ -238,9 +239,12 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		topLinearLayout.addView(textView);
 		addLine(topLinearLayout, false, id);
 		topStack.push(textView);
+		System.out.println("Before: " + topTreeStack);
 		
 		FormationTree tree = compiler.compile(text);
 		topTreeStack.push(tree);
+		System.out.println("After: " + topTreeStack);
+		System.out.println("Added tree " + tree);
 	}
 
 	public void addTextViewToBottom(TextView textView, String text) {
@@ -283,8 +287,10 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 						bottomRedoLinearLayout.addView(undone);
 						bottomRedoLinearLayout.addView(line);
 						bottomStack.pop();
+						System.out.println("Pop: " + bottomTreeStack.peek());
 						bottomTreeStack.pop();
 						bottomRedoStack.push(undone);
+						System.out.println("Next: " + bottomTreeStack.peek());
 						bottomTree = bottomTreeStack.peek();
 					}
 					setUpTree(bottomTree, bottomTreeStack, bottomFormationTree);
@@ -304,8 +310,6 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	}
 
 	public void setRules(SparseArray<String> rules, Node selected, FormationTree selectedTree) {
-		System.out.println("setRules() selected tree: " + selectedTree);
-		
 		this.selected = selected;
 		this.selectedTree = selectedTree;
 
@@ -313,10 +317,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 		if (isTopTree(selectedTree)) {
 			rulesList = topRulesList;
-			System.out.println("Top tree selected");
 		} else {
 			rulesList = bottomRulesList;
-			System.out.println("Bottom tree selected");
 		}
 
 		rulesList.getMenu().clear();
@@ -325,26 +327,45 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		for (int i = 0; i < rules.size(); ++i) {
 			key = rules.keyAt(i);
 
-			System.out.println(key);
 			// User input not required
 			if (key < min_user_input_required || (key >= first_order_rules && key < fo_min_user_input_required)) {
-				System.out.println("User input not required for " + key + " " + rules.get(key));
 				rulesList.getMenu().add(Menu.NONE, key, Menu.NONE, rules.get(key));
 			} else {
-				System.out.println("User input required for " + key + " " + rules.get(key));
 				SubMenu sub = rulesList.getMenu().addSubMenu(Menu.NONE, key, Menu.NONE, rules.get(key));
-				SortedSet<String> vars = topTree.getVariables();
-				vars.addAll(bottomTree.getVariables());
 
-				if (key >= fo_min_user_input_required) {
-					System.out.println("First order user input required for " + key + " " + rules.get(key));
+				if (key >= fo_min_user_input_required && key < 106) {
+					SortedSet<String> vars = topTree.getVariables();
+					vars.addAll(bottomTree.getVariables());
 					Variable[] variables = Variable.values();
 					for (Variable v : variables) {
 						String s = v.getValue();
-						if (s != "┬" && s != "⊥")
+						
+						// Adding quantifier rules
+						if (key == 104 || key == 105) {
+							if (s != "┬" && s != "⊥" && !selected.hasFree(s)) {
+								Node parent = selected.getParent();
+								while (!parent.isBound(s)) {
+									if (parent.isRoot()) {
+										sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + s);
+										break;
+									} else {
+										parent = parent.getParent();
+									}
+								}
+								
+							}
+						// Replacement rules
+						} else if (s != "┬" && s != "⊥" && !(selected.hasFree(s) || selected.isBound(s)))
 							sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + s);
 					}
+				} else if (firstOrder) {
+					SortedSet<String> vars = topTree.getAtoms();
+					vars.addAll(bottomTree.getAtoms());
+					for (String v : vars)
+						sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + v);
 				} else {
+					SortedSet<String> vars = topTree.getVariables();
+					vars.addAll(bottomTree.getVariables());
 					for (String v : vars)
 						sub.add(Menu.NONE, key, Menu.NONE, rules.get(key) + " using " + v);
 				}
@@ -357,8 +378,18 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 	public boolean onMenuItemClick(MenuItem item) {
 		int id = item.getItemId();
 
+		FormationTree newTree = selectedTree.clone();
+
+		if (isTopTree(selectedTree)) {
+			topTreeStack.pop();
+			topTreeStack.push(newTree);
+		} else {
+			bottomTreeStack.pop();
+			bottomTreeStack.push(newTree);
+		}
+		
 		// User input not required
-		if (id < min_user_input_required || (id >= first_order_rules && id < fo_min_user_input_required)) {
+		if (id < min_user_input_required || (id >= first_order_rules && id < fo_min_user_input_required) || id > 105) {
 			re.applyRuleFromBitSet(id, selectedTree, selected, null);
 			itemClicked();
 		} else {
@@ -374,6 +405,8 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 		}
 		topRedoLinearLayout.removeAllViews();
 		bottomRedoLinearLayout.removeAllViews();
+		topRedoStack.clear();
+		bottomRedoStack.clear();
 		topRedoLine.setVisibility(View.INVISIBLE);
 		bottomRedoLine.setVisibility(View.INVISIBLE);
 		return true;
@@ -381,6 +414,7 @@ public class BeginEquivalenceActivity extends Activity implements android.widget
 
 	public void itemClicked() {
 		if (isTopTree(selectedTree)) {
+			System.out.println("Item clicked: " + topTreeStack);
 			addTextViewToTop(new TextView(context), selectedTree.toString());
 		} else {
 			addTextViewToBottom(new TextView(context), selectedTree.toString());

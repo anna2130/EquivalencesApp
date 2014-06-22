@@ -4,14 +4,17 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import treeBuilder.Atom;
 import treeBuilder.BinaryOperator;
 import treeBuilder.FormationTree;
 import treeBuilder.Node;
 import treeBuilder.UnaryOperator;
+import treeBuilder.Variable;
 import android.util.SparseArray;
 
 public class RuleEngine {
@@ -189,6 +192,15 @@ public class RuleEngine {
 	 * 103: ∃x[e]	|-  ∃y[e{x->y}]
 	 * 104: t		|- 	∀x[t]
 	 * 105: t		|- 	∃x[t]
+	 * 
+	 * Combined commutativity rules
+	 * 106. ¬a∧b 		|-	¬(a→b)
+	 * 107. (¬a∧¬b)v(a∧b)	|-	a↔b
+	 * 108. (¬a∧b)v(a∧¬b) 	|-  ¬(a↔b)
+	 * 109. ∀x[t∨e] 	|- 	t∨∀x[e]
+	 * 110: ∃x[t∧e]		|-  t∧∃x[e]
+	 * 111: t∧∃x[e]		|-  ∃x[t∧e]
+	 * 112: t∨∀x[e]		|- 	∀x[t∨e]
 	 */
 
 	public BitSet getApplicableRules(FormationTree tree, Node node) {
@@ -225,20 +237,24 @@ public class RuleEngine {
 					&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1]));
 			bs.set(17, rightChild.isOr() && tree.equalSubTrees(leftChild, rightGChildren[0]));
 			bs.set(18, leftChild.isOr() && tree.equalSubTrees(leftGChildren[0], rightChild));
-			if (firstOrder && leftChild.isAll()) {
-				String variable = leftChild.getVars().peek();
-				bs.set(97, !rightChild.hasFree(variable));
+			if (firstOrder) {
+				bs.set(95, leftChild.isAll() && rightChild.isAll());
+				if (leftChild.isExists()) {
+					String variable = leftChild.getVars().peek();
+					bs.set(96, !rightChild.hasFree(variable));
+				} else if (rightChild.isExists()) {
+					String variable = rightChild.getVars().peek();
+					bs.set(111, !leftChild.hasFree(variable));
+				}
 			}
-			bs.set(98, leftChild.isExists() && rightChild.isExists());
+			bs.set(106, leftChild.isNot());
 		}
 
-		// Equivalences involving ∧
+		// Equivalences involving V
 		else if (node.isOr()) {
 			BinaryOperator binary = (BinaryOperator) node;
 			Node leftChild = binary.getLeftChild();
 			Node rightChild = binary.getRightChild();
-			Node[] leftGChildren = leftChild.getChildren();
-			Node[] rightGChildren = rightChild.getChildren();
 
 			bs.set(19);
 			bs.set(20, rs.isIdempotent(tree, binary));
@@ -250,31 +266,46 @@ public class RuleEngine {
 			bs.set(26, leftChild.isBottom());
 			bs.set(27, rs.isLeftAssociative(tree, binary, "∨"));
 			bs.set(28, rs.isRightAssociative(tree, binary, "∨"));
-			bs.set(29, leftChild.isAnd() && rightChild.isAnd()
-					&& rightGChildren[0].isNot() && rightGChildren[1].isNot()
-					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])
-					&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1].getChildren()[0]));
-			bs.set(30, leftChild.isAnd() && rightChild.isAnd()
-					&& rightGChildren[0].isNot() && leftGChildren[1].isNot()
-					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])
-					&& tree.equalSubTrees(leftGChildren[1].getChildren()[0], rightGChildren[1]));
+			if (leftChild.isAnd() && rightChild.isAnd()) {
+				Node[] leftGChildren = leftChild.getChildren();
+				Node[] rightGChildren = rightChild.getChildren();
+				bs.set(29, rightGChildren[0].isNot() && rightGChildren[1].isNot()
+						&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])
+						&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1].getChildren()[0]));
+				bs.set(30, rightGChildren[0].isNot() && leftGChildren[1].isNot()
+						&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0].getChildren()[0])
+						&& tree.equalSubTrees(leftGChildren[1].getChildren()[0], rightGChildren[1]));
+				bs.set(34, tree.equalSubTrees(leftGChildren[0], rightGChildren[0]));
+				bs.set(35, tree.equalSubTrees(leftGChildren[1], rightGChildren[1]));
+				bs.set(107, leftGChildren[0].isNot() && leftGChildren[1].isNot()
+						&& tree.equalSubTrees(rightGChildren[0], leftGChildren[0].getChildren()[0])
+						&& tree.equalSubTrees(rightGChildren[1], leftGChildren[1].getChildren()[0]));
+				bs.set(108, leftGChildren[0].isNot() && rightGChildren[1].isNot()
+						&& tree.equalSubTrees(rightGChildren[0], leftGChildren[0].getChildren()[0])
+						&& tree.equalSubTrees(rightGChildren[1].getChildren()[0], leftGChildren[1]));
+			}
 			bs.set(31, leftChild.isNot() && rightChild.isNot());
 			bs.set(32, rightChild.isAnd());
 			bs.set(33, leftChild.isAnd());
-			bs.set(34, leftChild.isAnd() && rightChild.isAnd()
-					&& tree.equalSubTrees(leftGChildren[0], rightGChildren[0]));
-			bs.set(35, leftChild.isAnd() && rightChild.isAnd()
-					&& tree.equalSubTrees(leftGChildren[1], rightGChildren[1]));
-			bs.set(36, rightChild.isAnd() && tree.equalSubTrees(leftChild, rightGChildren[0]));
-			bs.set(37, leftChild.isAnd() && tree.equalSubTrees(leftGChildren[0], rightChild));
+			if (rightChild.isAnd()) {
+				Node[] rightGChildren = rightChild.getChildren();
+				bs.set(36, tree.equalSubTrees(leftChild, rightGChildren[0]));
+			}
+			if (leftChild.isAnd()) {
+				Node[] leftGChildren = leftChild.getChildren();
+				bs.set(37, tree.equalSubTrees(leftGChildren[0], rightChild));
+			}
 			bs.set(38, leftChild.isNot());
 			if (firstOrder) {
-				bs.set(95, leftChild.isAll() && rightChild.isAll());
-				if (leftChild.isExists()) {
+				if (leftChild.isAll()) {
 					String variable = leftChild.getVars().peek();
-					bs.set(96, !rightChild.hasFree(variable));
+					bs.set(97, !rightChild.hasFree(variable));
+				} else if (rightChild.isAll()) {
+					String variable = rightChild.getVars().peek();
+					bs.set(112, !leftChild.hasFree(variable));
 				}
 			}
+			bs.set(98, leftChild.isExists() && rightChild.isExists());
 		}
 
 		// Equivalences involving ¬
@@ -348,7 +379,7 @@ public class RuleEngine {
 				bs.set(68);
 				bs.set(71, 76);
 			}
-			if (firstOrder)
+			if (firstOrder && !node.isTop() && !node.isBottom())
 				bs.set(104, 106);
 		}
 
@@ -363,7 +394,9 @@ public class RuleEngine {
 			bs.set(80, child.isAnd());
 			if (child.isOr()) {
 				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
+				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
 				bs.set(81, !rightGrandChild.hasFree(variable));
+				bs.set(109, !leftGrandChild.hasFree(variable));
 			} else if (child.isImplies()) {
 				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
 				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
@@ -386,7 +419,9 @@ public class RuleEngine {
 			bs.set(88, child.isOr());
 			if (child.isAnd()) {
 				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
+				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
 				bs.set(89, !rightGrandChild.hasFree(variable));
+				bs.set(110, !leftGrandChild.hasFree(variable));
 			} else if (child.isImplies()) {
 				Node leftGrandChild = ((BinaryOperator) child).getLeftChild();
 				Node rightGrandChild = ((BinaryOperator) child).getRightChild();
@@ -407,6 +442,8 @@ public class RuleEngine {
 
 	public void applyRuleFromBitSet(int index, FormationTree tree, 
 			Node node, String input) {
+		int key = node.getKey();
+		int depth = node.getDepth();
 
 		switch (index) {
 		case 0:		ra.applyCommutativity((BinaryOperator) node);
@@ -617,7 +654,36 @@ public class RuleEngine {
 		break;
 		case 104:	ra.applyAddAll(tree, node, input);
 		break;
-		case 105:	ra.applyAddOr(tree, node, input);
+		case 105:	ra.applyAddExists(tree, node, input);
+		break;
+		case 106: 	ra.applyCommutativity((BinaryOperator) node);
+		ra.applyAndNotToNotImplies(tree, (BinaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) node);
+		break;
+		case 107:	ra.applyCommutativity((BinaryOperator) node);
+		ra.applyOrAndToIff(tree, (BinaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) node);
+		break;
+		case 108:	ra.applyCommutativity((BinaryOperator) node);
+		ra.applyOrAndToNotIff(tree, (BinaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) node);
+		break;
+		case 109:	
+		ra.applyCommutativity((BinaryOperator) ((UnaryOperator) node).getChild());
+		ra.applyAllDistrubutionOfQuantifiersWithNoFreeVariables(tree, (UnaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) tree.findNode(key, depth));
+		break;
+		case 110:	ra.applyCommutativity((BinaryOperator) ((UnaryOperator) node).getChild());
+		ra.applyExistsDistributionOfQuantifiersWithNoFreeVariables(tree, (UnaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) tree.findNode(key, depth));
+		break;
+		case 111:	ra.applyCommutativity((BinaryOperator) node);
+		ra.applyExistsDistributionOfQuantifiersWithNoFreeVariablesBackwards(tree, (BinaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) ((UnaryOperator) tree.findNode(key, depth)).getChild());
+		break;
+		case 112:	ra.applyCommutativity((BinaryOperator) node);
+		ra.applyAllDistributionOfQuantifiersWithNoFreeVariablesBackwards(tree, (BinaryOperator) node);
+		ra.applyCommutativity((BinaryOperator) ((UnaryOperator) tree.findNode(key, depth)).getChild());
 		break;
 		}
 
@@ -650,29 +716,64 @@ public class RuleEngine {
 		// user input is chosen randomly
 		String var = null;
 		boolean notFirstOrderRule = nextSetBit < first_order_rules;
+
 		if (nextSetBit >= min_user_input_required && notFirstOrderRule || nextSetBit >= fo_user_input_required) {
-			SortedSet<String> vars;
-			
-			if (notFirstOrderRule)
+			LinkedList<String> usedVars = tree.getUsedQuantifiedVars();
+			SortedSet<String> vars = new TreeSet<String>();
+
+			if (notFirstOrderRule) {
 				vars = tree.getAtoms();
-			else
-				vars = tree.getVariables();
+				vars.removeAll(usedVars);
 
-			rand = new Random();
+				rand = new Random();
 
-			if (vars.size() != 0) {
-				int randomVar = rand.nextInt(vars.size());
+				if (vars.size() != 0) {
+					int randomVar = rand.nextInt(vars.size());
 
-				Iterator<String> it = vars.iterator();
-				for (int i = 0; i <= randomVar && it.hasNext(); ++i)
-					var = it.next();
-			} else {
-				if (notFirstOrderRule && firstOrder) {
-					var = "Px";
+					Iterator<String> it = vars.iterator();
+					for (int i = 0; i <= randomVar && it.hasNext(); ++i)
+						var = it.next();
 				} else {
 					var = "x";
 				}
+			} else {
+				System.out.println("");
+
+				Variable[] variables = Variable.values();
+				for (Variable v : variables) {
+					String s = v.getValue();
+
+					// Adding quantifier rules
+					if (nextSetBit == 104 || nextSetBit == 105) {
+						if (s != "┬" && s != "⊥" && !node.hasFree(s)) {
+							Node parent = node.getParent();
+							while (!parent.isBound(s)) {
+								if (parent.isRoot()) {
+									vars.add(s);
+									break;
+								} else {
+									parent = parent.getParent();
+								}
+							}
+
+						}
+						// Replacement rules
+					} else if (s != "┬" && s != "⊥" && !(node.hasFree(s) || node.isBound(s)))
+						vars.add(s);
+				}
+				rand = new Random();
+
+				if (vars.size() != 0) {
+					int randomVar = rand.nextInt(vars.size());
+
+					Iterator<String> it = vars.iterator();
+					for (int i = 0; i <= randomVar && it.hasNext(); ++i)
+						var = it.next();
+				} else {
+					var = "Px";
+				}
 			}
+
 		}
 
 		// rule to be applied creates truth values
@@ -692,6 +793,8 @@ public class RuleEngine {
 		}
 
 		System.out.println("Rule: " + nextSetBit);
+		if (var != null)
+			System.out.println("Input: " + var);
 		applyRuleFromBitSet(nextSetBit, tree, node, var);
 	}
 

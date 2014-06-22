@@ -19,10 +19,15 @@
     <string name="settings">Settings</string>
     <string name="left">\u003C</string>
     <string name="right">\u003E</string>
-    <string name="examples">Example formulae:</string>
-    <string name="rules2">∀x∃y[(x∧y)→z]</string>
-    <string name="rules3">∀x∀y[Px→¬(y→Qyxz)]</string>
-    <string name="rules4">(x∧y)v(¬x∧¬y)</string>
+    <string name="examples">Rules:</string>
+    <string name="rules6">Example formula: ∀x∃y[(Px∧Py)→Qxyz]</string>
+    <string name="rules2">Surround subformulae after quantifiers with [ ] brackets</string>
+    <string name="rules3">Function symbols are not supported</string>
+    <string name="rules4">Quantified variables must be unique in nested formulae</string>
+    <string name="rules5">Predicate symbols must have a constant arity throughout the formula</string>
+    <string name="rules7">When applying rules to ∀x[...], φ and ψ stand for any WFF</string>
+    <string name="rules8">θ stands for any WFF with no free occurrences of x</string>
+    <string name="rules9">Warning: First Order Logic formulae are not checked for equivalence</string>
 
     <string-array name="difficulty_array">
         <item>Beginner</item>

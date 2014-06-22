@@ -149,5 +149,5 @@ public class Parser {
 //		FormationTree tree = compiler.compile("¬(a∧b)");
 //		assertEquals("¬(a∧b): ", tree.toString(), "0-0: ¬ (0-1: ∧ (0-2: a, 1-2: b))");
 //	}
-	
+
 }

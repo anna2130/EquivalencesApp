@@ -4,6 +4,16 @@
         android:layout_height="fill_parent"
         android:id="@+id/relative01" >
 
+    <TextView
+        android:id="@+id/example_formulae"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/start_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="@string/examples"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
     <EditText
         android:id="@+id/start_equivalence"
         android:layout_width="400dp"
@@ -23,16 +33,6 @@
         android:layout_marginTop="14dp"
         android:ems="10"
         android:hint="@string/end_equivalence" />
-    
-    <android.inputmethodservice.KeyboardView
-        android:id="@+id/keyboardview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:visibility="gone" />
 
     <TextView
         android:id="@+id/error_message"
@@ -45,8 +45,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium" 
         android:visibility="invisible" />
         
-    <requestFocus />
-
     <Button
         android:id="@+id/randomise_start_button"
         android:layout_width="wrap_content"
@@ -67,22 +65,13 @@
         android:text="@string/randomise" />
 
     <TextView
-        android:id="@+id/example_formulae"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/start_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="@string/examples"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
         android:id="@+id/formula1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/example_formulae"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/rules2"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -92,6 +81,7 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/formula1"
         android:layout_marginTop="15dp"
+        android:text="@string/rules3"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -101,14 +91,75 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/formula2"
         android:layout_marginTop="15dp"
+        android:text="@string/rules4"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula3"
+        android:layout_marginTop="15dp"
+        android:text="@string/rules5"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula4"
+        android:layout_marginTop="50dp"
+        android:text="@string/rules6"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula5"
+        android:layout_marginTop="15dp"
+        android:text="@string/rules9"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula8"
+        android:layout_marginTop="50dp"
+        android:text="@string/rules7"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/formula7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/formula6"
+        android:layout_marginTop="15dp"
+        android:text="@string/rules8"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <android.inputmethodservice.KeyboardView
+        android:id="@+id/keyboardview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/error_message"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_centerHorizontal="true"
         android:onClick="startEquivalence"
         android:text="@string/start_button" />

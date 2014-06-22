@@ -153,10 +153,19 @@ public class UnaryOperator extends Node {
 	@Override
 	public void replaceVariable(String oldVar, String newVar) {
 		LinkedList<String> vars = getVars();
-		if (isAll() || isExists() && vars.contains(oldVar) && !vars.contains(newVar)) {
-			vars.remove(oldVar);
-			vars.add(newVar);
+		if ((isAll() || isExists()) && vars.contains(oldVar) && !vars.contains(newVar)) {
+			int location = vars.indexOf(oldVar);
+			vars.set(location, newVar);
 			child.replaceVariable(oldVar, newVar);
 		}
+	}
+	
+	@Override
+	public LinkedList<String> getUsedQuantifiedVars() {
+		LinkedList<String> usedVars = new LinkedList<String>();
+		if (isAll() || isExists())
+			usedVars.addAll(getVars());
+		usedVars.addAll(child.getUsedQuantifiedVars());
+		return usedVars;
 	}
 }

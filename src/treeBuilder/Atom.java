@@ -6,7 +6,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Atom extends Node {
-	
+
 	public Atom(int key, int depth, String value, LinkedList<String> vars) {
 		super(key, depth, value, vars);
 	}
@@ -15,15 +15,15 @@ public class Atom extends Node {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getValue());
-		
+
 		LinkedList<String> vars = getVars();
 		if (vars != null)
 			for (String var : vars)
 				sb.append(var);
-		
+
 		return sb.toString();
 	}
-	
+
 	public String toTreeString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getKey());
@@ -36,7 +36,7 @@ public class Atom extends Node {
 		if (vars != null)
 			for (String var : vars)
 				sb.append(var);
-		
+
 		return sb.toString();
 	}
 
@@ -46,7 +46,7 @@ public class Atom extends Node {
 		clone.setParent(getParent());
 		return clone;
 	}
-	
+
 	public boolean getTruthValue(HashMap<String, Integer> values) {
 		if (isTop())
 			return true;
@@ -60,17 +60,17 @@ public class Atom extends Node {
 	public SortedSet<String> getVariables() {
 		SortedSet<String> variables = new TreeSet<String>();
 		LinkedList<String> vars = getVars();
-		
+
 		if (vars != null)
 			variables.addAll(vars);
- 
+
 		Character val = getValue().charAt(0);
 		if (val >= 'a' && val <= 'z' || isTop() || isBottom())
 			variables.add(getValue());
-		
+
 		return variables;
 	}
-	
+
 	@Override
 	public SortedSet<String> getAtoms() {
 		SortedSet<String> atomSet = new TreeSet<String>();
@@ -82,12 +82,12 @@ public class Atom extends Node {
 	public boolean isAtom() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean isTop() {
 		return getValue().equals("┬");
 	}
-	
+
 	@Override
 	public boolean isBottom() {
 		return getValue().equals("⊥");
@@ -97,7 +97,11 @@ public class Atom extends Node {
 	// if x occurs in φ. Moreover, there are no bound variables in any atomic formula.
 	@Override
 	public boolean hasFree(String variable) {
-		return getVars().contains(variable) || getValue().equals(variable);
+		LinkedList<String> vars = getVars();
+		if (vars != null)
+			return vars.contains(variable) || getValue().equals(variable);
+		else
+			return getValue().equals(variable);
 	}
 
 	@Override
@@ -108,9 +112,9 @@ public class Atom extends Node {
 	@Override
 	public void replaceVariable(String oldVar, String newVar) {
 		LinkedList<String> vars = getVars();
-		if (vars.contains(oldVar) && !vars.contains(newVar)) {
-			vars.remove(oldVar);
-			vars.add(newVar);
+		if (vars != null && vars.contains(oldVar) && !vars.contains(newVar)) {
+			int location = vars.indexOf(oldVar);
+			vars.set(location, newVar);
 		} else if (oldVar.equals(getValue())) {
 			setValue(newVar);
 		}

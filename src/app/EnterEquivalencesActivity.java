@@ -60,22 +60,31 @@ public class EnterEquivalencesActivity extends Activity {
 		
 		initialFormula = "";
 
+		TextView rules = (TextView) findViewById(R.id.example_formulae);
 		TextView exampleRule1 = (TextView) findViewById(R.id.formula1);
 		TextView exampleRule2 = (TextView) findViewById(R.id.formula2);
 		TextView exampleRule3 = (TextView) findViewById(R.id.formula3);
+		TextView exampleRule4 = (TextView) findViewById(R.id.formula4);
+		TextView exampleRule5 = (TextView) findViewById(R.id.formula5);
+		TextView exampleRule6 = (TextView) findViewById(R.id.formula6);
+		TextView exampleRule7 = (TextView) findViewById(R.id.formula7);
+		TextView exampleRule8 = (TextView) findViewById(R.id.formula8);
 		
 		// ∀ | ∃ | ∧ | ∨ | ┬ | ⊥ | ¬ | → | ↔
 		
 		if (firstOrder) {
 			mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.firstorderkbd );
-			exampleRule1.setText("∀x∃y[Px→Qxy]");
-			exampleRule2.setText("∀x∀y[¬(Px∨Ryz)→Qy]");
-			exampleRule3.setText("∃y∀x[Px↔Qyz]");
 		} else {		
 			mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardview, R.layout.logickbd );
+			rules.setText("Examples:");
 			exampleRule1.setText("z→(y∧x)");
 			exampleRule2.setText("(x∨┬)→┬");
 			exampleRule3.setText("x∧¬(y∨z)");
+			exampleRule4.setText("");
+			exampleRule5.setText("");
+			exampleRule6.setText("");
+			exampleRule7.setText("");
+			exampleRule8.setText("");
 		}
 		
 		mCustomKeyboard.registerEditText(R.id.start_equivalence);
